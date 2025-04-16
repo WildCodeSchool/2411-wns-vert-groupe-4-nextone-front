@@ -1,0 +1,18 @@
+services:
+  frontend:
+    build: .
+    container_name: nextone-frontend
+    ports:
+      - "4000:4000"
+    volumes:
+      - ./src:/app/src
+    env_file:
+      - .env
+    develop:
+      watch:
+        - action: sync
+          path: .
+          target: /app
+          ignore:
+            - node_modules/
+    command: sh -c "npm run dev" #npm run codegen && plus tard
