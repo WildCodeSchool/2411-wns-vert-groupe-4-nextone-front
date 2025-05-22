@@ -2,7 +2,6 @@ services:
   frontend:
     image: nextone4/nextone-front:latest
     container_name: nextone-frontend
-    platform: linux/x86_64
     ports:
       - "4000:4000"
     volumes:
