@@ -11,5 +11,6 @@ export default defineConfig({
     port: 4000,
     host: true,
     open: false,
+    allowedHosts: ['frontend'],
   },
 })
