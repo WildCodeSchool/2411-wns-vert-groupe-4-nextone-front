@@ -25,7 +25,7 @@ jobs:
         with:
           name: frontend-dist
           path: dist/
- docker:
+  docker:
     needs: [test-frontend, build-frontend]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
