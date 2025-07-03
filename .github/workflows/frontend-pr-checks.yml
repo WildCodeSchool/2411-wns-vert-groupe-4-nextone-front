@@ -3,7 +3,6 @@ name: Frontend PR Checks
 on:
   [workflow_call, pull_request]
 
-
 jobs:
   test-frontend:
     runs-on: ubuntu-latest
