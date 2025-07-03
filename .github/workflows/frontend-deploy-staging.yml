@@ -1,9 +1,9 @@
-name: Deploy Frontend
+name: Deploy Frontend (Staging)
 
 on:
   push:
     branches:
-      - main
+      - staging
 
 jobs:
   test-frontend:
@@ -53,5 +53,5 @@ jobs:
           context: .
           file: Dockerfile.prod
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/nextone-front:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/nextone-front-staging:latest
           platforms: linux/amd64,linux/arm64,linux/x86_64
