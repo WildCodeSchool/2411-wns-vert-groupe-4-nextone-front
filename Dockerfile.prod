@@ -7,6 +7,8 @@ RUN npm install --only=production
 
 COPY dist/ ./web-client-build
 
+CMD ["tail", "-f", "/dev/null"]
+
 
 
 
