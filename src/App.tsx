@@ -5,7 +5,8 @@ function App() {
 
   return (
     <>
-      <div>
+      <div className='bg-card font-archivo'>
+        <p>NextOne</p>
         <Button onClick={() => alert('Hello World')}>Hello World</Button>
       </div>
     </>
