@@ -1,6 +1,6 @@
 services:
   frontend:
-    build: ./
+    image: nextone4/nextone-front:latest
     container_name: nextone-frontend
     ports:
       - "4000:4000"
