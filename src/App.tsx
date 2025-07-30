@@ -5,7 +5,7 @@ function App() {
 
   return (
     <>
-      <div>
+      <div className='bg-card'>
         <Button onClick={() => alert('Hello World')}>Hello World</Button>
       </div>
     </>
