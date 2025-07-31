@@ -7,6 +7,8 @@ import {
   gql,
   InMemoryCache,
 } from "@apollo/client";
+import LoginPageAdmin from "./pages/LoginPageAdmin";
+
 
 const router = createBrowserRouter([
   {
@@ -16,6 +18,10 @@ const router = createBrowserRouter([
   {
     path: "/about",
     element: <div>Route test About</div>,
+  },
+  {
+    path: "/admin/login",
+    element: <LoginPageAdmin />, 
   },
 ]);
 

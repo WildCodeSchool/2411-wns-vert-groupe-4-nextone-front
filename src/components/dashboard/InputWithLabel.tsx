@@ -44,3 +44,4 @@ export function InputWithLabel({
     </div>
   )
 }
+export default InputWithLabel
