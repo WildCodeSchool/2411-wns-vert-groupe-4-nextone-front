@@ -1,5 +1,4 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import App from "./App.tsx";
 import {
@@ -44,7 +43,7 @@ client
   )
   .catch((error) => console.error("Apollo Client configuration error:", error));
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
+createRoot(document.getElementById("root")!).render(
   <ApolloProvider client={client}>
     <RouterProvider router={router} />
   </ApolloProvider>
