@@ -2,7 +2,12 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { RouterProvider, createBrowserRouter } from "react-router";
 import App from "./App.tsx";
-import { ApolloClient, ApolloProvider, gql, InMemoryCache } from "@apollo/client";
+import {
+  ApolloClient,
+  ApolloProvider,
+  gql,
+  InMemoryCache,
+} from "@apollo/client";
 
 const router = createBrowserRouter([
   {
@@ -12,29 +17,35 @@ const router = createBrowserRouter([
   {
     path: "/about",
     element: <div>Route test About</div>,
-  }
+  },
 ]);
 
 export const client = new ApolloClient({
   cache: new InMemoryCache({
-    addTypename: false
+    addTypename: false,
   }),
-  uri: "http://localhost:4005",
+  uri: "http://localhost:4005/graphql",
 });
 
 client
   .query({
     query: gql`
-      query TestQuery {
-        __typename
+      query Companies {
+        companies {
+          id
+          name
+          address
+        }
       }
-    `
+    `,
   })
-  .then(response => console.log("Apollo Client is configured correctly:", response))
-  .catch(error => console.error("Apollo Client configuration error:", error));
+  .then((response) =>
+    console.log("Apollo Client is configured correctly:", response)
+  )
+  .catch((error) => console.error("Apollo Client configuration error:", error));
 
-  ReactDOM.createRoot(document.getElementById("root")!).render(
-    <ApolloProvider client={client}>
-      <RouterProvider router={router}/>
-    </ApolloProvider>
-  );
+ReactDOM.createRoot(document.getElementById("root")!).render(
+  <ApolloProvider client={client}>
+    <RouterProvider router={router} />
+  </ApolloProvider>
+);
