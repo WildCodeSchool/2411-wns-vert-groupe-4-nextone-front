@@ -9,6 +9,7 @@ import {
 } from "@apollo/client";
 import DashboardLayout from "./components/dashboard/DashboardLayout.tsx";
 import HomeDashboard from "./components/dashboard/HomeDashboard.tsx";
+import LoginPageAdmin from "./pages/LoginPageAdmin";
 
 const router = createBrowserRouter([
   {
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
         element: <HomeDashboard />,
       },
     ],
+  },
+  {
+    path: "/admin/login",
+    element: <LoginPageAdmin />, 
   },
 ]);
 
