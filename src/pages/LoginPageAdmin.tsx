@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import logo from "@/assets/images/Logo_NextOne_vert-noir.png";
 export default function LoginAdmin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,15 +15,15 @@ export default function LoginAdmin() {
     // Appeler le resolver GraphQL de login ici
   };
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#f3f4fb] px-4 font-['Archivo',Helvetica]">
-      <Card className="w-full max-w-md bg-white rounded-[15px] border-none shadow-lg">
-        <CardHeader className="flex flex-col items-center gap-[35px] p-[50px] pb-0">
+ <div className="min-h-screen flex items-start bg-[#f3f4fb] px-[80px] pt-[10px] font-['Archivo',Helvetica]">
+  <Card className="w-[480px] bg-white rounded-[15px] border-none shadow-lg ml-[80px] my-[20px]">
+        <CardHeader className="flex flex-col items-center gap-[20px] p-[50px] pb-0">
           <img
-            src="../assets/images/Logo_NextOne_vert-noir.png"
+            src={logo}
             alt="Logo"
-            className="w-[150px] h-auto mb-4"
+            className="w-[70px] h-[70px] rounded-[15px]"
           />
-          <CardTitle className="font-['Archivo',Helvetica] font-normal text-[#1f2511] text-[26px] text-center tracking-[0] leading-normal">
+          <CardTitle className="whitespace-nowrap font-['Archivo',Helvetica] font-normal text-[#1f2511] text-[26px] text-center tracking-[0] leading-normal mb-[30px]">
             Connectez-vous à votre compte
           </CardTitle>
         </CardHeader>
