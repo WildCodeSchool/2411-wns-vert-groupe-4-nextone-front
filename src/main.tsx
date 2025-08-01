@@ -7,6 +7,8 @@ import {
   gql,
   InMemoryCache,
 } from "@apollo/client";
+import DashboardLayout from "./components/dashboard/DashboardLayout.tsx";
+import HomeDashboard from "./components/dashboard/HomeDashboard.tsx";
 
 const router = createBrowserRouter([
   {
@@ -14,8 +16,14 @@ const router = createBrowserRouter([
     Component: App,
   },
   {
-    path: "/about",
-    element: <div>Route test About</div>,
+    element: <DashboardLayout />,
+    path: "/dashboard",
+    children: [
+      {
+        index: true,
+        element: <HomeDashboard />,
+      },
+    ],
   },
 ]);
 
