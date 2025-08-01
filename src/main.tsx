@@ -1,36 +1,12 @@
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router";
-import App from "./App.tsx";
+import { RouterProvider } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
   gql,
   InMemoryCache,
 } from "@apollo/client";
-import DashboardLayout from "./components/dashboard/DashboardLayout.tsx";
-import HomeDashboard from "./components/dashboard/HomeDashboard.tsx";
-import LoginPageAdmin from "./pages/LoginPageAdmin";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    Component: App,
-  },
-  {
-    element: <DashboardLayout />,
-    path: "/dashboard",
-    children: [
-      {
-        index: true,
-        element: <HomeDashboard />,
-      },
-    ],
-  },
-  {
-    path: "/admin/login",
-    element: <LoginPageAdmin />, 
-  },
-]);
+import { router } from "./routes/routes";
 
 export const client = new ApolloClient({
   cache: new InMemoryCache({
