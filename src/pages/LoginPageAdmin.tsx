@@ -4,6 +4,7 @@ import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import logo from "@/assets/images/Logo_NextOne_vert-noir.png";
+import iconImage from "@/assets/images/icon_img.jpg";
 export default function LoginAdmin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -15,9 +16,9 @@ export default function LoginAdmin() {
     // Appeler le resolver GraphQL de login ici
   };
   return (
- <div className="min-h-screen flex items-start bg-[#f3f4fb] px-[80px] pt-[10px] font-['Archivo',Helvetica]">
-  <Card className="w-[480px] bg-white rounded-[15px] border-none shadow-lg ml-[80px] my-[20px]">
-        <CardHeader className="flex flex-col items-center gap-[20px] p-[50px] pb-0">
+ <div className="min-h-screen  overflow-hidden flex items-start bg-[#f3f4fb] px-[80px] pt-[10px] font-['Archivo',Helvetica] gap-[80px]">
+  <Card className="w-[480px] max-h-[700px] bg-white rounded-[15px] border-none shadow-lg ml-[80px] my-[20px]">
+        <CardHeader className="flex flex-col items-center gap-[15px] p-[30px] pb-0">
           <img
             src={logo}
             alt="Logo"
@@ -28,7 +29,7 @@ export default function LoginAdmin() {
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="p-[50px] pt-0">
+        <CardContent className="p-[30px] pt-0">
           <form onSubmit={handleSubmit} className="flex flex-col gap-[45px]">
             <div className="flex flex-col gap-[30px]">
               <InputWithLabel
@@ -86,6 +87,12 @@ export default function LoginAdmin() {
           </p>
         </CardContent>
       </Card>
+        {/* Colonne droite : image */}
+      <img
+        src={iconImage} 
+        alt="Accueil NextOne"
+        className="w-[500px] h-[655px] rounded-[15px] object-cover"
+      />
     </div>
   );
 };
