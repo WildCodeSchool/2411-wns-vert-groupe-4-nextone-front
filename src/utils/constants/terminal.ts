@@ -1,0 +1,1 @@
+export const QrAtStart = `https://tailwindcss.com/docs/font-weight`;
