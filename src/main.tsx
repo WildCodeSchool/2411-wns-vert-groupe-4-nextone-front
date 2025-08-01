@@ -1,23 +1,12 @@
 import { createRoot } from "react-dom/client";
-import { RouterProvider, createBrowserRouter } from "react-router";
-import App from "./App.tsx";
+import { RouterProvider } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
   gql,
   InMemoryCache,
 } from "@apollo/client";
-
-const router = createBrowserRouter([
-  {
-    path: "/",
-    Component: App,
-  },
-  {
-    path: "/about",
-    element: <div>Route test About</div>,
-  },
-]);
+import { router } from "./routes/routes";
 
 export const client = new ApolloClient({
   cache: new InMemoryCache({
