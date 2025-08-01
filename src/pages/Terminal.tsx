@@ -8,6 +8,7 @@ import { QrAtStart } from "@/utils/constants/terminal";
 function Terminal() {
   const [ticketId, setTicketId] = useState(generateTicketId());
   const navigate = useNavigate()
+  console.log(ticketId)
 
   function generateTicketId() {
     return `ticket-${Math.random().toString(36).substring(2, 10)}`;
