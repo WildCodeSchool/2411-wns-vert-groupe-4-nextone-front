@@ -8,10 +8,10 @@ type RouteParams = {
 };
 
 type GetTicketType = {
-  getTicket: Ticket;
+  ticket: Ticket;
 };
 
-type Ticket = {
+export type Ticket = {
   code: string;
   email: string;
   createdAt: string;
@@ -21,6 +21,10 @@ type Ticket = {
   phone: string;
   status: string;
   updatedAt: string;
+  service: {
+    id: string;
+    name: string;
+  };
 };
 
 export default function TicketPage() {
@@ -29,7 +33,7 @@ export default function TicketPage() {
   const navigate = useNavigate();
 
   const { data, loading, error } = useQuery<GetTicketType>(GET_TICKET_INFOS, {
-    variables: { getTicketId: id },
+    variables: { ticketId: id },
   });
 
   const statusString = (status: string) => {
@@ -67,11 +71,11 @@ export default function TicketPage() {
           <IoIosArrowBack className="w-6 h-6 text-foreground cursor-pointer" />
         </div>
         <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
-          Ticket {data.getTicket.code}
+          Ticket {data.ticket.code}
         </h1>
         <div>
           <span className="ml-4 px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-            {statusString(data.getTicket.status)}
+            {statusString(data.ticket.status)}
           </span>
         </div>
       </div>
@@ -80,17 +84,16 @@ export default function TicketPage() {
           <h3 className="text-1xl font-light text-muted-foreground flex flex-col items-start justify-start">
             Informations personnelles
           </h3>
-          <p>Prénom: {data.getTicket.firstName}</p>
-          <p>Nom: {data.getTicket.lastName}</p>
-          <p>Email: {data.getTicket.email}</p>
-          <p>Téléphone: {data.getTicket.phone}</p>
-          <p>
-            Créé le: {new Date(data.getTicket.createdAt).toLocaleDateString()}
-          </p>
+          <p>Prénom: {data.ticket.firstName}</p>
+          <p>Nom: {data.ticket.lastName}</p>
+          <p>Email: {data.ticket.email}</p>
+          <p>Téléphone: {data.ticket.phone}</p>
+          <p>Créé le: {new Date(data.ticket.createdAt).toLocaleDateString()}</p>
           <p>
             Dernière mise à jour:{" "}
-            {new Date(data.getTicket.updatedAt).toLocaleDateString()}
+            {new Date(data.ticket.updatedAt).toLocaleDateString()}
           </p>
+          <p>Service: {data.ticket.service.name || "N/A"}</p>
         </div>
         <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full ml-4">
           <h3 className="text-1xl font-light text-muted-foreground flex flex-col items-start justify-start">
