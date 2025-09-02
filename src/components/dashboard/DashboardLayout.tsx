@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import DashboardMenuTooltip from "./DashboardMenuTooltip";
 import { FaTicketSimple } from "react-icons/fa6";
 import { MdRoomService } from "react-icons/md";
@@ -13,6 +13,8 @@ export type DashboardMenuItem = {
 };
 
 export default function DashboardLayout() {
+  const location = useLocation();
+
   const dashboardMenu: DashboardMenuItem[] = [
     {
       name: "Accueil",
@@ -43,7 +45,11 @@ export default function DashboardLayout() {
   };
 
   const isActive = (path: string) => {
-    return window.location.pathname === path;
+    if (path === "/dashboard") {
+      return location.pathname === path;
+    }
+
+    return location.pathname.startsWith(path);
   };
 
   return (
