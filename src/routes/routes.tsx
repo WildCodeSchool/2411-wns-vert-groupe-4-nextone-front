@@ -5,6 +5,7 @@ import DashboardLayout from "../components/dashboard/DashboardLayout";
 import HomeDashboard from "../components/dashboard/HomeDashboard";
 import LoginPageAdmin from "../pages/LoginPageAdmin";
 import PhonePage from "@/pages/PhonePage";
+import DashboardServicesPage from "@/pages/DashboardServicesPage.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +31,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <HomeDashboard />,
+      },
+      {
+        path: "services",
+        element: <DashboardServicesPage />,
       },
     ],
   },
