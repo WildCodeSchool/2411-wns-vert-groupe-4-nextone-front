@@ -72,9 +72,11 @@ export default function DashboardServicesPage() {
         <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
           Services
         </h1>
-        <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-300">
-          <span className="text-gray-400 text-xs">Logo</span>
-        </div>
+        <img
+          src="/src/assets/images/icon_img.jpg"
+          alt="Logo"
+          className="w-40 h-16 object-contain rounded-full bg-white shadow-md"
+        />
       </div>
       
       <div className="flex flex-col gap-6 w-full">
