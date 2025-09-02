@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Terminal from "../pages/Terminal";
 import App from "../App";
-import ChooseService from "@/components/terminal/ChooseService";
 import DashboardLayout from "../components/dashboard/DashboardLayout.tsx";
 import HomeDashboard from "../components/dashboard/HomeDashboard.tsx";
 import LoginPageAdmin from "../pages/LoginPageAdmin";
@@ -18,10 +17,6 @@ export const router = createBrowserRouter([
   {
     path: "/terminal",
     Component: Terminal,
-  },
-  {
-    path: "/choose-service",
-    Component: ChooseService,
   },
   {
     path: "/",
