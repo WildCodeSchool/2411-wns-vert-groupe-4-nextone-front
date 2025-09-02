@@ -5,15 +5,13 @@ import DashboardLayout from "../components/dashboard/DashboardLayout";
 import HomeDashboard from "../components/dashboard/HomeDashboard";
 import LoginPageAdmin from "../pages/LoginPageAdmin";
 import PhonePage from "@/pages/PhonePage";
+import TicketsDashboard from "@/components/dashboard/tickets/TicketsDashboard.tsx";
+import TicketPage from "@/components/dashboard/tickets/TicketPage.tsx";
 
 export const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-  },
-  {
-    path: "/about",
-    element: <div>Route test About</div>,
   },
   {
     path: "/terminal",
@@ -30,6 +28,14 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <HomeDashboard />,
+      },
+      {
+        path: "/dashboard/tickets",
+        element: <TicketsDashboard />,
+      },
+      {
+        path: "/dashboard/tickets/:id",
+        element: <TicketPage />,
       },
     ],
   },
