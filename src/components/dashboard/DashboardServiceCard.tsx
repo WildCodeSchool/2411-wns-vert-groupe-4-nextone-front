@@ -114,18 +114,19 @@ export default function DashboardServiceCard({
 
   return (
     <Card className="w-full border border-gray-200 shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 px-6 pt-6">
-        <CardTitle className="text-lg font-medium text-gray-900">
+      <CardHeader className="flex items-center justify-between w-full">
+        <CardTitle className="text-xl font-light flex flex-col items-start justify-start">
           {service.name}
         </CardTitle>
         <StatusBadge label={service.status} />
       </CardHeader>
 
-      <CardContent className="px-6 pb-6">
+      <CardContent className="px-[30px] pb-[32px]">
 
         {/* en-tête hors scroll */}
+      <div className="px-[24px] pr-[40px]">
         <Table className="table-fixed">
-          <TableHeader className="bg-[#F8FAFB]">
+          <TableHeader className="bg-[#F8FAFB] ">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
@@ -140,9 +141,10 @@ export default function DashboardServiceCard({
             ))}
           </TableHeader>
         </Table>
+      </div>
 
   
-        <div className="max-h-[300px] overflow-y-auto">
+        <div className="px-[24px] max-h-[300px] overflow-y-auto ">
           <Table className="table-fixed">
             <TableBody>
               {table.getRowModel().rows.map((row) => (
@@ -157,7 +159,6 @@ export default function DashboardServiceCard({
             </TableBody>
           </Table>
         </div>
-
       </CardContent>
     </Card>
   );
