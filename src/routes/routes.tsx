@@ -1,14 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
 import Terminal from "../pages/Terminal";
 import App from "../App";
-import DashboardLayout from "../components/dashboard/DashboardLayout.tsx";
-import HomeDashboard from "../components/dashboard/HomeDashboard.tsx";
+import DashboardLayout from "../components/dashboard/DashboardLayout";
+import HomeDashboard from "../components/dashboard/HomeDashboard";
 import LoginPageAdmin from "../pages/LoginPageAdmin";
+import PhonePage from "@/pages/PhonePage";
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    Component: App,
+    element: <App />,
   },
   {
     path: "/about",
@@ -16,11 +17,11 @@ export const router = createBrowserRouter([
   },
   {
     path: "/terminal",
-    Component: Terminal,
+    element: <Terminal />,
   },
-  {
-    path: "/",
-    Component: App,
+    {
+    path: "/phone",
+    element: <PhonePage />,
   },
   {
     element: <DashboardLayout />,
@@ -34,6 +35,6 @@ export const router = createBrowserRouter([
   },
   {
     path: "/admin/login",
-    element: <LoginPageAdmin />, 
+    element: <LoginPageAdmin />,
   },
 ]);

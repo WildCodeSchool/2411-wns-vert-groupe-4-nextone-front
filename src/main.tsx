@@ -7,6 +7,7 @@ import {
   InMemoryCache,
 } from "@apollo/client";
 import { router } from "./routes/routes";
+import { TicketProvider } from "./context/useContextTicket";
 
 export const client = new ApolloClient({
   cache: new InMemoryCache({
@@ -34,6 +35,8 @@ client
 
 createRoot(document.getElementById("root")!).render(
   <ApolloProvider client={client}>
-    <RouterProvider router={router} />
+    <TicketProvider>
+      <RouterProvider router={router} />
+    </TicketProvider>
   </ApolloProvider>
 );
