@@ -1,4 +1,10 @@
 import {
+  useReactTable,
+  getCoreRowModel,
+  flexRender,
+  ColumnDef,
+} from "@tanstack/react-table";
+import {
   Table,
   TableBody,
   TableCell,
@@ -10,12 +16,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal } from "lucide-react";
 import StatusBadge from "./StatusBadge";
+import { useMemo } from "react";
 
 type ServiceTicket = {
   id: string;
   ticket: string;
-  name?: string;
   lastname?: string;
+  name?: string;
   status: "En cours de traitement" | "En attente";
   waitTime?: string;
 };
@@ -27,32 +34,84 @@ type DashboardService = {
   tickets: ServiceTicket[];
 };
 
-const getTicketStatusColor = (status: string) => {
-  switch (status) {
-    case "En cours de traitement":
-    case "En attente":
-      return "text-black";
-    default:
-      return "bg-gray-100 text-gray-700";
-  }
-};
-
-const getTicketStatusBackgroundColor = (status: string) => {
-  switch (status) {
-    case "En cours de traitement":
-      return { backgroundColor: "#EAF6EB" };
-    case "En attente":
-      return { backgroundColor: "#FFFAE7" };
-    default:
-      return {};
-  }
-};
+function StatusCell({ status }: { status: ServiceTicket["status"] }) {
+  const bgColor =
+    status === "En cours de traitement" ? "#EAF6EB" : "#FFFAE7";
+  return (
+    <span
+      className="px-4 py-2 rounded text-xs w-fit text-black"
+      style={{ backgroundColor: bgColor }}
+    >
+      {status}
+    </span>
+  );
+}
 
 export default function DashboardServiceCard({
   service,
 }: {
   readonly service: DashboardService;
 }) {
+  const columns = useMemo<ColumnDef<ServiceTicket>[]>(() => [
+    {
+      header: "TICKET",
+      accessorKey: "ticket",
+      cell: (info) => info.getValue(),
+    },
+    {
+      header: "NOM",
+      accessorKey: "lastname",
+      cell: (info) => info.getValue() || "-",
+    },
+    {
+      header: "PRENOM",
+      accessorKey: "name",
+      cell: (info) => info.getValue() || "-",
+    },
+    {
+      header: "STATUT",
+      accessorKey: "status",
+      cell: ({ row }) => (
+        <StatusCell status={row.original.status} />
+      ),
+    },
+    {
+      header: "TEMPS D’ATTENTE",
+      accessorKey: "waitTime",
+      cell: (info) => (
+      <span className="pl-2">
+        {String(info.getValue() ?? "-")}
+      </span>
+      ),
+     
+    },
+    {
+      header: "",
+      id: "actions",
+      cell: ({ row }) => {
+        const ticket = row.original;
+        return (
+          <div className="flex justify-end items-center gap-2">
+            {ticket.status === "En attente" && (
+              <Button className="bg-[#1f2511] hover:bg-[#2a3217] text-white">
+                Prendre le ticket
+              </Button>
+            )}
+            <Button variant="ghost" size="sm">
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </div>
+        );
+      },
+    },
+  ], []);
+
+  const table = useReactTable({
+    data: service.tickets,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+  });
+
   return (
     <Card className="w-full border border-gray-200 shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4 px-6 pt-6">
@@ -62,66 +121,44 @@ export default function DashboardServiceCard({
         <StatusBadge label={service.status} />
       </CardHeader>
 
-      <CardContent className="px-6 pb-6 overflow-x-auto">
-        <Table>
-          <TableHeader className="bg-[#F8FAFB]">
-            <TableRow>
-              <TableHead style={{ color: "#6D6D6D" }} className="w-[10%] text-left">
-                TICKET
-              </TableHead>
-              <TableHead style={{ color: "#6D6D6D" }} className="w-[15%] text-left">
-                NOM
-              </TableHead>
-              <TableHead style={{ color: "#6D6D6D" }} className="w-[15%] text-left">
-                PRENOM
-              </TableHead>
-              <TableHead style={{ color: "#6D6D6D" }} className="w-[25%] text-left">
-                STATUT
-              </TableHead>
-              <TableHead style={{ color: "#6D6D6D" }} className="w-[20%] text-left">
-                TEMPS D’ATTENTE
-              </TableHead>
-              <TableHead className="w-[15%] text-left"></TableHead>
-            </TableRow>
-          </TableHeader>
+      <CardContent className="px-6 pb-6">
 
-          <TableBody>
-            {service.tickets.map((ticket) => (
-              <TableRow key={ticket.id} className="bg-[#F8FAFB]">
-                <TableCell className="w-[5%] text-left">{ticket.ticket}</TableCell>
-                <TableCell className="w-[15%] text-left">{ticket.name || "-"}</TableCell>
-                <TableCell className="w-[15%] text-left">{ticket.lastname || "-"}</TableCell>
-                <TableCell className="w-[25%] text-left">
-                  <span
-                    className={`px-4 py-2 rounded text-xs w-fit ${getTicketStatusColor(
-                      ticket.status
-                    )}`}
-                    style={getTicketStatusBackgroundColor(ticket.status)}
+        {/* en-tête hors scroll */}
+        <Table className="table-fixed">
+          <TableHeader className="bg-[#F8FAFB]">
+            {table.getHeaderGroups().map((headerGroup) => (
+              <TableRow key={headerGroup.id}>
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    className="text-left text-[#6D6D6D]"
                   >
-                    {ticket.status}
-                  </span>
-                </TableCell>
-                <TableCell className="w-[20%] text-left">
-                  {ticket.waitTime || "-"}
-                </TableCell>
-                <TableCell className="w-[15%] texl-left">
-                  <div className="flex justify-end items-center gap-2">
-                    {ticket.status === "En attente" && (
-                      <Button className="bg-[#1f2511] hover:bg-[#2a3217] text-white">
-                        Prendre le ticket
-                      </Button>
-                    )}
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+                    {flexRender(header.column.columnDef.header, header.getContext())}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
-          </TableBody>
+          </TableHeader>
         </Table>
+
+  
+        <div className="max-h-[300px] overflow-y-auto">
+          <Table className="table-fixed">
+            <TableBody>
+              {table.getRowModel().rows.map((row) => (
+                <TableRow key={row.id} className="bg-[#F8FAFB]">
+                  {row.getVisibleCells().map((cell) => (
+                    <TableCell key={cell.id} className="text-left">
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
       </CardContent>
     </Card>
   );
 }
-
