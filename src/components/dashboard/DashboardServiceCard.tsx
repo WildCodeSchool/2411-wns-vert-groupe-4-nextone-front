@@ -3,6 +3,10 @@ import {
   getCoreRowModel,
   flexRender,
   ColumnDef,
+  getSortedRowModel, 
+  getFilteredRowModel, 
+  SortingState, 
+  ColumnFiltersState, 
 } from "@tanstack/react-table";
 import {
   Table,
@@ -13,10 +17,19 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { MoreHorizontal, ChevronDown, Filter } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, ChevronDown } from "lucide-react"; 
 import StatusBadge from "./StatusBadge";
-import { useMemo } from "react";
+import { useMemo, useState } from "react"; 
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+
+
+const statusOptions = [
+  "En cours de traitement",
+  "En attente",
+];
 
 type ServiceTicket = {
   id: string;
@@ -34,47 +47,44 @@ type DashboardService = {
   tickets: ServiceTicket[];
 };
 
-// props pour le toggle accordéon
 export default function DashboardServiceCard({
   service,
   isOpen,
   onToggle,
 }: {
   readonly service: DashboardService;
-  readonly isOpen: boolean; 
-  readonly onToggle: () => void; 
+  readonly isOpen: boolean;
+  readonly onToggle: () => void;
 }) {
+  const [sorting, setSorting] = useState<SortingState>([]); 
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]); 
+
   const columns = useMemo<ColumnDef<ServiceTicket>[]>(() => [
     {
       header: "TICKET",
       accessorKey: "ticket",
-      cell: (info) => info.getValue(),
     },
     {
       header: "NOM",
       accessorKey: "lastname",
-      cell: (info) => info.getValue() || "-",
     },
     {
       header: "PRENOM",
       accessorKey: "name",
-      cell: (info) => info.getValue() || "-",
     },
     {
       header: "STATUT",
       accessorKey: "status",
-      cell: ({ row }) => (
-        <StatusCell status={row.original.status} />
-      ),
+      filterFn: (row, columnId, filterValue) => {
+        if (!filterValue || filterValue.length === 0) return true;
+        return filterValue.includes(row.getValue(columnId));
+      },
+      cell: ({ row }) => <StatusCell status={row.original.status} />,
     },
     {
       header: "TEMPS D’ATTENTE",
       accessorKey: "waitTime",
-      cell: (info) => (
-        <span className="pl-2">
-          {String(info.getValue() ?? "-")}
-        </span>
-      ),
+      cell: (info) => <span className="pl-2">{String(info.getValue() ?? "-")}</span>,
     },
     {
       header: "",
@@ -101,7 +111,23 @@ export default function DashboardServiceCard({
     data: service.tickets,
     columns,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(), 
+    getFilteredRowModel: getFilteredRowModel(), 
+    onSortingChange: setSorting, 
+    onColumnFiltersChange: setColumnFilters, 
+    state: {
+      sorting,
+      columnFilters,
+    },
   });
+
+  const handleFilterChange = (value: string) => {
+    const current = table.getColumn("status")?.getFilterValue() as string[];
+    const next = current?.includes(value)
+      ? current.filter((v) => v !== value)
+      : [...(current || []), value];
+    table.getColumn("status")?.setFilterValue(next);
+  };
 
   return (
     <Card className="w-full border border-gray-200 shadow-sm">
@@ -111,13 +137,11 @@ export default function DashboardServiceCard({
             {service.name}
           </CardTitle>
           <button
-            onClick={onToggle} // Appel toggle au clic
+            onClick={onToggle}
             className="transition-transform duration-300"
           >
             <ChevronDown
-              className={`w-5 h-5 ml-2 transition-transform ${
-                isOpen ? "rotate-180" : "rotate-0"
-              }`}
+              className={`w-5 h-5 ml-2 transition-transform ${isOpen ? "rotate-180" : "rotate-0"}`}
             />
           </button>
         </div>
@@ -126,6 +150,37 @@ export default function DashboardServiceCard({
 
       {isOpen && (
         <CardContent className="px-[30px] pb-[32px]">
+          <div className="flex items-center justify-between px-[24px] mb-4">
+            <Input
+              placeholder="Rechercher par nom..."
+              className="w-1/2"
+              value={(table.getColumn("lastname")?.getFilterValue() as string) ?? ""}
+              onChange={(e) => table.getColumn("lastname")?.setFilterValue(e.target.value)}
+            />
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline">
+                  <Filter className="mr-2 w-4 h-4" /> Filtres
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-48">
+                <p className="font-light text-sm mb-2">Statut</p>
+                {statusOptions.map((status) => (
+                  <div key={status} className="flex items-center gap-2 py-1">
+                    <Checkbox
+                      id={status}
+                      checked={(table.getColumn("status")?.getFilterValue() as string[] | undefined)?.includes(status) ?? false}
+                      onCheckedChange={() => handleFilterChange(status)}
+                    />
+                    <label htmlFor={status} className="text-sm cursor-pointer">
+                      {status}
+                    </label>
+                  </div>
+                ))}
+              </PopoverContent>
+            </Popover>
+          </div>
+
           <div className="px-[24px] pr-[40px]">
             <Table className="table-fixed">
               <TableHeader className="bg-[#F8FAFB]">
@@ -134,7 +189,8 @@ export default function DashboardServiceCard({
                     {headerGroup.headers.map((header) => (
                       <TableHead
                         key={header.id}
-                        className="text-left text-[#6D6D6D]"
+                        className="text-left text-[#6D6D6D] cursor-pointer"
+                        onClick={header.column.getCanSort() ? () => header.column.toggleSorting() : undefined}
                       >
                         {flexRender(header.column.columnDef.header, header.getContext())}
                       </TableHead>

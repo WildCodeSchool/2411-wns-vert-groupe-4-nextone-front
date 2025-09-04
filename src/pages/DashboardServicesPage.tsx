@@ -19,10 +19,10 @@ type DashboardService = {
 
 export default function DashboardServicesPage() {
 
-  const [openCardId, setOpenCardId] = useState<string>("1"); // gère l'état de la card ouverte
+  const [openCardId, setOpenCardId] = useState<string>("1"); 
 
   const handleToggle = (id: string) => {
-    setOpenCardId((prev) => (prev === id ? "" : id)); // ferme si on reclique dessus
+    setOpenCardId((prev) => (prev === id ? "" : id)); 
   };
 
   const services: DashboardService[] = [
@@ -259,8 +259,8 @@ export default function DashboardServicesPage() {
           <DashboardServiceCard
             key={service.id}
             service={service}
-            isOpen={openCardId === service.id}          // passe l’état ouvert à la card
-            onToggle={() => handleToggle(service.id)}  // gère le clic sur l’accordéon
+            isOpen={openCardId === service.id}          
+            onToggle={() => handleToggle(service.id)}  
           />
         ))}
       </div>
