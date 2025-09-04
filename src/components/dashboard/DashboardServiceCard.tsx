@@ -221,7 +221,7 @@ export default function DashboardServiceCard({
             </Table>
           </div>
 
-          <div className="px-[24px] max-h-[300px] overflow-y-auto">
+          <div className="px-[24px] max-h-[300px] min-h-[300px] overflow-y-scroll">  {/* hauteur min et max + overflow-y-scroll pour régler probleme de scroll */}
             <Table className="table-fixed">
               <TableBody>
                 {table.getRowModel().rows.map((row) => (
