@@ -6,7 +6,7 @@ import { useState } from "react";
 import { useTicket } from "@/context/useContextTicket";
 import { ChooseServiceProps } from "@/types/terminal";
 
-function PersonnalInformation({ onBack, onNext }: ChooseServiceProps) {
+function PersonnalInformation({ onBack, onNext, onCancel }: ChooseServiceProps) {
     const [name, setName] = useState("");
     const [firstName, setFirstName] = useState("");
     const { ticket, setTicket } = useTicket();
@@ -20,7 +20,7 @@ function PersonnalInformation({ onBack, onNext }: ChooseServiceProps) {
     <div className="flex flex-col md:flex-row h-screen w-full font-sans bg-white">
         <div className="w-full md:w-1/2 flex flex-col p-4 md:pl-8 overflow-y-auto">
             <div className="sticky top-0 bg-white z-10 pb-4">
-                <Stepper currentStep={2} />
+                <Stepper currentStep={2} onCancel={onCancel}/>
             </div>
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 md:gap-6">
                 <InputWithLabel label="Votre nom" name="name" type="text" placeholder="Nom" required value={name} onChange={(e) => setName(e.target.value)}/>
