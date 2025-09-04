@@ -20,6 +20,18 @@ type DashboardService = {
   tickets: ServiceTicket[];
 };
 
+// calcul temps d’attente (différence entre now et createdAt)
+function calculateWaitTime(createdAt: string): string {
+  const created = new Date(createdAt);
+  const now = new Date();
+  const diffMs = now.getTime() - created.getTime();
+  const diffMinutes = Math.floor(diffMs / 60000);
+  if (diffMinutes < 1) return "< 1 min";
+  if (diffMinutes === 1) return "1 minute";
+  return `${diffMinutes} minutes`;
+}
+
+
 // API
 type GetServicesResult = {
   services: { id: string; name: string; isGloballyActive: boolean }[];
@@ -79,7 +91,7 @@ export default function DashboardServicesPage() {
         lastname: t.lastName ?? undefined,
         name: t.firstName ?? undefined,
         status: t.status === "IN_PROGRESS" ? "En cours de traitement" : "En attente",
-        waitTime: undefined,
+        waitTime: calculateWaitTime(t.createdAt),
       };
 
       if (!map.has(serviceId)) map.set(serviceId, []);
