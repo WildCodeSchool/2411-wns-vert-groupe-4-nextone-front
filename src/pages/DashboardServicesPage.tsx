@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
 import { GET_SERVICES } from "@/requests/services.requests";
@@ -52,7 +52,7 @@ type GetTicketsResult = {
 
 export default function DashboardServicesPage() {
 
-  const [openCardId, setOpenCardId] = useState<string>("1"); // gère l'état de la card ouverte
+  const [openCardId, setOpenCardId] = useState<string>(""); // gère l'état de la card ouverte
 
   const {
     data: servicesData,
@@ -110,6 +110,13 @@ export default function DashboardServicesPage() {
       return { id: s.id, name: s.name, status, tickets };
     });
   }, [servicesData, ticketsByServiceId]);
+
+    useEffect(() => {
+    if (mappedServices.length > 0) {
+      setOpenCardId((prev) => (prev === "" ? mappedServices[0].id : prev));
+    }
+  }, [mappedServices]);
+
 
   // 4) États UI
   if (loading) {
@@ -181,247 +188,3 @@ export default function DashboardServicesPage() {
     </>
   );
 }
-
-
-  // const services: DashboardService[] = [
-  //   {
-  //     id: "1",
-  //     name: "Cardiologie",
-  //     status: "Fluide",
-  //     tickets: [
-  //       {
-  //         id: "1",
-  //         ticket: "CA304",
-  //         lastname: "Croisière",
-  //         name: "Thomas",
-  //         status: "En cours de traitement",
-  //         waitTime: "10 minutes",
-  //       },
-  //       {
-  //         id: "2", 
-  //         ticket: "CA305",
-  //         lastname: "Mas",
-  //         name: "Jeanne",
-  //         status: "En attente",
-  //         waitTime: "5 minutes",
-  //       },
-  //       {
-  //         id: "3", 
-  //         ticket: "CA306",
-  //         lastname: "Bon",
-  //         name: "Jean",
-  //         status: "En attente",
-  //         waitTime: "15 minutes",
-  //       },
-  //       {
-  //         id: "4", 
-  //         ticket: "CA307",
-  //         lastname: "Pelle",
-  //         name: "Sarah",
-  //         status: "En attente",
-  //         waitTime: "25 minutes",
-  //       },
-  //       {
-  //         id: "5", 
-  //         ticket: "CA308",
-  //         lastname: "Benitez",
-  //         name: "Benito",
-  //         status: "En attente",
-  //         waitTime: "35 minutes",
-  //       },
-  //          {
-  //         id: "3", 
-  //         ticket: "CA306",
-  //         lastname: "Bon",
-  //         name: "Jean",
-  //         status: "En attente",
-  //         waitTime: "15 minutes",
-  //       },
-  //       {
-  //         id: "4", 
-  //         ticket: "CA307",
-  //         lastname: "Pelle",
-  //         name: "Sarah",
-  //         status: "En attente",
-  //         waitTime: "25 minutes",
-  //       },
-  //       {
-  //         id: "5", 
-  //         ticket: "CA308",
-  //         lastname: "Benitez",
-  //         name: "Benito",
-  //         status: "En attente",
-  //         waitTime: "35 minutes",
-  //       },
-  //     ],
-  //   },
-  //   {
-  //     id: "2",
-  //     name: "Ophtalmologie",
-  //     status: "Fluide",
-  //     tickets: [
-  //        {
-  //         id: "1",
-  //         ticket: "CA304",
-  //         lastname: "Croisière",
-  //         name: "Thomas",
-  //         status: "En cours de traitement",
-  //         waitTime: "10 minutes",
-  //       },
-  //       {
-  //         id: "2", 
-  //         ticket: "CA305",
-  //         lastname: "Mas",
-  //         name: "Jeanne",
-  //         status: "En attente",
-  //         waitTime: "5 minutes",
-  //       },
-  //       {
-  //         id: "3", 
-  //         ticket: "CA306",
-  //         lastname: "Bon",
-  //         name: "Jean",
-  //         status: "En attente",
-  //         waitTime: "15 minutes",
-  //       },
-  //       {
-  //         id: "4", 
-  //         ticket: "CA307",
-  //         lastname: "Pelle",
-  //         name: "Sarah",
-  //         status: "En attente",
-  //         waitTime: "25 minutes",
-  //       },
-  //       {
-  //         id: "5", 
-  //         ticket: "CA308",
-  //         lastname: "Benitez",
-  //         name: "Benito",
-  //         status: "En attente",
-  //         waitTime: "35 minutes",
-  //       },
-  //          {
-  //         id: "3", 
-  //         ticket: "CA306",
-  //         lastname: "Bon",
-  //         name: "Jean",
-  //         status: "En attente",
-  //         waitTime: "15 minutes",
-  //       },
-  //       {
-  //         id: "4", 
-  //         ticket: "CA307",
-  //         lastname: "Pelle",
-  //         name: "Sarah",
-  //         status: "En attente",
-  //         waitTime: "25 minutes",
-  //       },
-  //       {
-  //         id: "5", 
-  //         ticket: "CA308",
-  //         lastname: "Benitez",
-  //         name: "Benito",
-  //         status: "En attente",
-  //         waitTime: "35 minutes",
-  //       },
-  //     ],
-  //   },
-  //     {
-  //     id: "3",
-  //     name: "Dermatologie",
-  //     status: "Fluide",
-  //     tickets: [
-  //        {
-  //         id: "1",
-  //         ticket: "CA304",
-  //         lastname: "Croisière",
-  //         name: "Thomas",
-  //         status: "En cours de traitement",
-  //         waitTime: "10 minutes",
-  //       },
-  //       {
-  //         id: "2", 
-  //         ticket: "CA305",
-  //         lastname: "Mas",
-  //         name: "Jeanne",
-  //         status: "En attente",
-  //         waitTime: "5 minutes",
-  //       },
-  //       {
-  //         id: "3", 
-  //         ticket: "CA306",
-  //         lastname: "Bon",
-  //         name: "Jean",
-  //         status: "En attente",
-  //         waitTime: "15 minutes",
-  //       },
-  //       {
-  //         id: "4", 
-  //         ticket: "CA307",
-  //         lastname: "Pelle",
-  //         name: "Sarah",
-  //         status: "En attente",
-  //         waitTime: "25 minutes",
-  //       },
-  //       {
-  //         id: "5", 
-  //         ticket: "CA308",
-  //         lastname: "Benitez",
-  //         name: "Benito",
-  //         status: "En attente",
-  //         waitTime: "35 minutes",
-  //       },
-  //          {
-  //         id: "3", 
-  //         ticket: "CA306",
-  //         lastname: "Bon",
-  //         name: "Jean",
-  //         status: "En attente",
-  //         waitTime: "15 minutes",
-  //       },
-  //       {
-  //         id: "4", 
-  //         ticket: "CA307",
-  //         lastname: "Pelle",
-  //         name: "Sarah",
-  //         status: "En attente",
-  //         waitTime: "25 minutes",
-  //       },
-  //       {
-  //         id: "5", 
-  //         ticket: "CA308",
-  //         lastname: "Benitez",
-  //         name: "Benito",
-  //         status: "En attente",
-  //         waitTime: "35 minutes",
-  //       },
-  //     ],
-  //   },
-  // ];
-
-//   return (
-//     <>
-//       <div className="flex items-center justify-between w-full mb-8">
-//         <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
-//           Services
-//         </h1>
-//         <img
-//           src="/src/assets/images/icon_img.jpg"
-//           alt="Logo"
-//           className="w-40 h-16 object-contain rounded-full bg-white shadow-md"
-//         />
-//       </div>
-
-//       <div className="flex flex-col gap-6 w-full">
-//         {services.map((service) => (
-//           <DashboardServiceCard
-//             key={service.id}
-//             service={service}
-//             isOpen={openCardId === service.id}          // passe l’état ouvert à la card
-//             onToggle={() => handleToggle(service.id)}  // gère le clic sur l’accordéon
-//           />
-//         ))}
-//       </div>
-//     </>
-//   );
-// }
