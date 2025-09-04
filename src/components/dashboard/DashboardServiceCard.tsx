@@ -3,10 +3,10 @@ import {
   getCoreRowModel,
   flexRender,
   ColumnDef,
-  getSortedRowModel, // 👉 Ajouté pour activer le tri
-  getFilteredRowModel, // 👉 Ajouté pour activer les filtres
-  SortingState, // 👉 Ajouté pour gérer l'état de tri
-  ColumnFiltersState, // 👉 Ajouté pour gérer l'état des filtres
+  getSortedRowModel, 
+  getFilteredRowModel, 
+  SortingState, 
+  ColumnFiltersState, 
 } from "@tanstack/react-table";
 import {
   Table,
@@ -17,15 +17,15 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MoreHorizontal, ChevronDown, Filter } from "lucide-react"; // 👉 ajout de Filter
+import { MoreHorizontal, ChevronDown, Filter } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import StatusBadge from "./StatusBadge";
-import { useMemo, useState } from "react"; // 👉 useState ajouté pour gérer le tri et les filtres
+import { useMemo, useState } from "react"; 
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 
-// 👉 État des statuts disponibles pour le filtre
+
 const statusOptions = [
   "En cours de traitement",
   "En attente",
@@ -56,8 +56,8 @@ export default function DashboardServiceCard({
   readonly isOpen: boolean;
   readonly onToggle: () => void;
 }) {
-  const [sorting, setSorting] = useState<SortingState>([]); // 👉 tri local
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]); // 👉 filtres locaux
+  const [sorting, setSorting] = useState<SortingState>([]); 
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]); 
 
   const columns = useMemo<ColumnDef<ServiceTicket>[]>(() => [
     {
@@ -111,10 +111,10 @@ export default function DashboardServiceCard({
     data: service.tickets,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(), // 👉 activation du tri
-    getFilteredRowModel: getFilteredRowModel(), // 👉 activation des filtres
-    onSortingChange: setSorting, // 👉 gestion du tri
-    onColumnFiltersChange: setColumnFilters, // 👉 gestion des filtres
+    getSortedRowModel: getSortedRowModel(), 
+    getFilteredRowModel: getFilteredRowModel(), 
+    onSortingChange: setSorting, 
+    onColumnFiltersChange: setColumnFilters,
     state: {
       sorting,
       columnFilters,
@@ -150,7 +150,7 @@ export default function DashboardServiceCard({
 
       {isOpen && (
         <CardContent className="px-[30px] pb-[32px]">
-          {/* 👉 Barre de recherche + filtre */}
+          {/* Barre de recherche + filtre */}
           <div className="flex items-center justify-between px-[24px] mb-4">
             <Input
               placeholder="Rechercher par nom..."
