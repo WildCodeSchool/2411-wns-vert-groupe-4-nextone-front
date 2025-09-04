@@ -38,6 +38,7 @@ import { Badge } from "@/components/ui/badge";
 import { IoIosMore } from "react-icons/io";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaRegTrashAlt } from "react-icons/fa";
+import { statusOptions } from "@/lib/ticketUtils";
 
 dayjs.extend(relativeTime);
 
@@ -157,39 +158,6 @@ export default function TicketsDashboard() {
   const { data, loading, error } = useQuery(GET_TICKETS);
 
   const tickets = data?.tickets ?? [];
-
-  const statusOptions = [
-    {
-      value: "CREATED",
-      label: "Créé",
-      badgeStyle: "bg-status-created text-black",
-    },
-    {
-      value: "CANCELED",
-      label: "Annulé",
-      badgeStyle: "bg-status-canceled text-black",
-    },
-    {
-      value: "DONE",
-      label: "Traité",
-      badgeStyle: "bg-status-done text-black",
-    },
-    {
-      value: "PENDING",
-      label: "En attente",
-      badgeStyle: "bg-status-pending text-black",
-    },
-    {
-      value: "ARCHIVED",
-      label: "Archivé",
-      badgeStyle: "bg-status-archived text-black",
-    },
-    {
-      value: "INPROGRESS",
-      label: "En cours",
-      badgeStyle: "bg-status-inprogress text-black",
-    },
-  ];
 
   const table = useReactTable({
     data: tickets,

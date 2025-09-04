@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { IoIosArrowBack } from "react-icons/io";
+import { IoIosArrowBack, IoIosMore } from "react-icons/io";
 import { GET_TICKET_INFOS } from "@/requests/tickets.requests";
 import { useQuery } from "@apollo/client/react";
 import { MdOutlineEmail } from "react-icons/md";
@@ -10,6 +10,10 @@ import { FaPlus } from "react-icons/fa6";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaTicketSimple } from "react-icons/fa6";
 import { GET_TICKET_LOGS } from "@/requests/ticketLogs.requests";
+import { useState } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { statusOptions } from "@/lib/ticketUtils";
 
 type RouteParams = {
   id: string;
@@ -44,6 +48,13 @@ export default function TicketPage() {
     variables: { ticketId: id },
   });
 
+  const ticketOptions = statusOptions.find(
+    (option) => option.value === data?.ticket.status
+  );
+
+  const [isEditingComments, setIsEditingComments] = useState(false);
+  const [comments, setComments] = useState("");
+
   const {
     data: ticketLogs,
     loading: ticketLogsLoading,
@@ -52,41 +63,20 @@ export default function TicketPage() {
     variables: { field: { ticketId: id } },
   });
 
-  const statusString = (status: string) => {
-    switch (status) {
-      case "CREATED":
-        return "Créé";
-      case "PENDING":
-        return "En attente";
-      case "CANCELED":
-        return "Annulé";
-      case "DONE":
-        return "Terminé";
-      case "ARCHIVED":
-        return "Archivé";
-      default:
-        return "Statut inconnu";
-    }
-  };
-
   const ticketLogSentence = (log: any) => {
-    const managerName = log.manager
-      ? `${log.manager.firstName} ${log.manager.lastName}`
-      : "le système";
-
     switch (log.status) {
       case "CREATED":
-        return `Le ticket a été créé par ${managerName}`;
+        return `Ticket créé`;
       case "INPROGRESS":
-        return `Le ticket est en cours de traitement par ${managerName}`;
+        return `Ticket en cours de traitement`;
       case "CANCELED":
-        return `Le ticket a été annulé par ${managerName}`;
+        return `Ticket annulé`;
       case "DONE":
-        return `Le ticket a été marqué comme traité par ${managerName}`;
+        return `Ticket traité`;
       case "ARCHIVED":
-        return `Le ticket a été archivé par ${managerName}`;
+        return `Ticket archivé`;
       case "PENDING":
-        return `Le ticket a été mis en attente par ${managerName}`;
+        return `Ticket mis en attente`;
       default:
         return "Statut inconnu";
     }
@@ -109,17 +99,20 @@ export default function TicketPage() {
         >
           <IoIosArrowBack className="w-6 h-6 text-foreground cursor-pointer" />
         </div>
-        <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
+        <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance mr-2">
           {data.ticket.firstName} {data.ticket.lastName}
         </h1>
-        <div>
-          <span className="ml-4 px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-            Ticket #{data.ticket.code}
-          </span>
-          <span className="ml-4 px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-            {statusString(data.ticket.status)}
-          </span>
-        </div>
+        <span className="ml-4 px-4 py-2 rounded-lg text-sm font-light bg-primary text-white">
+          Ticket {data.ticket.code}
+        </span>
+        <span
+          className={`ml-4 px-4 py-2 rounded-lg text-sm font-light mr-6 ${
+            ticketOptions ? ticketOptions.badgeStyle : ""
+          }`}
+        >
+          {ticketOptions ? ticketOptions.label : data.ticket.status}
+        </span>
+        <IoIosMore size={20} />
       </div>
       <div className="flex flex-row items-stretch justify-between w-full h-full mt-10 gap-10">
         <div className="flex flex-col items-start justify-start gap-6 w-full">
@@ -127,7 +120,6 @@ export default function TicketPage() {
             <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
               Informations personnelles
             </h2>
-
             <div className="flex flex-row items-center justify-start">
               <FaPerson className="mr-4" size={20} />
               <p>
@@ -149,7 +141,7 @@ export default function TicketPage() {
             </h2>
             <div className="flex flex-row items-center justify-start">
               <FaTicketSimple className="mr-4" size={20} />
-              <p>#{data.ticket.code}</p>
+              <p>{data.ticket.code}</p>
             </div>
             <div className="flex flex-row items-center justify-start">
               <MdRoomService className="mr-4" size={20} />
@@ -164,39 +156,80 @@ export default function TicketPage() {
               <p>{new Date(data.ticket.updatedAt).toLocaleDateString()}</p>
             </div>
           </div>
-          <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full mr-4">
-            <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
-              Commentaires
-            </h2>
-          </div>
         </div>
-        <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full">
-          <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
-            Historique du ticket
-          </h2>
-          <div className="flex flex-col items-start justify-start gap-4 w-full h-full overflow-y-scroll">
-            {ticketLogs &&
-              ticketLogs.ticketLogsByProperty.map((log: any) => (
-                <div
-                  key={log.id}
-                  className="flex flex-row items-center justify-start border-2 border-muted p-4 w-[90%] rounded-lg"
-                >
-                  <p className="font-medium">
-                    {new Date(log.createdAt).toLocaleDateString("fr-FR", {
-                      day: "numeric",
-                      month: "short",
-                      year: "numeric",
-                    })}{" "}
-                    -{" "}
-                    {new Date(log.createdAt).toLocaleTimeString("fr-FR", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    })}{" "}
-                    :
-                  </p>
-                  <p className="ml-2">{ticketLogSentence(log)}</p>
-                </div>
-              ))}
+        <div className="flex flex-col items-stretch justify-start w-full h-full gap-10">
+          <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full h-[45%]">
+            <h2 className="text-xl font-light tracking-tight text-balance text-muted-foreground">
+              Historique du ticket
+            </h2>
+            <div className="flex flex-col items-start justify-start w-full h-full overflow-y-auto">
+              {ticketLogs &&
+                ticketLogs.ticketLogsByProperty.map((log: any, idx: number) => {
+                  const isLast =
+                    idx === ticketLogs.ticketLogsByProperty.length - 1;
+                  return (
+                    <div
+                      key={log.id}
+                      className={`flex flex-row items-center justify-between p-4 w-full text-sm ${
+                        !isLast ? "border-b-2 border-muted" : ""
+                      }`}
+                    >
+                      <div className="flex flex-row items-center justify-start mr-4 gap-3">
+                        <img
+                          src="/avatar-example.jpg"
+                          alt=""
+                          className="w-7 h-7 rounded-full"
+                        />
+                        {log.manager ? (
+                          <p className="mr-4 font-medium">
+                            {log.manager.firstName} {log.manager.lastName}
+                          </p>
+                        ) : (
+                          <p className="mr-4 font-medium">Système</p>
+                        )}
+                        <p className="font-light">{ticketLogSentence(log)}</p>
+                      </div>
+                      <p className="font-light text-xs text-muted-foreground ml-4">
+                        {new Date(log.createdAt).toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "numeric",
+                          year: "2-digit",
+                        })}
+                        <br />
+                        {new Date(log.createdAt).toLocaleTimeString("fr-FR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  );
+                })}
+            </div>
+          </div>
+          <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full h-[55%]">
+            <div className="flex flex-row items-center justify-between w-full">
+              <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
+                Commentaires
+              </h2>
+              <Button onClick={() => setIsEditingComments(true)}>
+                Modifier les commentaires
+              </Button>
+            </div>
+            {isEditingComments ? (
+              <>
+                <Textarea
+                  value={comments}
+                  onChange={(e) => setComments(e.target.value)}
+                  placeholder="Ajouter un commentaire..."
+                  rows={4}
+                />
+                <Button onClick={() => setIsEditingComments(false)}>
+                  Sauvegarder
+                </Button>
+              </>
+            ) : (
+              <p>{comments ? comments : "Aucun commentaire"}</p>
+            )}
           </div>
         </div>
       </div>
