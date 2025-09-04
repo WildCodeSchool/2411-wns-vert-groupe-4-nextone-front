@@ -168,7 +168,7 @@ export default function DashboardServiceCard({
             />
             <Popover>
               <PopoverTrigger asChild>
-                <Button variant="outline">
+                <Button variant="outline" className="mr-4">
                   <Filter className="mr-2 w-4 h-4" /> Filtres
                 </Button>
               </PopoverTrigger>
@@ -191,7 +191,7 @@ export default function DashboardServiceCard({
             {columnFilters.length > 0 && (
               <Button
                 variant="outline"
-                className="[&&]:bg-red-600 text-white hover:bg-red-700 hover:text-white"
+                className="[&&]:bg-red-600 text-white hover:bg-red-700 hover:text-white mr-4"
                 onClick={() => {
                   setColumnFilters([]); // Réinitialise tous les filtres actifs
                 }}
