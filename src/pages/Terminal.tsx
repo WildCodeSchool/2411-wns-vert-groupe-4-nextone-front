@@ -7,47 +7,53 @@ import ChooseService from "@/components/terminal/ChooseService";
 import PersonnalInformation from "@/components/terminal/PersonnalInformation";
 import ContactInfo from "@/components/terminal/ContactInfo";
 import SuccessTicketPage from "@/components/terminal/SuccessTicketPage";
+import PhonePage from "@/pages/PhonePage";
 
-type Screen = "home" | "chooseService" | "persoInfo" | "contactInfo" | "successTicketPage";
+type Screen = "home" | "chooseService" | "persoInfo" | "contactInfo" | "successTicketPage" | "phone";
 
 function Terminal() {
   const [searchParams] = useSearchParams();
   const screenFromUrl = searchParams.get("screen") as Screen | null;
+  const isScannedFromUrl = searchParams.get("scanned") === "true";
+  const ticketIdFromUrl = searchParams.get("ticketId");
 
   const [currentScreen, setCurrentScreen] = useState<Screen>(screenFromUrl || "home");
-  const [ticketId, setTicketId] = useState(generateTicketId());
+  const [ticketId, setTicketId] = useState(ticketIdFromUrl || generateTicketId());
+  const [isScanned, setIsScanned] = useState(isScannedFromUrl);
 
   function generateTicketId() {
     return `ticket-${Math.random().toString(36).substring(2, 10)}`;
   }
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTicketId(generateTicketId());
-    }, 30000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    if (currentScreen === "successTicketPage") {
-      const timer = setTimeout(() => {
-        setCurrentScreen("home");
-      }, 20000);
+    if (currentScreen === "successTicketPage" && !isScanned) {
+      const timer = setTimeout(() => setCurrentScreen("home"), 20000);
       return () => clearTimeout(timer);
     }
-  }, [currentScreen]);
+  }, [currentScreen, isScanned]);
 
   if (currentScreen === "chooseService") {
-    return <ChooseService onBack={() => setCurrentScreen("home")} onNext={() => setCurrentScreen("persoInfo")} />;
+    return <ChooseService onBack={() => setCurrentScreen("home")} onNext={() => setCurrentScreen("persoInfo")} onCancel={() => setCurrentScreen("home")} />;
   }
+
   if (currentScreen === "persoInfo") {
-    return <PersonnalInformation onBack={() => setCurrentScreen("chooseService")} onNext={() => setCurrentScreen("contactInfo")} />;
+    return <PersonnalInformation onBack={() => setCurrentScreen("chooseService")} onNext={() => setCurrentScreen("contactInfo")} onCancel={() => setCurrentScreen("home")} />;
   }
+
   if (currentScreen === "contactInfo") {
-    return <ContactInfo onBack={() => setCurrentScreen("persoInfo")} onNext={() => setCurrentScreen("successTicketPage")} />;
+    return <ContactInfo onBack={() => setCurrentScreen("persoInfo")} onNext={() => setCurrentScreen("successTicketPage")} onCancel={() => setCurrentScreen("home")} />;
   }
+
   if (currentScreen === "successTicketPage") {
-    return <SuccessTicketPage />;
+    return <SuccessTicketPage
+      isScanned={isScanned}
+      ticketId={ticketId}
+      onTimeout={() => setCurrentScreen("phone")}
+    />;
+  }
+
+  if (currentScreen === "phone") {
+    return <PhonePage ticketId={ticketId} />;
   }
 
   return (
@@ -60,12 +66,13 @@ function Terminal() {
           <br />
           depuis cette borne
         </p>
-        <button onClick={() => setCurrentScreen("chooseService")} className="bg-primary text-white text-base py-2 px-4 rounded-md w-full max-w-[400px] transition font-semibold">
+        <button
+          onClick={() => setCurrentScreen("chooseService")} className="bg-primary text-white text-base py-2 px-4 rounded-md w-full max-w-[400px] transition font-semibold">
           Rejoindre la file d’attente
         </button>
         <div className="flex items-center gap-2 justify-center mt-2 text-black">
           <hr className="w-6 md:w-8 border-t border-black" />
-          <span className="text-sm">OU</span>
+            <span className="text-sm">OU</span>
           <hr className="w-6 md:w-8 border-t border-black" />
         </div>
         <p className="text-center text-sm md:text-base mt-2">
@@ -74,7 +81,11 @@ function Terminal() {
           prendre un ticket depuis votre smartphone
         </p>
         <div className="mt-2">
-          <QRCode value={`${window.location.origin}/terminal?screen=chooseService`} size={120} fgColor="#000000"/>
+          <QRCode
+            value={`${window.location.origin}/terminal?screen=chooseService&scanned=true`}
+            size={120}
+            fgColor="#000000"
+          />
         </div>
       </div>
       <CompanyIllustration />

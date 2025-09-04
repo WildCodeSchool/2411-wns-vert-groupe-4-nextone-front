@@ -6,6 +6,7 @@ type TicketInfo = {
   firstName: string;
   email: string;
   phone: string;
+  rgpdAccepted: boolean
 };
 
 type TicketContextType = {
@@ -22,6 +23,7 @@ export const TicketProvider = ({ children }: { children: ReactNode }) => {
     firstName: "",
     email: "",
     phone: "",
+    rgpdAccepted: false,
   });
 
   return (

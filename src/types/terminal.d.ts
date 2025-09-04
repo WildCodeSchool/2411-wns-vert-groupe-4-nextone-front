@@ -16,4 +16,5 @@ export type Service = {
 type ChooseServiceProps = {
   onBack: () => void;
   onNext: () => void;
+  onCancel: () => void;
 };

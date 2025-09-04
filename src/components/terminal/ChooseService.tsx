@@ -10,7 +10,7 @@ import { GET_SERVICES } from "@/requests/queries/service.query";
 import { Service, ChooseServiceProps } from "@/types/terminal";
 import { LoadingSpinner, Message } from "@/utils/message";
 
-function ChooseService({ onBack, onNext }: ChooseServiceProps) {
+function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
   const { ticket, setTicket } = useTicket();
   const [selectedService, setSelectedService] = useState<string | undefined>(ticket.service || undefined);
   const { data, loading, error } = useQuery(GET_SERVICES);
@@ -35,7 +35,7 @@ function ChooseService({ onBack, onNext }: ChooseServiceProps) {
     <div className="flex flex-col md:flex-row h-screen w-full font-sans bg-white">
       <div className="w-full md:w-1/2 flex flex-col p-4 md:pl-8 overflow-y-auto">
         <div className="sticky top-0 bg-white z-10 pb-4">
-          <Stepper currentStep={1} />
+          <Stepper currentStep={1} onCancel={onCancel}/>
         </div>
         <h2 className="text-[22px] text-left mb-4">
           Quel service souhaitez-vous visiter ?
