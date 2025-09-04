@@ -188,6 +188,17 @@ export default function DashboardServiceCard({
                 ))}
               </PopoverContent>
             </Popover>
+            {columnFilters.length > 0 && (
+              <Button
+                variant="outline"
+                className="[&&]:bg-red-600 text-white hover:bg-red-700 hover:text-white"
+                onClick={() => {
+                  setColumnFilters([]); // Réinitialise tous les filtres actifs
+                }}
+              >
+                Réinitialiser les filtres
+              </Button>
+            )}
           </div>
 
           <div className="px-[24px] pr-[40px]">
