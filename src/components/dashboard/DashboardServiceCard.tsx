@@ -6,11 +6,7 @@ import {
   getSortedRowModel, 
   getFilteredRowModel, 
   SortingState, 
-  ColumnFiltersState, 
-  getSortedRowModel, 
-  getFilteredRowModel, 
-  SortingState, 
-  ColumnFiltersState, 
+  ColumnFiltersState,  
 } from "@tanstack/react-table";
 import {
   Table,
@@ -21,12 +17,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MoreHorizontal, ChevronDown, Filter } from "lucide-react"; 
-import { MoreHorizontal, ChevronDown, Filter } from "lucide-react"; 
+import { MoreHorizontal, ChevronDown, Filter } from "lucide-react";  
 import { Button } from "@/components/ui/button";
 import StatusBadge from "./StatusBadge";
-import { useMemo, useState } from "react"; 
-import { useMemo, useState } from "react"; 
+import { useMemo, useState } from "react";  
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -63,8 +57,6 @@ export default function DashboardServiceCard({
   readonly isOpen: boolean;
   readonly onToggle: () => void;
 }) {
-  const [sorting, setSorting] = useState<SortingState>([]); 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]); 
   const [sorting, setSorting] = useState<SortingState>([]); 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]); 
 
@@ -221,7 +213,7 @@ export default function DashboardServiceCard({
             </Table>
           </div>
 
-          <div className="px-[24px] max-h-[300px] min-h-[300px] overflow-y-scroll">  {/* hauteur min et max + overflow-y-scroll pour régler probleme de scroll */}
+          <div className="px-[24px] max-h-[300px] min-h-[300px] overflow-y-scroll">  
             <Table className="table-fixed">
               <TableBody>
                 {table.getRowModel().rows.map((row) => (
