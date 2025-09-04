@@ -239,7 +239,7 @@ export default function TicketsDashboard() {
           Tickets ({tickets.length})
         </h1>
       </div>
-      <div className="mt-8 bg-card p-8 rounded-lg w-full overflow-hidden">
+      <div className="mt-8 bg-card p-8 rounded-lg w-full">
         <div className="w-full flex flex-row items-center justify-between">
           <div className="w-full flex flex-row items-center justify-start gap-4">
             <Input
@@ -325,12 +325,12 @@ export default function TicketsDashboard() {
               }}
             >
               <FaRegTrashAlt />
-              Réinitialiser les filtres
+              Réinitialiser
             </Button>
           )}
         </div>
-        <div className="mt-6 bg-popover px-6 py-2 rounded-lg">
-          <Table className="h-full">
+        <div className="mt-6 bg-popover px-6 py-2 rounded-lg h-[100%] overflow-y-auto">
+          <Table className="h-full relative">
             <TableHeader className="sticky top-0 bg-popover z-10">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id}>
