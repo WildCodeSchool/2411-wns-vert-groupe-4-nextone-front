@@ -1,3 +1,4 @@
+import { useState } from "react";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
 
 type ServiceTicket = {
@@ -17,6 +18,13 @@ type DashboardService = {
 };
 
 export default function DashboardServicesPage() {
+
+  const [openCardId, setOpenCardId] = useState<string>("1"); // gère l'état de la card ouverte
+
+  const handleToggle = (id: string) => {
+    setOpenCardId((prev) => (prev === id ? "" : id)); // ferme si on reclique dessus
+  };
+
   const services: DashboardService[] = [
     {
       id: "1",
@@ -245,10 +253,15 @@ export default function DashboardServicesPage() {
           className="w-40 h-16 object-contain rounded-full bg-white shadow-md"
         />
       </div>
-      
+
       <div className="flex flex-col gap-6 w-full">
         {services.map((service) => (
-          <DashboardServiceCard key={service.id} service={service} />
+          <DashboardServiceCard
+            key={service.id}
+            service={service}
+            isOpen={openCardId === service.id}          // passe l’état ouvert à la card
+            onToggle={() => handleToggle(service.id)}  // gère le clic sur l’accordéon
+          />
         ))}
       </div>
     </>
