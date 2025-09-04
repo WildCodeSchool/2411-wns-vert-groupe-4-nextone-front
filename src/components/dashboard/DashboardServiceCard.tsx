@@ -7,6 +7,10 @@ import {
   getFilteredRowModel, 
   SortingState, 
   ColumnFiltersState, 
+  getSortedRowModel, 
+  getFilteredRowModel, 
+  SortingState, 
+  ColumnFiltersState, 
 } from "@tanstack/react-table";
 import {
   Table,
@@ -18,12 +22,15 @@ import {
 } from "@/components/ui/table";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { MoreHorizontal, ChevronDown, Filter } from "lucide-react"; 
+import { MoreHorizontal, ChevronDown, Filter } from "lucide-react"; 
 import { Button } from "@/components/ui/button";
 import StatusBadge from "./StatusBadge";
+import { useMemo, useState } from "react"; 
 import { useMemo, useState } from "react"; 
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+
 
 
 const statusOptions = [
@@ -56,6 +63,8 @@ export default function DashboardServiceCard({
   readonly isOpen: boolean;
   readonly onToggle: () => void;
 }) {
+  const [sorting, setSorting] = useState<SortingState>([]); 
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]); 
   const [sorting, setSorting] = useState<SortingState>([]); 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]); 
 
@@ -114,7 +123,7 @@ export default function DashboardServiceCard({
     getSortedRowModel: getSortedRowModel(), 
     getFilteredRowModel: getFilteredRowModel(), 
     onSortingChange: setSorting, 
-    onColumnFiltersChange: setColumnFilters, 
+    onColumnFiltersChange: setColumnFilters,
     state: {
       sorting,
       columnFilters,
