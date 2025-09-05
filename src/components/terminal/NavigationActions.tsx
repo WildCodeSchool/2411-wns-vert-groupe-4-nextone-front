@@ -19,10 +19,10 @@ function NavigationActions({ onBack, onNext, updateTicket }: StepControlsProps) 
 
   return (
     <div className="flex max-w-md mt-6 space-x-9">
-      <Button onClick={handleBack} variant="ghost" className="text-primary text-[20px]">
+      <Button type="button" onClick={handleBack} variant="ghost" className="text-primary text-[20px]">
         Retour
       </Button>
-      <Button onClick={handleNext} className="text-[20px]">
+      <Button type="submit" onClick={handleNext} className="text-[20px]">
         Continuer
       </Button>
     </div>
