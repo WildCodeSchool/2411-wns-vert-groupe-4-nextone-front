@@ -4,15 +4,34 @@ import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import logo from "@/assets/images/Logo_NextOne_vert-noir.png";
+import { useLazyQuery } from "@apollo/client";
+import { LOGIN } from "@/requests/queries/auth.query";
+import { useNavigate } from "react-router-dom";
 export default function LoginAdmin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [stayConnected, setStayConnected] = useState(false);
 
+  const navigate = useNavigate();
+
+  const [login] = useLazyQuery(LOGIN, {
+    async onCompleted(data) {
+      console.log(data);
+      navigate("/dashboard");
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ email, password, stayConnected });
-    // Appeler le resolver GraphQL de login ici
+    console.log("Submitting form with:", { email, password });
+    login({
+      variables: {
+        infos: {
+          email,
+          password,
+        },
+      },
+    });
   };
   return (
     <div className="h-screen flex items-stretch justify-between bg-background px-12 py-10">
@@ -73,7 +92,6 @@ export default function LoginAdmin() {
                   </button>
                 </div>
               </div>
-
               <Button
                 type="submit"
                 className="w-full bg-[#1f2511] py-7 rounded-lg font-['Archivo',Helvetica] font-light text-lg"
