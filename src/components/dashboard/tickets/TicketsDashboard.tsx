@@ -1,5 +1,5 @@
-import { GET_TICKETS } from "@/requests/tickets.requests";
-import { useQuery } from "@apollo/client/react";
+import { GET_TICKETS, UPDATE_TICKET_STATUS } from "@/requests/tickets.requests";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -137,10 +137,19 @@ export default function TicketsDashboard() {
       cell: ({ row }) => {
         return (
           <div className="flex flex-row items-center justify-end gap-6">
-            {row.getValue("status") === "PENDING" && (
-              <Button>Prendre le ticket</Button>
+            {(row.getValue("status") === "PENDING" ||
+              row.getValue("status") === "CREATED") && (
+              <Button
+                className="cursor-pointer"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  handleUpdateTicketToInProgress(row.original.id);
+                }}
+              >
+                Prendre le ticket
+              </Button>
             )}
-            <IoIosMore size={20} />
+            <IoIosMore size={20} className="cursor-pointer" />
           </div>
         );
       },
@@ -156,6 +165,20 @@ export default function TicketsDashboard() {
   ]);
 
   const { data, loading, error } = useQuery(GET_TICKETS);
+
+  const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
+
+  const handleUpdateTicketToInProgress = (ticketId: string) => {
+    updateTicketStatus({
+      variables: {
+        updateTicketStatusData: {
+          id: ticketId,
+          status: "INPROGRESS",
+        },
+      },
+      refetchQueries: [{ query: GET_TICKETS }],
+    });
+  };
 
   const tickets = data?.tickets ?? [];
 
