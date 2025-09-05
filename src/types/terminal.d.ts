@@ -18,3 +18,5 @@ type ChooseServiceProps = {
   onNext: () => void;
   onCancel: () => void;
 };
+
+export type Screen = "home" | "chooseService" | "persoInfo" | "contactInfo" | "successTicketPage" | "phone";

@@ -1,18 +1,14 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import logo from "../assets/logo.png";
+import { useTicket } from "@/context/useContextTicket";
+  import { useSearchParams } from "react-router-dom";
 
-export default function PhonePage({ ticketId }: { ticketId: string }) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-
-  const ticketInfo = {
-    service: "Neurologie",
-    ticketNumber: ticketId,
-    firstName: "Corentin",
-    lastName: "Dupont",
-    email: "corentin@example.com",
-    phone: "+33 6 12 34 56 78",
-  };
+export default function PhonePage() {
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+    const [searchParams] = useSearchParams();
+    const ticketFromQr = searchParams.get("ticket");
+    const ticket = ticketFromQr ? JSON.parse(ticketFromQr) : useTicket().ticket;
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-50 p-4 space-y-8">
@@ -21,13 +17,13 @@ export default function PhonePage({ ticketId }: { ticketId: string }) {
                 <img src={logo} className="w-30 h-30 object-contain" alt="Logo" />
             </div>
             <div className="bg-primary text-white font-bold px-8 py-4 rounded-lg">
-                {ticketInfo.ticketNumber}
+                {ticket.code}
             </div>
         </div>
         <div className="w-full max-w-sm bg-white rounded-lg shadow p-6 text-center space-y-6">
-            <p className="text-gray-600 text-[20px]">Bonjour {ticketInfo.firstName},</p>
+            <p className="text-gray-600 text-[20px]">Bonjour {ticket.firstName},</p>
             <p className="text-gray-500 text-[13px]">
-                Vous êtes en attente au service {ticketInfo.service}.
+                Vous êtes en attente au service {ticket.serviceName}.
             </p>
             <div className="relative w-64 h-64 mx-auto">
                 <svg className="transform -rotate-90 w-full h-full" viewBox="0 0 36 36">
@@ -60,32 +56,29 @@ export default function PhonePage({ ticketId }: { ticketId: string }) {
                 <div className="text-sm text-gray-700 space-y-1">
                 <p>
                     <span className="font-semibold">Service :</span>{" "}
-                    {ticketInfo.service}
+                    {ticket.serviceName}
                 </p>
                 <p>
                     <span className="font-semibold">Numéro de ticket :</span>{" "}
-                    {ticketInfo.ticketNumber}
+                    {ticket.code}
                 </p>
                 <p>
-                    <span className="font-semibold">Nom :</span> {ticketInfo.lastName}
+                    <span className="font-semibold">Nom :</span> {ticket.name}
                 </p>
                 <p>
                     <span className="font-semibold">Prénom :</span>{" "}
-                    {ticketInfo.firstName}
+                    {ticket.firstName}
                 </p>
                 <p>
-                    <span className="font-semibold">Email :</span> {ticketInfo.email}
+                    <span className="font-semibold">Email :</span> {ticket.email}
                 </p>
                 <p>
                     <span className="font-semibold">Téléphone :</span>{" "}
-                    {ticketInfo.phone}
+                    {ticket.phone}
                 </p>
                 </div>
-                <button
-                className="mt-3 w-full bg-primary text-white py-2 rounded hover:bg-primary/90 transition"
-                onClick={() => setIsDrawerOpen(false)}
-                >
-                Fermer
+                <button className="mt-3 w-full bg-primary text-white py-2 rounded hover:bg-primary/90 transition" onClick={() => setIsDrawerOpen(false)}>
+                    Fermer
                 </button>
             </div>
             )}
