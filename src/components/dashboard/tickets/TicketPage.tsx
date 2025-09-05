@@ -14,6 +14,7 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { statusOptions } from "@/lib/ticketUtils";
+import TicketInfos from "./TicketInfos";
 
 type RouteParams = {
   id: string;
@@ -120,41 +121,39 @@ export default function TicketPage() {
             <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
               Informations personnelles
             </h2>
-            <div className="flex flex-row items-center justify-start">
-              <FaPerson className="mr-4" size={20} />
-              <p>
-                {data.ticket.firstName} {data.ticket.lastName}
-              </p>
-            </div>
-            <div className="flex flex-row items-center justify-start">
-              <MdOutlineEmail className="mr-4" size={20} />
-              <p>{data.ticket.email}</p>
-            </div>
-            <div className="flex flex-row items-center justify-start">
-              <FaPhoneAlt className="mr-4" size={20} />
-              <p>{data.ticket.phone}</p>
-            </div>
+            <TicketInfos
+              information={`${data.ticket.firstName} ${data.ticket.lastName}`}
+              icon={FaPerson}
+            />
+            <TicketInfos
+              information={data.ticket.email}
+              icon={MdOutlineEmail}
+            />
+            <TicketInfos information={data.ticket.phone} icon={FaPhoneAlt} />
           </div>
           <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full mr-4">
             <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
               Informations sur le ticket
             </h2>
-            <div className="flex flex-row items-center justify-start">
-              <FaTicketSimple className="mr-4" size={20} />
-              <p>{data.ticket.code}</p>
-            </div>
-            <div className="flex flex-row items-center justify-start">
-              <MdRoomService className="mr-4" size={20} />
-              <p>{data.ticket.service.name || "N/A"}</p>
-            </div>
-            <div className="flex flex-row items-center justify-start">
-              <FaPlus className="mr-4" size={20} />
-              <p>{new Date(data.ticket.createdAt).toLocaleDateString()}</p>
-            </div>
-            <div className="flex flex-row items-center justify-start">
-              <MdOutlineEdit className="mr-4" size={20} />
-              <p>{new Date(data.ticket.updatedAt).toLocaleDateString()}</p>
-            </div>
+            <TicketInfos information={data.ticket.code} icon={FaTicketSimple} />
+            <TicketInfos
+              information={data.ticket.service.name || "N/A"}
+              icon={MdRoomService}
+            />
+            <TicketInfos
+              information={`${new Date(
+                data.ticket.createdAt
+              ).toLocaleDateString()} à ${" "}
+                ${new Date(data.ticket.createdAt).toLocaleTimeString()}`}
+              icon={FaPlus}
+            />
+            <TicketInfos
+              information={`${new Date(
+                data.ticket.updatedAt
+              ).toLocaleDateString()} à ${" "}
+                ${new Date(data.ticket.updatedAt).toLocaleTimeString()}`}
+              icon={MdOutlineEdit}
+            />
           </div>
         </div>
         <div className="flex flex-col items-stretch justify-start w-full h-full gap-10">

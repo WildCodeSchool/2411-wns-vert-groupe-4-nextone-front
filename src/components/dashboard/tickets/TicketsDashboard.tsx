@@ -230,7 +230,7 @@ export default function TicketsDashboard() {
           Tickets ({tickets.length})
         </h1>
       </div>
-      <div className="mt-8 bg-card p-8 rounded-lg w-full">
+      <div className="mt-8 bg-card p-8 rounded-lg w-full h-full overflow-hidden">
         <div className="w-full flex flex-row items-center justify-between">
           <div className="w-full flex flex-row items-center justify-start gap-4">
             <Input
@@ -320,11 +320,11 @@ export default function TicketsDashboard() {
             </Button>
           )}
         </div>
-        <div className="mt-6 bg-popover px-6 py-2 rounded-lg h-[100%] overflow-y-auto">
-          <Table className="h-full relative">
-            <TableHeader className="sticky top-0 bg-popover z-10">
+        <div className="mt-6 bg-popover px-6 py-2 rounded-lg h-[90%] overflow-y-auto">
+          <Table className="w-full overflow-y-hidden">
+            <TableHeader className="sticky top-0 z-10 w-full bg-popover">
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
+                <TableRow key={headerGroup.id} className="w-full">
                   {headerGroup.headers.map((header) => {
                     return (
                       <TableHead
