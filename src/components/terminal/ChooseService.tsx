@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TicketInfo, useTicket } from "@/context/useContextTicket";
 import NavigationActions from "./NavigationActions";
@@ -11,10 +11,11 @@ import { LoadingSpinner, Message } from "@/utils/message";
 
 function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
   const { ticket, setTicket } = useTicket();
-
   const [selectedService, setSelectedService] = useState<{ id: string; name: string } | undefined>(
     ticket.serviceId ? { id: ticket.serviceId, name: ticket.serviceName || "" } : undefined
   );
+
+  const [errorMessage, setErrorMessage] = useState<string>("");
 
   const { data, loading, error } = useQuery(GET_SERVICES);
 
@@ -22,19 +23,12 @@ function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
     (service) => service.isGloballyActive
   );
 
-  // Fonction pour mettre à jour le service sélectionné et le ticket
   const updateSelectedService = (service: Service) => {
     const serviceObj = { id: service.id, name: service.name };
     setSelectedService(serviceObj);
     setTicket({ ...ticket, serviceId: serviceObj.id, serviceName: serviceObj.name });
+    setErrorMessage("");
   };
-
-  // Définit un service par défaut si aucun n'est sélectionné
-  useEffect(() => {
-    if (!selectedService && activeServices.length > 0) {
-      updateSelectedService(activeServices[0]);
-    }
-  }, [activeServices]);
 
   const handleSelectService = (id: string) => {
     const service = activeServices.find((s) => s.id === id);
@@ -43,8 +37,17 @@ function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
   };
 
   function updateTicketService(ticket: TicketInfo, selectedService: { id: string; name: string } | undefined, setTicket: (ticket: TicketInfo) => void) {
-  if (!selectedService) return;
-  setTicket({ ...ticket, serviceId: selectedService.id, serviceName: selectedService.name });
+    if (!selectedService) return;
+    setTicket({ ...ticket, serviceId: selectedService.id, serviceName: selectedService.name });
+  }
+
+  function setTicketForGenerate () {
+    if (!selectedService) {
+      setErrorMessage("Vous devez sélectionner un service avant de continuer.");
+      return;
+    }
+    updateTicketService(ticket, selectedService, setTicket);
+    onNext?.();
   }
 
   const tabClass = "w-full text-[20px] text-primary py-6 rounded-md border border-primary text-center data-[state=active]:bg-primary data-[state=active]:text-white";
@@ -60,16 +63,30 @@ function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
           <Stepper currentStep={1} onCancel={onCancel} />
         </div>
         <h2 className="text-[22px] mb-4">Quel service souhaitez-vous visiter ?</h2>
-        <Tabs value={selectedService?.id || ""} onValueChange={handleSelectService} className="w-full mb-6">
-          <TabsList className="grid grid-cols-2 gap-4 w-full">
-            {activeServices.map((service) => (
-              <TabsTrigger key={service.id} value={service.id} className={tabClass}>
-                {service.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
-        <NavigationActions onBack={onBack} onNext={onNext} updateTicket={() => updateTicketService(ticket, selectedService, setTicket)}/>
+        {activeServices.length > 4 ? (
+          <div className="mb-2">
+            <select className="w-full border border-primary rounded-md p-3 text-lg" value={selectedService?.id || ""} onChange={(e) => handleSelectService(e.target.value)}>
+              <option value="">-- Sélectionnez un service --</option>
+              {activeServices.map((service) => (
+                <option key={service.id} value={service.id}>
+                  {service.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          <Tabs value={selectedService?.id || ""} onValueChange={handleSelectService} className="w-full mb-2">
+            <TabsList className="grid grid-cols-2 gap-4 w-full">
+              {activeServices.map((service) => (
+                <TabsTrigger key={service.id} value={service.id} className={tabClass}>
+                  {service.name}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+          </Tabs>
+        )}
+        {errorMessage && <p className="text-red-600 mt-2 text-sm">{errorMessage}</p>}
+        <NavigationActions onBack={onBack} onNext={setTicketForGenerate} updateTicket={() => updateTicketService(ticket, selectedService, setTicket)}/>
       </div>
       <CompanyIllustration />
     </div>

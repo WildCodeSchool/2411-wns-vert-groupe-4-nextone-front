@@ -1,6 +1,6 @@
 import ChooseService from "@/components/terminal/ChooseService";
 import PersonnalInformation from "@/components/terminal/PersonnalInformation";
-import ContactInfo from "@/components/terminal/ContactInfo";
+import ContactInfo from "@/components/terminal/ContactInformation";
 import SuccessTicketPage from "@/components/terminal/SuccessTicketPage";
 import PhonePage from "@/pages/PhonePage";
 import { Screen } from "@/types/terminal";

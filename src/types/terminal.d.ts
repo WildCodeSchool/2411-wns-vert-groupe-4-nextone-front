@@ -13,6 +13,17 @@ export type Service = {
   isGloballyActive: boolean;
 };
 
+type PersoInfo = {
+  name: string;
+  firstName: string;
+};
+
+type ContactInfo = {
+  email: string;
+  phone: string;
+  rgpdAccepted: boolean;
+}
+
 type ChooseServiceProps = {
   onBack: () => void;
   onNext: () => void;
