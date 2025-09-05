@@ -39,6 +39,7 @@ import { IoIosMore } from "react-icons/io";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { statusOptions } from "@/lib/ticketUtils";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 dayjs.extend(relativeTime);
 
@@ -320,8 +321,8 @@ export default function TicketsDashboard() {
             </Button>
           )}
         </div>
-        <div className="mt-6 bg-popover px-6 py-2 rounded-lg h-[90%] overflow-y-auto">
-          <Table className="w-full overflow-y-hidden">
+        <ScrollArea className="mt-6 bg-popover px-6 py-2 rounded-lg h-[90%] overflow-y-auto">
+          <Table className="w-full" noWrapper>
             <TableHeader className="sticky top-0 z-10 w-full bg-popover">
               {table.getHeaderGroups().map((headerGroup) => (
                 <TableRow key={headerGroup.id} className="w-full">
@@ -376,7 +377,7 @@ export default function TicketsDashboard() {
               )}
             </TableBody>
           </Table>
-        </div>
+        </ScrollArea>
       </div>
     </>
   );
