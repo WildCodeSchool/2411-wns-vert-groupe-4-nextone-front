@@ -1,12 +1,15 @@
 import { createContext, useContext, useState, ReactNode } from "react";
 
-type TicketInfo = {
-  service: string;
+export type TicketInfo = {
+  id?: string,
+  serviceId: string;  
+  serviceName?: string;    
   name: string;
   firstName: string;
   email: string;
   phone: string;
-  rgpdAccepted: boolean
+  code?: string,
+  rgpdAccepted: boolean;
 };
 
 type TicketContextType = {
@@ -18,11 +21,13 @@ const TicketContext = createContext<TicketContextType | undefined>(undefined);
 
 export const TicketProvider = ({ children }: { children: ReactNode }) => {
   const [ticket, setTicket] = useState<TicketInfo>({
-    service: "",
+    serviceId: "",
+    serviceName: "",
     name: "",
     firstName: "",
     email: "",
     phone: "",
+    code: "",
     rgpdAccepted: false,
   });
 

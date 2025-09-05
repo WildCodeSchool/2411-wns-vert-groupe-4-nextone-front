@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
-import { useTicket } from "@/context/useContextTicket";
+import { TicketInfo, useTicket } from "@/context/useContextTicket";
 import NavigationActions from "./NavigationActions";
 import CompanyIllustration from "./CompanyIllustration";
 import Stepper from "./Stepper";
@@ -12,20 +11,43 @@ import { LoadingSpinner, Message } from "@/utils/message";
 
 function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
   const { ticket, setTicket } = useTicket();
-  const [selectedService, setSelectedService] = useState<string | undefined>(ticket.service || undefined);
+
+  const [selectedService, setSelectedService] = useState<{ id: string; name: string } | undefined>(
+    ticket.serviceId ? { id: ticket.serviceId, name: ticket.serviceName || "" } : undefined
+  );
+
   const { data, loading, error } = useQuery(GET_SERVICES);
 
-  const activeServices = (data?.services as Service[] ?? [])
-    .filter((service: Service) => service.isGloballyActive)
-    .map((service: Service) => service.name);
+  const activeServices: Service[] = (data?.services as Service[] ?? []).filter(
+    (service) => service.isGloballyActive
+  );
 
+  // Fonction pour mettre à jour le service sélectionné et le ticket
+  const updateSelectedService = (service: Service) => {
+    const serviceObj = { id: service.id, name: service.name };
+    setSelectedService(serviceObj);
+    setTicket({ ...ticket, serviceId: serviceObj.id, serviceName: serviceObj.name });
+  };
+
+  // Définit un service par défaut si aucun n'est sélectionné
   useEffect(() => {
     if (!selectedService && activeServices.length > 0) {
-      const defaultService = activeServices[0];
-      setSelectedService(defaultService);
-      setTicket({ ...ticket, service: defaultService });
+      updateSelectedService(activeServices[0]);
     }
-  }, [activeServices, selectedService, ticket, setTicket]);
+  }, [activeServices]);
+
+  const handleSelectService = (id: string) => {
+    const service = activeServices.find((s) => s.id === id);
+    if (!service) return;
+    updateSelectedService(service);
+  };
+
+  function updateTicketService(ticket: TicketInfo, selectedService: { id: string; name: string } | undefined, setTicket: (ticket: TicketInfo) => void) {
+  if (!selectedService) return;
+  setTicket({ ...ticket, serviceId: selectedService.id, serviceName: selectedService.name });
+  }
+
+  const tabClass = "w-full text-[20px] text-primary py-6 rounded-md border border-primary text-center data-[state=active]:bg-primary data-[state=active]:text-white";
 
   if (loading) return <LoadingSpinner />;
   if (error) return <Message text="Erreur lors du chargement des services" colorClass="text-red-500" />;
@@ -35,29 +57,19 @@ function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
     <div className="flex flex-col md:flex-row h-screen w-full font-sans bg-white">
       <div className="w-full md:w-1/2 flex flex-col p-4 md:pl-8 overflow-y-auto">
         <div className="sticky top-0 bg-white z-10 pb-4">
-          <Stepper currentStep={1} onCancel={onCancel}/>
+          <Stepper currentStep={1} onCancel={onCancel} />
         </div>
-        <h2 className="text-[22px] text-left mb-4">
-          Quel service souhaitez-vous visiter ?
-        </h2>
-        <Tabs
-          value={selectedService}
-          onValueChange={(value) => {
-            setSelectedService(value);
-            setTicket({ ...ticket, service: value });
-          }} className="w-full mb-6">
+        <h2 className="text-[22px] mb-4">Quel service souhaitez-vous visiter ?</h2>
+        <Tabs value={selectedService?.id || ""} onValueChange={handleSelectService} className="w-full mb-6">
           <TabsList className="grid grid-cols-2 gap-4 w-full">
             {activeServices.map((service) => (
-              <TabsTrigger key={service} value={service}
-                className={cn(
-                  "w-full text-[20px] text-primary py-6 rounded-md border border-primary text-center",
-                  "data-[state=active]:bg-primary data-[state=active]:text-white")}>
-                {service}
+              <TabsTrigger key={service.id} value={service.id} className={tabClass}>
+                {service.name}
               </TabsTrigger>
             ))}
           </TabsList>
         </Tabs>
-        <NavigationActions onBack={onBack} onNext={onNext} />
+        <NavigationActions onBack={onBack} onNext={onNext} updateTicket={() => updateTicketService(ticket, selectedService, setTicket)}/>
       </div>
       <CompanyIllustration />
     </div>

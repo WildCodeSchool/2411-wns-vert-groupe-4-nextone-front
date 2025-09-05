@@ -2,8 +2,11 @@ import { useEffect } from "react";
 import CompanyIllustration from "./CompanyIllustration";
 import success from "../../assets/success.png";
 import QRCode from "react-qr-code";
+import { useTicket } from "@/context/useContextTicket";
 
-function SuccessTicketPage({isScanned, ticketId, onTimeout}: {isScanned: boolean; ticketId: string; onTimeout: () => void;}) {
+function SuccessTicketPage({isScanned, onTimeout}: {isScanned: boolean; onTimeout: () => void;}) {
+    const { ticket } = useTicket();
+
     useEffect(() => {
         if (isScanned) {
         const timer = setTimeout(() => onTimeout(), 10000);
@@ -11,7 +14,7 @@ function SuccessTicketPage({isScanned, ticketId, onTimeout}: {isScanned: boolean
         }
     }, [isScanned, onTimeout]);
 
-    const qrValue = `${window.location.origin}/terminal?screen=phone&scanned=true&ticketId=${ticketId}`;
+    const qrValue = `${window.location.origin}/terminal?screen=phone&scanned=true&ticketId=${ticket.id}&ticket=${encodeURIComponent(JSON.stringify(ticket))}`;
 
     return (
         <div className="flex flex-col md:flex-row h-screen w-full font-sans bg-white p-4 md:pl-8">
@@ -22,7 +25,7 @@ function SuccessTicketPage({isScanned, ticketId, onTimeout}: {isScanned: boolean
                 </p>
                 <p className="text-sm md:text-[15px] font-medium">Votre numéro de ticket :</p>
                 <div className="bg-primary flex items-center justify-center text-white text-l p-4 font-bold rounded-md w-[100px] md:w-[120px] h-[45px] md:h-[50px]">
-                    {ticketId}
+                    {ticket.code}
                 </div>
                 {!isScanned && (
                 <>
