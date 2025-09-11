@@ -3,10 +3,10 @@ import {
   getCoreRowModel,
   flexRender,
   ColumnDef,
-  getSortedRowModel, 
-  getFilteredRowModel, 
-  SortingState, 
-  ColumnFiltersState,  
+  getSortedRowModel,
+  getFilteredRowModel,
+  SortingState,
+  ColumnFiltersState,
 } from "@tanstack/react-table";
 import {
   Table,
@@ -16,28 +16,44 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { MoreHorizontal, ChevronDown, Filter } from "lucide-react";  
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { ChevronDown, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import StatusBadge from "./StatusBadge";
-import { useMemo, useState } from "react";  
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { useMemo, useState } from "react";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { TicketActionMenu } from "./TicketActionMenu";
+import { useMutation } from "@apollo/client";
+import {
+  DELETE_TICKET,
+  UPDATE_TICKET_STATUS,
+} from "@/requests/tickets.requests";
+import { useToast } from "@/hooks/use-toast";
+import {
+  TICKET_STATUS_OPTIONS,
+  STATUS_LABEL_TO_ENUM,
+  TICKET_STATUS_LABELS, 
+} from "@/utils/ticketStatus";
+import EditTicketModal from "./EditTicketModal";
 
-
-
-const statusOptions = [
-  "En cours de traitement",
-  "En attente",
-];
 
 type ServiceTicket = {
   id: string;
   ticket: string;
   lastname?: string;
   name?: string;
-  status: "En cours de traitement" | "En attente";
+  status: keyof typeof TICKET_STATUS_LABELS; 
   waitTime?: string;
 };
 
@@ -57,8 +73,57 @@ export default function DashboardServiceCard({
   readonly isOpen: boolean;
   readonly onToggle: () => void;
 }) {
-  const [sorting, setSorting] = useState<SortingState>([]); 
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]); 
+  const [sorting, setSorting] = useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+ 
+  const [editingTicketId, setEditingTicketId] = useState<string | null>(null);
+
+  
+  const handleEdit = (ticketId: string) => {
+    setEditingTicketId(ticketId); 
+  };
+
+  const { toastSuccess, toastError } = useToast();
+  const [deleteTicket] = useMutation(DELETE_TICKET);
+  const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
+
+  const handleDelete = async (ticketId: string) => {
+    try {
+      await deleteTicket({ variables: { deleteTicketId: ticketId } });
+      toastSuccess("Ticket supprimé avec succès");
+    } catch (error) {
+      toastError("Erreur lors de la suppression du ticket");
+      console.error(error);
+    }
+  };
+
+  const handleResetStatus = async (ticketId: string) => {
+    try {
+      const newStatus = STATUS_LABEL_TO_ENUM["En attente"];
+      await updateTicketStatus({
+        variables: {
+          updateTicketStatusData: {
+            id: ticketId,
+            status: newStatus,
+          },
+        },
+      });
+      toastSuccess("Statut remis à 'En attente'");
+    } catch (error) {
+      toastError("Erreur lors du changement de statut");
+      console.error(error);
+    }
+  };
+
+  const handleFilterChange = (statusValue: string) => {
+    const current = table.getColumn("status")?.getFilterValue() as string[] | undefined;
+    const next = current?.includes(statusValue)
+      ? current.filter((v) => v !== statusValue)
+      : [...(current || []), statusValue];
+
+    table.getColumn("status")?.setFilterValue(next);
+  };
 
   const columns = useMemo<ColumnDef<ServiceTicket>[]>(() => [
     {
@@ -85,7 +150,9 @@ export default function DashboardServiceCard({
     {
       header: "TEMPS D’ATTENTE",
       accessorKey: "waitTime",
-      cell: (info) => <span className="pl-2">{String(info.getValue() ?? "-")}</span>,
+      cell: (info) => (
+        <span className="pl-2">{String(info.getValue() ?? "-")}</span>
+      ),
     },
     {
       header: "",
@@ -94,14 +161,16 @@ export default function DashboardServiceCard({
         const ticket = row.original;
         return (
           <div className="flex justify-end items-center gap-2">
-            {ticket.status === "En attente" && (
+            {ticket.status === "PENDING" && (
               <Button className="bg-[#1f2511] hover:bg-[#2a3217] text-white">
                 Prendre le ticket
               </Button>
             )}
-            <Button variant="ghost" size="sm">
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
+            <TicketActionMenu
+              onEdit={() => handleEdit(ticket.id)} 
+              onDelete={() => handleDelete(ticket.id)}
+              onResetStatus={() => handleResetStatus(ticket.id)}
+            />
           </div>
         );
       },
@@ -112,9 +181,9 @@ export default function DashboardServiceCard({
     data: service.tickets,
     columns,
     getCoreRowModel: getCoreRowModel(),
-    getSortedRowModel: getSortedRowModel(), 
-    getFilteredRowModel: getFilteredRowModel(), 
-    onSortingChange: setSorting, 
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+    onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     state: {
       sorting,
@@ -122,15 +191,8 @@ export default function DashboardServiceCard({
     },
   });
 
-  const handleFilterChange = (value: string) => {
-    const current = table.getColumn("status")?.getFilterValue() as string[];
-    const next = current?.includes(value)
-      ? current.filter((v) => v !== value)
-      : [...(current || []), value];
-    table.getColumn("status")?.setFilterValue(next);
-  };
-
   return (
+  <>
     <Card className="w-full border border-gray-200 shadow-sm">
       <CardHeader className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2">
@@ -142,7 +204,9 @@ export default function DashboardServiceCard({
             className="transition-transform duration-300"
           >
             <ChevronDown
-              className={`w-5 h-5 ml-2 transition-transform ${isOpen ? "rotate-180" : "rotate-0"}`}
+              className={`w-5 h-5 ml-2 transition-transform ${
+                isOpen ? "rotate-180" : "rotate-0"
+              }`}
             />
           </button>
         </div>
@@ -151,12 +215,17 @@ export default function DashboardServiceCard({
 
       {isOpen && (
         <CardContent className="px-[30px] pb-[32px]">
+         
           <div className="flex items-center justify-between px-[24px] mb-4">
             <Input
               placeholder="Rechercher par nom..."
               className="w-1/2"
-              value={(table.getColumn("lastname")?.getFilterValue() as string) ?? ""}
-              onChange={(e) => table.getColumn("lastname")?.setFilterValue(e.target.value)}
+              value={
+                (table.getColumn("lastname")?.getFilterValue() as string) ?? ""
+              }
+              onChange={(e) =>
+                table.getColumn("lastname")?.setFilterValue(e.target.value)
+              }
             />
             <Popover>
               <PopoverTrigger asChild>
@@ -166,15 +235,17 @@ export default function DashboardServiceCard({
               </PopoverTrigger>
               <PopoverContent className="w-48">
                 <p className="font-light text-sm mb-2">Statut</p>
-                {statusOptions.map((status) => (
-                  <div key={status} className="flex items-center gap-2 py-1">
+                {TICKET_STATUS_OPTIONS.map((opt) => (
+                  <div key={opt.value} className="flex items-center gap-2 py-1">
                     <Checkbox
-                      id={status}
-                      checked={(table.getColumn("status")?.getFilterValue() as string[] | undefined)?.includes(status) ?? false}
-                      onCheckedChange={() => handleFilterChange(status)}
+                      id={opt.value}
+                      checked={
+                        (table.getColumn("status")?.getFilterValue() as string[])?.includes(opt.value) ?? false
+                      }
+                      onCheckedChange={() => handleFilterChange(opt.value)}
                     />
-                    <label htmlFor={status} className="text-sm cursor-pointer">
-                      {status}
+                    <label htmlFor={opt.value} className="text-sm cursor-pointer">
+                      {opt.label}
                     </label>
                   </div>
                 ))}
@@ -184,9 +255,7 @@ export default function DashboardServiceCard({
               <Button
                 variant="outline"
                 className="[&&]:bg-red-600 text-white hover:bg-red-700 hover:text-white mr-4"
-                onClick={() => {
-                  setColumnFilters([]); // Réinitialise tous les filtres actifs
-                }}
+                onClick={() => setColumnFilters([])}
               >
                 Réinitialiser les filtres
               </Button>
@@ -202,9 +271,16 @@ export default function DashboardServiceCard({
                       <TableHead
                         key={header.id}
                         className="text-left text-[#6D6D6D] cursor-pointer"
-                        onClick={header.column.getCanSort() ? () => header.column.toggleSorting() : undefined}
+                        onClick={
+                          header.column.getCanSort()
+                            ? () => header.column.toggleSorting()
+                            : undefined
+                        }
                       >
-                        {flexRender(header.column.columnDef.header, header.getContext())}
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
                       </TableHead>
                     ))}
                   </TableRow>
@@ -213,14 +289,17 @@ export default function DashboardServiceCard({
             </Table>
           </div>
 
-          <div className="px-[24px] max-h-[300px] min-h-[300px] overflow-y-scroll">  
+          <div className="px-[24px] max-h-[300px] min-h-[300px] overflow-y-scroll">
             <Table className="table-fixed">
               <TableBody>
                 {table.getRowModel().rows.map((row) => (
                   <TableRow key={row.id} className="bg-[#F8FAFB]">
                     {row.getVisibleCells().map((cell) => (
                       <TableCell key={cell.id} className="text-left">
-                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
                       </TableCell>
                     ))}
                   </TableRow>
@@ -231,18 +310,27 @@ export default function DashboardServiceCard({
         </CardContent>
       )}
     </Card>
-  );
+    {editingTicketId && (
+      <EditTicketModal
+        ticketId={editingTicketId}
+        onClose={() => setEditingTicketId(null)}
+      />
+    )}
+  </>
+);
 }
 
 function StatusCell({ status }: { status: ServiceTicket["status"] }) {
+  const label = TICKET_STATUS_LABELS[status] ?? status;
   const bgColor =
-    status === "En cours de traitement" ? "#EAF6EB" : "#FFFAE7";
+    label === "En cours de traitement" ? "#EAF6EB" : "#FFFAE7";
+
   return (
     <span
       className="px-4 py-2 rounded text-xs w-fit text-black"
       style={{ backgroundColor: bgColor }}
     >
-      {status}
+      {label}
     </span>
   );
 }

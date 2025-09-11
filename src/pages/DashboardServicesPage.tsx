@@ -2,14 +2,16 @@ import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
 import { GET_SERVICES } from "@/requests/services.requests";
-import { GET_TICKETS } from "@/requests/tickets.requests"; 
+import { GET_TICKETS } from "@/requests/tickets.requests";
+
+import type { TicketStatus } from "@/utils/ticketStatus";
 
 type ServiceTicket = {
   id: string;
   ticket: string;
   lastname?: string;
   name?: string;
-  status: "En cours de traitement" | "En attente";
+  status: TicketStatus; 
   waitTime?: string;
 };
 
@@ -20,7 +22,6 @@ type DashboardService = {
   tickets: ServiceTicket[];
 };
 
-// calcul temps d’attente (différence entre now et createdAt)
 function calculateWaitTime(createdAt: string): string {
   const created = new Date(createdAt);
   const now = new Date();
@@ -31,8 +32,7 @@ function calculateWaitTime(createdAt: string): string {
   return `${diffMinutes} minutes`;
 }
 
-
-// API
+// API types
 type GetServicesResult = {
   services: { id: string; name: string; isGloballyActive: boolean }[];
 };
@@ -43,7 +43,7 @@ type GetTicketsResult = {
     code: string;
     firstName?: string | null;
     lastName?: string | null;
-    status: string; // IN_PROGRESS | PENDING | ...
+    status: string;
     createdAt: string;
     updatedAt: string;
     service?: { id: string; name: string } | null;
@@ -51,8 +51,7 @@ type GetTicketsResult = {
 };
 
 export default function DashboardServicesPage() {
-
-  const [openCardId, setOpenCardId] = useState<string>(""); // gère l'état de la card ouverte
+  const [openCardId, setOpenCardId] = useState<string>("");
 
   const {
     data: servicesData,
@@ -72,10 +71,9 @@ export default function DashboardServicesPage() {
   const error = errorServices || errorTickets;
 
   const handleToggle = (id: string) => {
-    setOpenCardId((prev) => (prev === id ? "" : id)); // ferme si on reclique dessus
+    setOpenCardId((prev) => (prev === id ? "" : id));
   };
 
-    // 2) Grouper les tickets par service.id
   const ticketsByServiceId = useMemo(() => {
     const map = new Map<string, ServiceTicket[]>();
     const all = ticketsData?.tickets ?? [];
@@ -84,13 +82,12 @@ export default function DashboardServicesPage() {
       const serviceId = t.service?.id;
       if (!serviceId) continue;
 
-      // mapping Ticket API -> Ticket UI
       const uiTicket: ServiceTicket = {
         id: t.id,
         ticket: t.code,
         lastname: t.lastName ?? undefined,
         name: t.firstName ?? undefined,
-        status: t.status === "IN_PROGRESS" ? "En cours de traitement" : "En attente",
+        status: t.status as TicketStatus, 
         waitTime: calculateWaitTime(t.createdAt),
       };
 
@@ -100,25 +97,21 @@ export default function DashboardServicesPage() {
     return map;
   }, [ticketsData]);
 
-  // 3) Mapping Services API -> UI + injection des tickets groupés
   const mappedServices: DashboardService[] = useMemo(() => {
     const apiServices = servicesData?.services ?? [];
     return apiServices.map((s) => {
-      // Règle temporaire : actif -> "Fluide", sinon "En attente"
       const status: DashboardService["status"] = s.isGloballyActive ? "Fluide" : "En attente";
       const tickets = ticketsByServiceId.get(s.id) ?? [];
       return { id: s.id, name: s.name, status, tickets };
     });
   }, [servicesData, ticketsByServiceId]);
 
-    useEffect(() => {
+  useEffect(() => {
     if (mappedServices.length > 0) {
       setOpenCardId((prev) => (prev === "" ? mappedServices[0].id : prev));
     }
   }, [mappedServices]);
 
-
-  // 4) États UI
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center py-16">

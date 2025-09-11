@@ -39,3 +39,34 @@ export const GET_TICKET_INFOS = gql`
     }
   }
 `;
+
+export const UPDATE_TICKET = gql`
+  mutation UpdateTicket($updateTicketData: UpdateTicketInput!) {
+    updateTicket(data: $updateTicketData) {
+      id
+      firstName
+      lastName
+      email
+      phone
+      status
+    }
+  }
+`;
+
+export const UPDATE_TICKET_STATUS = gql`
+  mutation Mutation($updateTicketStatusData: UpdateStatusTicketInput!) {
+    updateTicketStatus(data: $updateTicketStatusData) {
+      id
+      status
+      code
+    }
+  }
+`;
+
+export const DELETE_TICKET = gql`
+  mutation Mutation($deleteTicketId: ID!) {
+    deleteTicket(id: $deleteTicketId) {
+      id
+    }
+  }
+`;
