@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TicketInfo, useTicket } from "@/context/useContextTicket";
-import NavigationActions from "./NavigationActions";
-import CompanyIllustration from "./CompanyIllustration";
-import Stepper from "./Stepper";
+import NavigationActions from "../../common/terminal/NavigationActions";
+import CompanyIllustration from "../../common/terminal/CompanyIllustration";
+import Stepper from "../../common/terminal/Stepper";
 import { useQuery } from "@apollo/client";
 import { GET_SERVICES } from "@/requests/queries/service.query";
 import { Service, ChooseServiceProps } from "@/types/terminal";
@@ -58,39 +58,46 @@ function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
 
   return (
     <div className="flex flex-col md:flex-row h-screen w-full font-sans bg-white">
-      <div className="w-full md:w-1/2 flex flex-col p-4 md:pl-8 overflow-y-auto">
-        <div className="sticky top-0 bg-white z-10 pb-4">
-          <Stepper currentStep={1} onCancel={onCancel} />
+      <div className="w-full md:w-1/2 h-screen flex flex-col p-4 md:p-8">
+        <div className="sticky top-0 bg-white z-10 pb-6">
+          <Stepper currentStep={1}/>
         </div>
-        <h2 className="text-[22px] mb-4">Quel service souhaitez-vous visiter ?</h2>
-        {activeServices.length > 4 ? (
-          <div className="mb-2">
-            <select className="w-full border border-primary rounded-md p-3 text-lg" value={selectedService?.id || ""} onChange={(e) => handleSelectService(e.target.value)}>
-              <option value="">-- Sélectionnez un service --</option>
-              {activeServices.map((service) => (
-                <option key={service.id} value={service.id}>
-                  {service.name}
-                </option>
-              ))}
-            </select>
-          </div>
-        ) : (
-          <Tabs value={selectedService?.id || ""} onValueChange={handleSelectService} className="w-full mb-2">
-            <TabsList className="grid grid-cols-2 gap-4 w-full">
-              {activeServices.map((service) => (
-                <TabsTrigger key={service.id} value={service.id} className={tabClass}>
-                  {service.name}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        )}
-        {errorMessage && <p className="text-red-600 mt-2 text-sm">{errorMessage}</p>}
-        <NavigationActions onBack={onBack} onNext={setTicketForGenerate} updateTicket={() => updateTicketService(ticket, selectedService, setTicket)}/>
+         <div className="flex-1 flex flex-col justify-center">
+          <h2 className="text-[22px] mb-8 text-left">
+            Quel service souhaitez-vous visiter ?
+          </h2>
+          {activeServices.length > 4 ? (
+            <div className="mb-4">
+              <select className="w-full border border-primary rounded-md p-3 text-lg" value={selectedService?.id || ""} onChange={(e) => handleSelectService(e.target.value)}>
+                <option value="">-- Sélectionnez un service --</option>
+                {activeServices.map((service) => (
+                  <option key={service.id} value={service.id}>
+                    {service.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <Tabs value={selectedService?.id || ""} onValueChange={handleSelectService} className="w-full mb-4">
+              <TabsList className="grid grid-cols-2 gap-4 w-full">
+                {activeServices.map((service) => (
+                  <TabsTrigger key={service.id} value={service.id} className={tabClass}>
+                    {service.name}
+                  </TabsTrigger>
+                ))}
+              </TabsList>
+            </Tabs>
+          )}
+          {errorMessage && (
+            <p className="text-red-600 mt-2 text-sm">{errorMessage}</p>
+          )}
+          <NavigationActions onBack={onBack} onNext={setTicketForGenerate} onCancel={onCancel} updateTicket={() =>updateTicketService(ticket, selectedService, setTicket)}/>
+        </div>
       </div>
       <CompanyIllustration />
     </div>
-  );
+);
+
 }
 
 export default ChooseService;

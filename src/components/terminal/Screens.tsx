@@ -12,7 +12,7 @@ type ScreenComponentProps = {
 };
 
 export function getScreenComponent(screen: Screen, props: ScreenComponentProps) {
-  const { setCurrentScreen, handleCancel, isScanned } = props;
+    const { setCurrentScreen, handleCancel, isScanned } = props;
 
     if (screen === "chooseService") {
     return <ChooseService 
