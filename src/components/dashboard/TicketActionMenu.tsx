@@ -9,13 +9,13 @@ import {
 
 export type TicketActionMenuProps = {
   onEdit: () => void;           
-  onDelete: () => void;          
+  onArchive: () => void;          
   onResetStatus: () => void;     
 };
 
 export function TicketActionMenu({
   onEdit,
-  onDelete,
+  onArchive,
   onResetStatus,
 }: TicketActionMenuProps) {
   return (
@@ -37,7 +37,9 @@ export function TicketActionMenu({
           Remettre en attente
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={onDelete}>
+        <DropdownMenuItem onClick={() => {
+          onArchive();
+        }}>
           <Trash2 className="w-4 h-4 mr-2 text-red-500" />
           Supprimer
         </DropdownMenuItem>

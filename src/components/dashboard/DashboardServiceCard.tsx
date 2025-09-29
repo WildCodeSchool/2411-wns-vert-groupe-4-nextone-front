@@ -36,7 +36,6 @@ import { Input } from "@/components/ui/input";
 import { TicketActionMenu } from "./TicketActionMenu";
 import { useMutation } from "@apollo/client";
 import {
-  DELETE_TICKET,
   UPDATE_TICKET_STATUS,
 } from "@/requests/tickets.requests";
 import { useToast } from "@/hooks/use-toast";
@@ -46,6 +45,8 @@ import {
   TICKET_STATUS_LABELS, 
 } from "@/utils/ticketStatus";
 import EditTicketModal from "./EditTicketModal";
+import { RiArrowUpDownLine } from "react-icons/ri";
+
 
 
 type ServiceTicket = {
@@ -68,10 +69,12 @@ export default function DashboardServiceCard({
   service,
   isOpen,
   onToggle,
+  onTicketsUpdate,
 }: {
   readonly service: DashboardService;
   readonly isOpen: boolean;
   readonly onToggle: () => void;
+  readonly onTicketsUpdate?: () => void;
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -85,18 +88,27 @@ export default function DashboardServiceCard({
   };
 
   const { toastSuccess, toastError } = useToast();
-  const [deleteTicket] = useMutation(DELETE_TICKET);
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
 
-  const handleDelete = async (ticketId: string) => {
-    try {
-      await deleteTicket({ variables: { deleteTicketId: ticketId } });
-      toastSuccess("Ticket supprimé avec succès");
-    } catch (error) {
-      toastError("Erreur lors de la suppression du ticket");
-      console.error(error);
-    }
-  };
+  const handleArchive = async (ticketId: string) => {
+  try {
+    const archivedStatus = STATUS_LABEL_TO_ENUM["Archivé"]; 
+    await updateTicketStatus({
+      variables: {
+        updateTicketStatusData: {
+          id: ticketId,
+          status: archivedStatus,
+        },
+      },
+    });
+    toastSuccess("Ticket archivé avec succès");
+    onTicketsUpdate?.(); 
+  } catch (error) {
+    toastError("Erreur lors de l’archivage du ticket");
+    console.error(error);
+  }
+};
+
 
   const handleResetStatus = async (ticketId: string) => {
     try {
@@ -109,6 +121,7 @@ export default function DashboardServiceCard({
           },
         },
       });
+      onTicketsUpdate?.();
       toastSuccess("Statut remis à 'En attente'");
     } catch (error) {
       toastError("Erreur lors du changement de statut");
@@ -131,29 +144,55 @@ export default function DashboardServiceCard({
       accessorKey: "ticket",
     },
     {
-      header: "NOM",
-      accessorKey: "lastname",
+       accessorKey: "lastname",
+       header: ({ column }) => (
+    <div
+      className="flex items-center gap-2 cursor-pointer select-none"
+      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+    >
+      NOM
+      <RiArrowUpDownLine />
+    </div>
+  ),
     },
     {
       header: "PRENOM",
       accessorKey: "name",
     },
     {
-      header: "STATUT",
       accessorKey: "status",
+      header: ({ column }) => (
+        <div
+          className="flex items-center gap-2 cursor-pointer select-none"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          STATUT
+          <RiArrowUpDownLine />
+        </div>
+      ),
       filterFn: (row, columnId, filterValue) => {
         if (!filterValue || filterValue.length === 0) return true;
         return filterValue.includes(row.getValue(columnId));
       },
       cell: ({ row }) => <StatusCell status={row.original.status} />,
     },
+
     {
-      header: "TEMPS D’ATTENTE",
       accessorKey: "waitTime",
+      header: ({ column }) => (
+        <div
+          className="flex items-center gap-2 cursor-pointer select-none"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          TEMPS D’ATTENTE
+          <RiArrowUpDownLine />
+        </div>
+      ),
       cell: (info) => (
         <span className="pl-2">{String(info.getValue() ?? "-")}</span>
       ),
     },
+
     {
       header: "",
       id: "actions",
@@ -168,7 +207,7 @@ export default function DashboardServiceCard({
             )}
             <TicketActionMenu
               onEdit={() => handleEdit(ticket.id)} 
-              onDelete={() => handleDelete(ticket.id)}
+              onArchive={() => handleArchive(ticket.id)}
               onResetStatus={() => handleResetStatus(ticket.id)}
             />
           </div>

@@ -1,4 +1,7 @@
-import { Toaster } from "sonner"
+import { Toaster } from "sonner";
+import "./styles/toast.css"; 
+;
+ 
 
 export default function ToasterProvider() {
   return (
@@ -6,8 +9,19 @@ export default function ToasterProvider() {
       position="top-right"
       richColors
       closeButton
-      expand
-      duration={4000}
+      duration={3500}
+      toastOptions={{
+        style: {
+          borderRadius: "14px",
+          padding: "16px",
+          background: "#1F2511", 
+          color: "#FFFFFF",       
+          fontFamily: "Archivo, sans-serif",
+          boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+          borderLeft: "4px solid #B5E303", 
+        },
+        className: "custom-toast",
+      }}
     />
   );
 }

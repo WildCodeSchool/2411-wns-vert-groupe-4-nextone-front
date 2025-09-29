@@ -82,6 +82,8 @@ export default function DashboardServicesPage() {
       const serviceId = t.service?.id;
       if (!serviceId) continue;
 
+       if (t.status === "ARCHIVED") continue; // Skip archived tickets
+
       const uiTicket: ServiceTicket = {
         id: t.id,
         ticket: t.code,
@@ -170,6 +172,7 @@ export default function DashboardServicesPage() {
             service={service}
             isOpen={openCardId === service.id}
             onToggle={() => handleToggle(service.id)}
+            onTicketsUpdate={() => { refetchTickets(); }}
           />
         ))}
         {mappedServices.length === 0 && (

@@ -64,8 +64,8 @@ export const UPDATE_TICKET_STATUS = gql`
 `;
 
 export const DELETE_TICKET = gql`
-  mutation Mutation($deleteTicketId: ID!) {
-    deleteTicket(id: $deleteTicketId) {
+  mutation deleteTicket($id: ID!) {
+    deleteTicket(id: $id) {
       id
     }
   }
