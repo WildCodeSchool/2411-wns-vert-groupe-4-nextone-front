@@ -10,6 +10,7 @@ import {
 } from "@apollo/client";
 import { router } from "./routes/routes";
 import { TicketProvider } from "./context/useContextTicket";
+import AuthProvider from "./context/AuthContext";
 
 const httpLink = new HttpLink({
   uri: "http://localhost:4005/graphql",
@@ -43,8 +44,10 @@ client
 
 createRoot(document.getElementById("root")!).render(
   <ApolloProvider client={client}>
-    <TicketProvider>
-      <RouterProvider router={router} />
-    </TicketProvider>
+    <AuthProvider>
+      <TicketProvider>
+        <RouterProvider router={router} />
+      </TicketProvider>
+    </AuthProvider>
   </ApolloProvider>
 );

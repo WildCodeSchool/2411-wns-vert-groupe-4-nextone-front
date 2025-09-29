@@ -7,6 +7,7 @@ import logo from "@/assets/images/Logo_NextOne_vert-noir.png";
 import { useLazyQuery } from "@apollo/client";
 import { LOGIN } from "@/requests/queries/auth.query";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 export default function LoginAdmin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,9 +15,12 @@ export default function LoginAdmin() {
 
   const navigate = useNavigate();
 
+  const { getInfos } = useAuth();
+
   const [login] = useLazyQuery(LOGIN, {
     fetchPolicy: "no-cache",
     async onCompleted() {
+      await getInfos();
       navigate("/dashboard");
     },
   });
