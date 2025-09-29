@@ -3,7 +3,9 @@ import { RouterProvider } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
+  from,
   gql,
+  HttpLink,
   InMemoryCache,
 } from "@apollo/client";
 import { router } from "./routes/routes";
@@ -13,11 +15,17 @@ const uri = import.meta.env.DEV
   ? "http://localhost:4005/graphql"
   : "https://david4.wns.wilders.dev/graphql";
 
+const httpLink = new HttpLink({
+  uri: uri,
+  credentials: "include",
+});
+
 export const client = new ApolloClient({
   cache: new InMemoryCache({
     addTypename: false,
   }),
-  uri: uri,
+  link: from([httpLink]),
+  credentials: "include",
 });
 
 client

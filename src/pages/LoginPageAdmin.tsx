@@ -15,15 +15,14 @@ export default function LoginAdmin() {
   const navigate = useNavigate();
 
   const [login] = useLazyQuery(LOGIN, {
-    async onCompleted(data) {
-      console.log(data);
+    fetchPolicy: "no-cache",
+    async onCompleted() {
       navigate("/dashboard");
     },
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Submitting form with:", { email, password });
     login({
       variables: {
         infos: {
