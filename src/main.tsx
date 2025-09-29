@@ -3,17 +3,25 @@ import { RouterProvider } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
+  from,
   gql,
+  HttpLink,
   InMemoryCache,
 } from "@apollo/client";
 import { router } from "./routes/routes";
 import { TicketProvider } from "./context/useContextTicket";
 
+const httpLink = new HttpLink({
+  uri: "http://localhost:4005/graphql",
+  credentials: "include",
+});
+
 export const client = new ApolloClient({
   cache: new InMemoryCache({
     addTypename: false,
   }),
-  uri: "http://localhost:4005/graphql",
+  link: from([httpLink]),
+  credentials: "include",
 });
 
 client
