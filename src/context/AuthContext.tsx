@@ -1,4 +1,4 @@
-import { CHECK_TOKEN } from "@/requests/queries/auth.query";
+import { CHECK_TOKEN, LOGOUT } from "@/requests/queries/auth.query";
 import { useLazyQuery } from "@apollo/client";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 
@@ -11,14 +11,15 @@ type CheckToken = {
   };
 };
 
-type UserAuthContext = CheckToken["checkToken"] | null;
+export type UserAuthContext = CheckToken["checkToken"] | null;
 
-type ContextType = {
+type AuthContextType = {
   user: UserAuthContext;
   getInfos(): Promise<void>;
+  logout(): Promise<void>;
   reset(): void;
 };
-const AuthContext = createContext({} as ContextType);
+const AuthContext = createContext({} as AuthContextType);
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -37,25 +38,37 @@ function AuthProvider({ children }: Readonly<PropsWithChildren>) {
     fetchPolicy: "no-cache",
   });
 
-  const value: ContextType = {
+  const [logout] = useLazyQuery(LOGOUT, {
+    fetchPolicy: "no-cache",
+  });
+
+  const value: AuthContextType = {
     user,
     getInfos: async () => {
       await checkToken({
         onCompleted(data) {
-          console.log("%c⧭", "color: #00aaff", data);
           const user = {
             email: data.checkToken.email ?? "",
             firstName: data.checkToken.firstName ?? "",
             id: data.checkToken.id ?? "",
             lastName: data.checkToken.lastName ?? "",
           };
-          console.log("%c⧭", "color: #f200e2", user);
           setUser(user);
           localStorage.setItem("user", JSON.stringify(user));
         },
       });
     },
     reset: () => setUser(null),
+    logout: async () => {
+      await logout({
+        onCompleted(data) {
+          if (data.logout.success) {
+            setUser(null);
+            localStorage.removeItem("user");
+          }
+        },
+      });
+    },
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

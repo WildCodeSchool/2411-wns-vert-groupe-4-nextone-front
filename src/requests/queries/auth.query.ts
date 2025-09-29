@@ -18,3 +18,12 @@ export const CHECK_TOKEN = gql`
     }
   }
 `;
+
+export const LOGOUT = gql`
+  query Logout {
+    logout {
+      message
+      success
+    }
+  }
+`;
