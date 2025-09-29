@@ -7,13 +7,9 @@ const steps = [
   { label: "Coordonnées" },
 ];
 
-interface StepperWithCancelProps extends StepperProps {
-  onCancel?: () => void;
-}
-
-function Stepper({ currentStep, onCancel }: StepperWithCancelProps) {
+function Stepper({ currentStep }: StepperProps) {
   return (
-    <div className="w-full mb-6">
+    <div className="w-full">
       <div className="flex justify-between items-center mb-3">
         {steps.map((step, i) => {
           const stepNumber = i + 1;
@@ -38,13 +34,6 @@ function Stepper({ currentStep, onCancel }: StepperWithCancelProps) {
       <div className="h-1 bg-gray-300 rounded-full">
         <div className="h-1 bg-primary rounded-full transition-all duration-300" style={{ width: `${(currentStep / steps.length) * 100}%` }}/>
       </div>
-      {onCancel && (
-        <div className="mt-4 flex justify-start">
-          <button onClick={onCancel} className="px-5 py-2 rounded-full border-2 border-primary text-primary font-semibold hover:bg-primary hover:text-white transition-colors duration-300 shadow-sm">
-            Annuler
-          </button>
-        </div>
-      )}
     </div>
   );
 }
