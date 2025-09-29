@@ -7,3 +7,14 @@ export const LOGIN = gql`
     }
   }
 `;
+
+export const CHECK_TOKEN = gql`
+  query CheckToken {
+    checkToken {
+      email
+      firstName
+      id
+      lastName
+    }
+  }
+`;
