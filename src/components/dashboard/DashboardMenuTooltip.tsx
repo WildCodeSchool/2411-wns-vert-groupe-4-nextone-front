@@ -1,31 +1,65 @@
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { DashboardMenuItem } from "./DashboardLayout";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
+import { UserAuthContext } from "@/context/AuthContext";
 
 export default function DashboardMenuTooltip({
   item,
   isActive = false,
-  isProfileTooltip = false,
+  user = null,
+  logout,
 }: {
   item: DashboardMenuItem;
   isActive?: boolean;
-  isProfileTooltip?: boolean;
+  user?: UserAuthContext | null;
+  logout?: () => Promise<void>;
 }) {
-  if (isProfileTooltip) {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    if (!logout) return;
+
+    logout();
+    navigate("/login");
+  };
+
+  if (user) {
     return (
-      <Tooltip>
-        <TooltipTrigger className="flex items-center justify-center w-full aspect-square bg-primary text-white rounded-full">
-          <Link
-            to={item.path}
-            className="flex items-center justify-center w-full h-full"
+      <>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <div className="flex items-center justify-center w-full aspect-square bg-primary text-white rounded-full cursor-pointer">
+              {item.icon}
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            className="w-56 z-50 ml-4 p-2 bg-card"
+            side="right"
+            align="end"
           >
-            {item.icon}
-          </Link>
-        </TooltipTrigger>
-        <TooltipContent side="right">
-          <p>{item.name}</p>
-        </TooltipContent>
-      </Tooltip>
+            <DropdownMenuLabel>
+              <p>
+                {user?.firstName} {user?.lastName}
+              </p>
+              <p>Administrateur</p>
+            </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuItem>Paramètres</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => handleLogout()}>
+                Déconnexion
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </>
     );
   }
 
