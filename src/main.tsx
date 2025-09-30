@@ -19,19 +19,21 @@ export const client = new ApolloClient({
 client
   .query({
     query: gql`
-      query Companies {
-        companies {
-          id
-          name
-          address
+      query IntrospectionQuery {
+        __schema {
+          types {
+            name
+            kind
+          }
         }
       }
     `,
   })
-  .then((response) =>
-    console.log("Apollo Client is configured correctly:", response)
-  )
-  .catch((error) => console.error("Apollo Client configuration error:", error));
+  .then((response) => {
+    console.log("GraphQL API is reachable with response.", response);
+    console.log("Introspection response:", response.data.__schema.types);
+  })
+  .catch((error) => console.error(error));
 
 createRoot(document.getElementById("root")!).render(
   <ApolloProvider client={client}>
