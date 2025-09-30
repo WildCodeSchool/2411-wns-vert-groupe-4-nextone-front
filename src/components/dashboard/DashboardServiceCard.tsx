@@ -25,7 +25,7 @@ import {
 import { ChevronDown, Filter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import StatusBadge from "./StatusBadge";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState, useEffect } from "react"; 
 import {
   Popover,
   PopoverTrigger,
@@ -35,19 +35,14 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { TicketActionMenu } from "./TicketActionMenu";
 import { useMutation } from "@apollo/client";
-import {
-  UPDATE_TICKET_STATUS,
-} from "@/requests/tickets.requests";
+import { UPDATE_TICKET_STATUS } from "@/requests/tickets.requests";
 import { useToast } from "@/hooks/use-toast";
 import {
   TICKET_STATUS_OPTIONS,
   STATUS_LABEL_TO_ENUM,
   TICKET_STATUS_LABELS, 
 } from "@/utils/ticketStatus";
-import EditTicketModal from "./EditTicketModal";
 import { RiArrowUpDownLine } from "react-icons/ri";
-
-
 
 type ServiceTicket = {
   id: string;
@@ -79,36 +74,35 @@ export default function DashboardServiceCard({
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 
- 
-  const [editingTicketId, setEditingTicketId] = useState<string | null>(null);
-
-  
-  const handleEdit = (ticketId: string) => {
-    setEditingTicketId(ticketId); 
-  };
-
   const { toastSuccess, toastError } = useToast();
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
 
-  const handleArchive = async (ticketId: string) => {
-  try {
-    const archivedStatus = STATUS_LABEL_TO_ENUM["Archivé"]; 
-    await updateTicketStatus({
-      variables: {
-        updateTicketStatusData: {
-          id: ticketId,
-          status: archivedStatus,
-        },
-      },
-    });
-    toastSuccess("Ticket archivé avec succès");
-    onTicketsUpdate?.(); 
-  } catch (error) {
-    toastError("Erreur lors de l’archivage du ticket");
-    console.error(error);
-  }
-};
+  const scrollRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    if (isOpen && scrollRef.current) {
+      scrollRef.current.scrollTop = 0;
+    }
+  }, [isOpen, service.tickets.length]);
+
+  const handleArchive = async (ticketId: string) => {
+    try {
+      const archivedStatus = STATUS_LABEL_TO_ENUM["Archivé"];
+      await updateTicketStatus({
+        variables: {
+          updateTicketStatusData: {
+            id: ticketId,
+            status: archivedStatus,
+          },
+        },
+      });
+      toastSuccess("Ticket archivé avec succès");
+      onTicketsUpdate?.();
+    } catch (error) {
+      toastError("Erreur lors de l’archivage du ticket");
+      console.error(error);
+    }
+  };
 
   const handleResetStatus = async (ticketId: string) => {
     try {
@@ -144,16 +138,16 @@ export default function DashboardServiceCard({
       accessorKey: "ticket",
     },
     {
-       accessorKey: "lastname",
-       header: ({ column }) => (
-    <div
-      className="flex items-center gap-2 cursor-pointer select-none"
-      onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-    >
-      NOM
-      <RiArrowUpDownLine />
-    </div>
-  ),
+      accessorKey: "lastname",
+      header: ({ column }) => (
+        <div
+          className="flex items-center gap-2 cursor-pointer select-none"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          NOM
+          <RiArrowUpDownLine />
+        </div>
+      ),
     },
     {
       header: "PRENOM",
@@ -176,7 +170,6 @@ export default function DashboardServiceCard({
       },
       cell: ({ row }) => <StatusCell status={row.original.status} />,
     },
-
     {
       accessorKey: "waitTime",
       header: ({ column }) => (
@@ -192,7 +185,6 @@ export default function DashboardServiceCard({
         <span className="pl-2">{String(info.getValue() ?? "-")}</span>
       ),
     },
-
     {
       header: "",
       id: "actions",
@@ -206,7 +198,7 @@ export default function DashboardServiceCard({
               </Button>
             )}
             <TicketActionMenu
-              onEdit={() => handleEdit(ticket.id)} 
+              ticketId={ticket.id} 
               onArchive={() => handleArchive(ticket.id)}
               onResetStatus={() => handleResetStatus(ticket.id)}
             />
@@ -231,132 +223,128 @@ export default function DashboardServiceCard({
   });
 
   return (
-  <>
-    <Card className="w-full border border-gray-200 shadow-sm">
-      <CardHeader className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-2">
-          <CardTitle className="text-xl font-light flex flex-col items-start justify-start">
-            {service.name}
-          </CardTitle>
-          <button
-            onClick={onToggle}
-            className="transition-transform duration-300"
-          >
-            <ChevronDown
-              className={`w-5 h-5 ml-2 transition-transform ${
-                isOpen ? "rotate-180" : "rotate-0"
-              }`}
-            />
-          </button>
-        </div>
-        <StatusBadge label={service.status} />
-      </CardHeader>
-
-      {isOpen && (
-        <CardContent className="px-[30px] pb-[32px]">
-         
-          <div className="flex items-center justify-between px-[24px] mb-4">
-            <Input
-              placeholder="Rechercher par nom..."
-              className="w-1/2"
-              value={
-                (table.getColumn("lastname")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(e) =>
-                table.getColumn("lastname")?.setFilterValue(e.target.value)
-              }
-            />
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button variant="outline" className="mr-4">
-                  <Filter className="mr-2 w-4 h-4" /> Filtres
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-48">
-                <p className="font-light text-sm mb-2">Statut</p>
-                {TICKET_STATUS_OPTIONS.map((opt) => (
-                  <div key={opt.value} className="flex items-center gap-2 py-1">
-                    <Checkbox
-                      id={opt.value}
-                      checked={
-                        (table.getColumn("status")?.getFilterValue() as string[])?.includes(opt.value) ?? false
-                      }
-                      onCheckedChange={() => handleFilterChange(opt.value)}
-                    />
-                    <label htmlFor={opt.value} className="text-sm cursor-pointer">
-                      {opt.label}
-                    </label>
-                  </div>
-                ))}
-              </PopoverContent>
-            </Popover>
-            {columnFilters.length > 0 && (
-              <Button
-                variant="outline"
-                className="[&&]:bg-red-600 text-white hover:bg-red-700 hover:text-white mr-4"
-                onClick={() => setColumnFilters([])}
-              >
-                Réinitialiser les filtres
-              </Button>
-            )}
+    <>
+      <Card key={service.id} className="w-full border border-gray-200 shadow-sm">
+        <CardHeader className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-2">
+            <CardTitle className="text-xl font-light flex flex-col items-start justify-start">
+              {service.name}
+            </CardTitle>
+            <button
+              onClick={onToggle}
+              className="transition-transform duration-300"
+            >
+              <ChevronDown
+                className={`w-5 h-5 ml-2 transition-transform ${
+                  isOpen ? "rotate-180" : "rotate-0"
+                }`}
+              />
+            </button>
           </div>
+          <StatusBadge label={service.status} />
+        </CardHeader>
 
-          <div className="px-[24px] pr-[40px]">
-            <Table className="table-fixed">
-              <TableHeader className="bg-[#F8FAFB]">
-                {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id}>
-                    {headerGroup.headers.map((header) => (
-                      <TableHead
-                        key={header.id}
-                        className="text-left text-[#6D6D6D] cursor-pointer"
-                        onClick={
-                          header.column.getCanSort()
-                            ? () => header.column.toggleSorting()
-                            : undefined
+        {isOpen && (
+          <CardContent className="px-[30px] pb-[32px]">
+            <div className="flex items-center justify-between px-[24px] mb-4">
+              <Input
+                placeholder="Rechercher par nom..."
+                className="w-1/2"
+                value={
+                  (table.getColumn("lastname")?.getFilterValue() as string) ?? ""
+                }
+                onChange={(e) =>
+                  table.getColumn("lastname")?.setFilterValue(e.target.value)
+                }
+              />
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className="mr-4">
+                    <Filter className="mr-2 w-4 h-4" /> Filtres
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-48">
+                  <p className="font-light text-sm mb-2">Statut</p>
+                  {TICKET_STATUS_OPTIONS.map((opt) => (
+                    <div key={opt.value} className="flex items-center gap-2 py-1">
+                      <Checkbox
+                        id={opt.value}
+                        checked={
+                          (table.getColumn("status")?.getFilterValue() as string[])?.includes(opt.value) ?? false
                         }
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableHeader>
-            </Table>
-          </div>
+                        onCheckedChange={() => handleFilterChange(opt.value)}
+                      />
+                      <label htmlFor={opt.value} className="text-sm cursor-pointer">
+                        {opt.label}
+                      </label>
+                    </div>
+                  ))}
+                </PopoverContent>
+              </Popover>
+              {columnFilters.length > 0 && (
+                <Button
+                  variant="outline"
+                  className="[&&]:bg-red-600 text-white hover:bg-red-700 hover:text-white mr-4"
+                  onClick={() => setColumnFilters([])}
+                >
+                  Réinitialiser les filtres
+                </Button>
+              )}
+            </div>
 
-          <div className="px-[24px] max-h-[300px] min-h-[300px] overflow-y-scroll">
-            <Table className="table-fixed">
-              <TableBody>
-                {table.getRowModel().rows.map((row) => (
-                  <TableRow key={row.id} className="bg-[#F8FAFB]">
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="text-left">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      )}
-    </Card>
-    {editingTicketId && (
-      <EditTicketModal
-        ticketId={editingTicketId}
-        onClose={() => setEditingTicketId(null)}
-      />
-    )}
-  </>
-);
+            <div className="px-[24px] pr-[40px]">
+              <Table className="table-fixed">
+                <TableHeader className="bg-[#F8FAFB]">
+                  {table.getHeaderGroups().map((headerGroup) => (
+                    <TableRow key={headerGroup.id}>
+                      {headerGroup.headers.map((header) => (
+                        <TableHead
+                          key={header.id}
+                          className="text-left text-[#6D6D6D] cursor-pointer"
+                          onClick={
+                            header.column.getCanSort()
+                              ? () => header.column.toggleSorting()
+                              : undefined
+                          }
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableHeader>
+              </Table>
+            </div>
+
+            <div
+              ref={scrollRef} 
+              className="px-[24px] max-h-[300px] min-h-[300px] overflow-y-scroll"
+            >
+              <Table className="table-fixed">
+                <TableBody>
+                  {table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id} className="bg-[#F8FAFB]">
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id} className="text-left">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </CardContent>
+        )}
+      </Card>
+    </>
+  );
 }
 
 function StatusCell({ status }: { status: ServiceTicket["status"] }) {

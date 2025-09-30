@@ -7,17 +7,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { useNavigate } from "react-router-dom";
+
 export type TicketActionMenuProps = {
-  onEdit: () => void;           
+ticketId: string;           
   onArchive: () => void;          
   onResetStatus: () => void;     
 };
 
 export function TicketActionMenu({
-  onEdit,
+  ticketId,
   onArchive,
   onResetStatus,
 }: TicketActionMenuProps) {
+  const navigate = useNavigate();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -27,7 +31,8 @@ export function TicketActionMenu({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={onEdit}>
+         <DropdownMenuItem onClick={() => navigate(`/tickets/${ticketId}/edit`)}>
+          {/* redirection to ticketpage edit */}
           <Pencil className="w-4 h-4 mr-2" />
           Modifier
         </DropdownMenuItem>
