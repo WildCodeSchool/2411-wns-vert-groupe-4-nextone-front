@@ -19,7 +19,7 @@ export const router = createBrowserRouter([
     path: "/terminal",
     element: <Terminal />,
   },
-    {
+  {
     path: "/phone",
     element: <PhonePage />,
   },
@@ -34,7 +34,7 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/admin/login",
+    path: "/login",
     element: <LoginPageAdmin />,
   },
 ]);

@@ -4,95 +4,124 @@ import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import logo from "@/assets/images/Logo_NextOne_vert-noir.png";
-import iconImage from "@/assets/images/icon_img.jpg";
+import { useLazyQuery } from "@apollo/client";
+import { LOGIN } from "@/requests/queries/auth.query";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 export default function LoginAdmin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [stayConnected, setStayConnected] = useState(false);
 
+  const navigate = useNavigate();
+
+  const { getInfos } = useAuth();
+
+  const [login] = useLazyQuery(LOGIN, {
+    fetchPolicy: "no-cache",
+    async onCompleted() {
+      await getInfos();
+      navigate("/dashboard");
+    },
+  });
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log({ email, password, stayConnected });
-    // Appeler le resolver GraphQL de login ici
+    login({
+      variables: {
+        infos: {
+          email,
+          password,
+        },
+      },
+    });
   };
   return (
- <div className="min-h-screen  overflow-hidden flex items-start bg-[#f3f4fb] px-[80px] pt-[10px] font-['Archivo',Helvetica] gap-[80px]">
-  <Card className="w-[480px] max-h-[700px] bg-white rounded-[15px] border-none shadow-lg ml-[80px] my-[20px]">
-        <CardHeader className="flex flex-col items-center gap-[15px] p-[30px] pb-0">
-          <img
-            src={logo}
-            alt="Logo"
-            className="w-[70px] h-[70px] rounded-[15px]"
-          />
-          <CardTitle className="whitespace-nowrap font-['Archivo',Helvetica] font-normal text-[#1f2511] text-[26px] text-center tracking-[0] leading-normal mb-[30px]">
-            Connectez-vous à votre compte
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent className="p-[30px] pt-0">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-[45px]">
-            <div className="flex flex-col gap-[30px]">
-              <InputWithLabel
-                label="Adresse mail"
-                name="email"
-                type="email"
-                placeholder="example@example.com"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-              <InputWithLabel
-                label="Mot de passe"
-                name="password"
-                type="password"
-                placeholder="**********"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-
-               <div className="flex items-center justify-between">
-                <div className="inline-flex items-center gap-2.5">
-                  <Checkbox
-                    id="stay-connected"
-                    checked={stayConnected}
-                    onCheckedChange={(checked) => setStayConnected(checked === true)}
-                  />
-                  <label htmlFor="stay-connected" className="text-sm cursor-pointer">
-                    Rester connecté
-                  </label>
+    <div className="h-screen flex items-stretch justify-between bg-background px-12 py-10">
+      <div className="w-[50%] flex items-center justify-center px-24">
+        <Card className="flex flex-col align-center justify-center w-full shadow-none border-0 py-12 px-4">
+          <CardHeader className="flex flex-col items-center gap-7 mb-6">
+            <img
+              src={logo}
+              alt="Logo"
+              className="w-[70px] h-[70px] rounded-lg"
+            />
+            <CardTitle className="whitespace-nowrap font-['Archivo',Helvetica] font-normal text-[#1f2511] text-[1.7rem] text-center">
+              Connectez-vous à votre compte
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-[45px]">
+              <div className="flex flex-col gap-[30px]">
+                <InputWithLabel
+                  label="Adresse mail"
+                  name="email"
+                  type="email"
+                  placeholder="example@example.com"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="!text-base font-normal !bg-transparent !shadow-none w-full"
+                />
+                <InputWithLabel
+                  label="Mot de passe"
+                  name="password"
+                  type="password"
+                  placeholder="**********"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="!text-base font-normal !bg-transparent !shadow-none"
+                />
+                <div className="flex items-center justify-between">
+                  <div className="inline-flex items-center gap-2.5">
+                    <Checkbox
+                      id="stay-connected"
+                      checked={stayConnected}
+                      onCheckedChange={(checked) =>
+                        setStayConnected(checked === true)
+                      }
+                      className="w-5 h-5 rounded-none bg-gray-300 border-none checked:bg-[#1f2511] transition-all"
+                    />
+                    <label
+                      htmlFor="stay-connected"
+                      className="text-sm cursor-pointer"
+                    >
+                      Rester connecté
+                    </label>
+                  </div>
+                  <button type="button" className="text-sm hover:underline">
+                    Mot de passe oublié ?
+                  </button>
                 </div>
-                <button type="button" className="text-sm hover:underline">
-                  Mot de passe oublié ?
-                </button>
-              </div> 
-            </div>
+              </div>
+              <Button
+                type="submit"
+                className="w-full bg-[#1f2511] py-7 rounded-lg font-['Archivo',Helvetica] font-light text-lg"
+              >
+                Me connecter
+              </Button>
+            </form>
 
-            <Button 
-              type="submit" 
-              className="w-full bg-[#1f2511] hover:bg-[#2a3217] py-5 rounded-[10px] font-['Archivo',Helvetica] font-medium text-lg"
-            >
-              Me connecter
-            </Button>
-          </form>
-
-          <p className="text-center text-sm mt-[45px] font-['Archivo',Helvetica] font-normal text-[#1f2511]">
-            Pas encore de compte ?{" "}
-            <button
-              type="button"
-              className="hover:underline bg-transparent border-none p-0 cursor-pointer font-['Archivo',Helvetica] font-normal text-[#1f2511]"
-            >
-              Contactez-nous
-            </button>
-          </p>
-        </CardContent>
-      </Card>
-        {/* Colonne droite : image */}
-      <img
-        src={iconImage} 
-        alt="Accueil NextOne"
-        className="w-[500px] h-[655px] rounded-[15px] object-cover"
-      />
+            <p className="text-center text-sm mt-[45px] font-['Archivo',Helvetica] font-normal text-[#1f2511]">
+              Pas encore de compte ?{" "}
+              <button
+                type="button"
+                className="hover:underline bg-transparent border-none p-0 cursor-pointer font-['Archivo',Helvetica] font-normal text-[#1f2511]"
+              >
+                Contactez-nous
+              </button>
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      <div className="w-[50%] flex items-center justify-center pl-24 overflow-hidden">
+        <img
+          src="/login-picture.jpg"
+          alt="Accueil NextOne"
+          className="w-[100%] h-full object-cover rounded-lg"
+        />
+      </div>
     </div>
   );
-};
+}

@@ -5,6 +5,7 @@ import { MdRoomService } from "react-icons/md";
 import { IoPerson } from "react-icons/io5";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { IoIosSettings } from "react-icons/io";
+import { useAuth } from "@/context/AuthContext";
 
 export type DashboardMenuItem = {
   name: string;
@@ -13,6 +14,8 @@ export type DashboardMenuItem = {
 };
 
 export default function DashboardLayout() {
+  const { user, logout } = useAuth();
+
   const dashboardMenu: DashboardMenuItem[] = [
     {
       name: "Accueil",
@@ -37,7 +40,7 @@ export default function DashboardLayout() {
   ];
 
   const dashboardUserSettingsMenuItem: DashboardMenuItem = {
-    name: "Paramètres utilisateur",
+    name: `${user?.firstName} ${user?.lastName}`,
     path: "/dashboard/user-settings",
     icon: <IoPerson size="1.2rem" />,
   };
@@ -75,7 +78,8 @@ export default function DashboardLayout() {
         </ul>
         <DashboardMenuTooltip
           item={dashboardUserSettingsMenuItem}
-          isProfileTooltip
+          user={user}
+          logout={logout}
         />
       </div>
       <div className="flex-1 p-8 overflow-y-auto flex flex-col justify-start items-start">
