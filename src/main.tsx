@@ -13,7 +13,7 @@ export const client = new ApolloClient({
   cache: new InMemoryCache({
     addTypename: false,
   }),
-  uri: "http://localhost:4005/graphql",
+  uri: process.env.VITE_API_URL,
 });
 
 client
