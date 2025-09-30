@@ -9,29 +9,30 @@ import {
 import { router } from "./routes/routes";
 import { TicketProvider } from "./context/useContextTicket";
 
+const uri = import.meta.env.DEV
+  ? "http://localhost:4005/graphql"
+  : "https://david4.wns.wilders.dev/graphql";
+
 export const client = new ApolloClient({
   cache: new InMemoryCache({
     addTypename: false,
   }),
-  uri: process.env.VITE_API_URL,
+  uri: uri,
 });
 
 client
   .query({
     query: gql`
-      query IntrospectionQuery {
-        __schema {
-          types {
-            name
-            kind
-          }
+      query Companies {
+        companies {
+          address
+          city
         }
       }
     `,
   })
   .then((response) => {
-    console.log("GraphQL API is reachable with response.", response);
-    console.log("Introspection response:", response.data.__schema.types);
+    console.log("GraphQL API is reachable. Response:", response);
   })
   .catch((error) => console.error(error));
 
