@@ -1,5 +1,9 @@
 import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import InputWithLabel from "@/components/dashboard/InputWithLabel";
+import { Button } from "@/components/ui/button";
+import UserInformationsForm from "@/components/dashboard/settings/forms/user/UserInformationsForm";
+import UserProfilePictureForm from "@/components/dashboard/settings/forms/user/UserProfilePictureForm";
 
 type TabEnum = "user" | "company";
 
@@ -17,7 +21,7 @@ export default function SettingsPage() {
           className="w-full"
           onValueChange={(value) => setCurrentTab(value as TabEnum)}
         >
-          <TabsList className="mb-4 gap-4">
+          <TabsList className="mb-8 gap-4">
             <TabsTrigger value="user">
               Informations de l'utilisateur
             </TabsTrigger>
@@ -28,13 +32,26 @@ export default function SettingsPage() {
             <TabsTrigger value="users">Gestion des utilisateurs</TabsTrigger>
           </TabsList>
           <TabsContent value="user">
-            <div className="flex flex-col gap-4 h-full justify-start items-start px-4">
-              <p>Nom</p>
-              <p>Prénom</p>
-              <p>Adresse e-mail</p>
-              <p>Numéro de téléphone</p>
-              <p>Mot de passe</p>
-              <p>Photo de profil</p>
+            <div className="flex gap-24 h-full justify-start items-stretch px-4 mb-4">
+              <div className="flex flex-col gap-6 h-full justify-start items-start w-[50%]">
+                <UserInformationsForm />
+                <div className="flex gap-6 items-end justify-start mt-6">
+                  <InputWithLabel
+                    label="Mot de passe"
+                    name="password"
+                    type="password"
+                    placeholder="••••••••"
+                    required
+                    disabled
+                    value="••••••••"
+                    className="!text-base font-normal !bg-transparent !shadow-none w-full"
+                  />
+                  <Button>Réinitialiser le mot de passe</Button>
+                </div>
+              </div>
+              <div className="flex flex-col gap-4 h-full justify-start items-start w-[50%]">
+                <UserProfilePictureForm />
+              </div>
             </div>
           </TabsContent>
           <TabsContent value="company">
