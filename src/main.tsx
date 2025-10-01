@@ -23,11 +23,8 @@ const httpLink = new HttpLink({
 });
 
 export const client = new ApolloClient({
-  cache: new InMemoryCache({
-    addTypename: true,
-  }),
+  cache: new InMemoryCache(),
   link: from([httpLink]),
-  credentials: "include",
 });
 
 client
