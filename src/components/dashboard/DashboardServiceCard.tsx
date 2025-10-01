@@ -43,6 +43,8 @@ import {
   TICKET_STATUS_LABELS, 
 } from "@/utils/ticketStatus";
 import { RiArrowUpDownLine } from "react-icons/ri";
+import { PaginationControls } from "@/components/ui/PaginationControls";
+import { ItemsPerPageSelector } from "@/components/dashboard/ItemsPerPageSelector";
 
 type ServiceTicket = {
   id: string;
@@ -73,6 +75,9 @@ export default function DashboardServiceCard({
 }) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
   const { toastSuccess, toastError } = useToast();
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
@@ -122,14 +127,14 @@ export default function DashboardServiceCard({
       console.error(error);
     }
   };
-  
+
   const handleTakeTicket = async (ticketId: string) => {
     try {
       await updateTicketStatus({
         variables: {
           updateTicketStatusData: {
             id: ticketId,
-            status: "INPROGRESS", // le ticket passe en cours
+            status: "INPROGRESS", 
           },
         },
       });
@@ -139,16 +144,6 @@ export default function DashboardServiceCard({
       toastError("Erreur lors de la prise du ticket");
       console.error(error);
     }
-  };
-
-
-  const handleFilterChange = (statusValue: string) => {
-    const current = table.getColumn("status")?.getFilterValue() as string[] | undefined;
-    const next = current?.includes(statusValue)
-      ? current.filter((v) => v !== statusValue)
-      : [...(current || []), statusValue];
-
-    table.getColumn("status")?.setFilterValue(next);
   };
 
   const columns = useMemo<ColumnDef<ServiceTicket>[]>(() => [
@@ -230,8 +225,9 @@ export default function DashboardServiceCard({
     },
   ], []);
 
+
   const table = useReactTable({
-    data: service.tickets,
+    data: service.tickets, 
     columns,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -244,12 +240,29 @@ export default function DashboardServiceCard({
     },
   });
 
+ 
+  const filteredRows = table.getFilteredRowModel().rows;
+  const paginatedRows = filteredRows.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const totalPages = Math.ceil(filteredRows.length / itemsPerPage);
+
+  const handleFilterChange = (statusValue: string) => {
+    const current = table.getColumn("status")?.getFilterValue() as string[] | undefined;
+    const next = current?.includes(statusValue)
+      ? current.filter((v) => v !== statusValue)
+      : [...(current || []), statusValue];
+
+    table.getColumn("status")?.setFilterValue(next);
+  };
+
   return (
     <>
       <Card key={service.id} className="w-full border border-gray-200 shadow-sm">
         <CardHeader className="flex items-center justify-between w-full">
           <div className="flex items-center gap-2">
-            <CardTitle className="text-xl font-light flex flex-col items-start justify-start">
+            <CardTitle className="text-xl font-bold flex-col items-start justify-start">
               {service.name}
             </CardTitle>
             <button
@@ -265,7 +278,6 @@ export default function DashboardServiceCard({
           </div>
           <StatusBadge label={service.status} />
         </CardHeader>
-
         {isOpen && (
           <CardContent className="px-[30px] pb-[32px]">
             <div className="flex items-center justify-between px-[24px] mb-4">
@@ -313,7 +325,6 @@ export default function DashboardServiceCard({
                 </Button>
               )}
             </div>
-
             <div className="px-[24px] pr-[40px]">
               <Table className="table-fixed">
                 <TableHeader className="bg-[#F8FAFB]">
@@ -347,7 +358,7 @@ export default function DashboardServiceCard({
             >
               <Table className="table-fixed">
                 <TableBody>
-                  {table.getRowModel().rows.map((row) => (
+                  {paginatedRows.map((row) => ( 
                     <TableRow key={row.id} className="bg-[#F8FAFB]">
                       {row.getVisibleCells().map((cell) => (
                         <TableCell key={cell.id} className="text-left">
@@ -362,11 +373,49 @@ export default function DashboardServiceCard({
                 </TableBody>
               </Table>
             </div>
+
+            <div className="flex flex-col sm:flex-row items-center justify-between px-[24px] pt-4 gap-4">
+              <ItemsPerPageSelector
+                value={itemsPerPage}
+                onChange={(val) => {
+                  setItemsPerPage(val);
+                  setCurrentPage(1); 
+                }}
+              />
+            <PaginationControls
+              paginationRange={getPaginationRange(currentPage, totalPages)} 
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={(page: number) => setCurrentPage(page)}
+            />
+            </div>
           </CardContent>
         )}
       </Card>
     </>
   );
+}
+
+function getPaginationRange(currentPage: number, totalPages: number): (number | string)[] {
+  const delta = 2;
+  const range: (number | string)[] = [];
+  const left = Math.max(2, currentPage - delta);
+  const right = Math.min(totalPages - 1, currentPage + delta);
+
+  range.push(1);
+  if (left > 2) {
+    range.push("...");
+  }
+  for (let i = left; i <= right; i++) {
+    range.push(i);
+  }
+  if (right < totalPages - 1) {
+    range.push("...");
+  }
+  if (totalPages > 1) {
+    range.push(totalPages);
+  }
+  return range;
 }
 
 function StatusCell({ status }: { status: ServiceTicket["status"] }) {
