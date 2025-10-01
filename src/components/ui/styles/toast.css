@@ -1,0 +1,50 @@
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(50px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+@keyframes slideFadeOut {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px) scale(0.95);
+  }
+}
+
+.custom-toast {
+  animation: slideFadeIn 0.6s ease-out forwards;
+}
+
+.custom-toast[data-state="closed"] {
+  animation: slideFadeOut 0.5s ease-in forwards;
+}
+
+/* ✅ Success */
+.custom-toast[data-type="success"] {
+  border-left: 4px solid #B5E303;
+}
+
+/* ❌ Error */
+.custom-toast[data-type="error"] {
+  border-left: 4px solid #FF4D4F;
+}
+
+/* ℹ️ Info */
+.custom-toast[data-type="info"] {
+  border-left: 4px solid #2F86EB;
+}
+
+/* ⚠️ Warning */
+/* .custom-toast[data-type="warning"] {
+  border-left: 4px solid #FFA500;
+} */
+

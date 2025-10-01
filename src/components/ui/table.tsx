@@ -1,5 +1,5 @@
+function Table({ className, ...props }: React.ComponentProps<"table">) {
 import * as React from "react";
-
 import { cn } from "@/lib/utils";
 
 function Table({
@@ -16,7 +16,7 @@ function Table({
       />
     );
   }
-
+  
   return (
     <div
       data-slot="table-container"
