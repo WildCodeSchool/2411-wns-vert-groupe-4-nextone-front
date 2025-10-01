@@ -9,6 +9,7 @@ import {
   InMemoryCache,
 } from "@apollo/client";
 import { router } from "./routes/routes";
+import ToasterProvider from "./components/ui/toaster";
 import { TicketProvider } from "./context/useContextTicket";
 import AuthProvider from "./context/AuthContext";
 
@@ -49,6 +50,7 @@ createRoot(document.getElementById("root")!).render(
   <ApolloProvider client={client}>
     <AuthProvider>
       <TicketProvider>
+        <ToasterProvider />
         <RouterProvider router={router} />
       </TicketProvider>
     </AuthProvider>

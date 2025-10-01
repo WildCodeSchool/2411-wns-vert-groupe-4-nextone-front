@@ -1,5 +1,6 @@
 import * as React from "react";
 import * as DropdownMenuPrimitive from "@radix-ui/react-dropdown-menu";
+import { DropdownMenuLabel } from "@radix-ui/react-dropdown-menu";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -99,4 +100,5 @@ export {
   DropdownMenuSubContent,
   DropdownMenuSubTrigger,
   DropdownMenuRadioGroup,
+  DropdownMenuLabel,
 };
