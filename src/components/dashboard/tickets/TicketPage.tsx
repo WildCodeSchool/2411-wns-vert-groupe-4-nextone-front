@@ -56,15 +56,11 @@ export default function TicketPage() {
   const [isEditingComments, setIsEditingComments] = useState(false);
   const [comments, setComments] = useState("");
 
-  const {
-    data: ticketLogs,
-    loading: ticketLogsLoading,
-    error: ticketLogsError,
-  } = useQuery(GET_TICKET_LOGS, {
+  const { data: ticketLogs } = useQuery(GET_TICKET_LOGS, {
     variables: { field: { ticketId: id } },
   });
 
-  const ticketLogSentence = (log: any) => {
+  const ticketLogSentence = (log: { status: string }) => {
     switch (log.status) {
       case "CREATED":
         return `Ticket créé`;
@@ -163,46 +159,56 @@ export default function TicketPage() {
             </h2>
             <div className="flex flex-col items-start justify-start w-full h-full overflow-y-auto">
               {ticketLogs &&
-                ticketLogs.ticketLogsByProperty.map((log: any, idx: number) => {
-                  const isLast =
-                    idx === ticketLogs.ticketLogsByProperty.length - 1;
-                  return (
-                    <div
-                      key={log.id}
-                      className={`flex flex-row items-center justify-between p-4 w-full text-sm ${
-                        !isLast ? "border-b-2 border-muted" : ""
-                      }`}
-                    >
-                      <div className="flex flex-row items-center justify-start mr-4 gap-3">
-                        <img
-                          src="/avatar-example.jpg"
-                          alt=""
-                          className="w-7 h-7 rounded-full"
-                        />
-                        {log.manager ? (
-                          <p className="mr-4 font-medium">
-                            {log.manager.firstName} {log.manager.lastName}
-                          </p>
-                        ) : (
-                          <p className="mr-4 font-medium">Système</p>
-                        )}
-                        <p className="font-light">{ticketLogSentence(log)}</p>
+                ticketLogs.ticketLogsByProperty.map(
+                  (
+                    log: {
+                      id: string;
+                      status: string;
+                      manager: { firstName: string; lastName: string };
+                      createdAt: string;
+                    },
+                    idx: number
+                  ) => {
+                    const isLast =
+                      idx === ticketLogs.ticketLogsByProperty.length - 1;
+                    return (
+                      <div
+                        key={log.id}
+                        className={`flex flex-row items-center justify-between p-4 w-full text-sm ${
+                          !isLast ? "border-b-2 border-muted" : ""
+                        }`}
+                      >
+                        <div className="flex flex-row items-center justify-start mr-4 gap-3">
+                          <img
+                            src="/avatar-example.jpg"
+                            alt=""
+                            className="w-7 h-7 rounded-full"
+                          />
+                          {log.manager ? (
+                            <p className="mr-4 font-medium">
+                              {log.manager.firstName} {log.manager.lastName}
+                            </p>
+                          ) : (
+                            <p className="mr-4 font-medium">Système</p>
+                          )}
+                          <p className="font-light">{ticketLogSentence(log)}</p>
+                        </div>
+                        <p className="font-light text-xs text-muted-foreground ml-4">
+                          {new Date(log.createdAt).toLocaleDateString("fr-FR", {
+                            day: "numeric",
+                            month: "numeric",
+                            year: "2-digit",
+                          })}
+                          <br />
+                          {new Date(log.createdAt).toLocaleTimeString("fr-FR", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
+                        </p>
                       </div>
-                      <p className="font-light text-xs text-muted-foreground ml-4">
-                        {new Date(log.createdAt).toLocaleDateString("fr-FR", {
-                          day: "numeric",
-                          month: "numeric",
-                          year: "2-digit",
-                        })}
-                        <br />
-                        {new Date(log.createdAt).toLocaleTimeString("fr-FR", {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
-                      </p>
-                    </div>
-                  );
-                })}
+                    );
+                  }
+                )}
             </div>
           </div>
           <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full h-[55%]">
