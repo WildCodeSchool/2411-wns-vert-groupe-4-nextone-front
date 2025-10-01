@@ -31,7 +31,7 @@ export function TicketActionMenu({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
-         <DropdownMenuItem onClick={() => navigate(`/tickets/${ticketId}/edit`)}>
+         <DropdownMenuItem onClick={() => navigate(`/dashboard/tickets/${ticketId}`)}>
           {/* redirection to ticketpage edit */}
           <Pencil className="w-4 h-4 mr-2" />
           Modifier
