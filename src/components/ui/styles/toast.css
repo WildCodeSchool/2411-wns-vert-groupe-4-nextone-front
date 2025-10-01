@@ -28,3 +28,23 @@
   animation: slideFadeOut 0.5s ease-in forwards;
 }
 
+/* ✅ Success */
+.custom-toast[data-type="success"] {
+  border-left: 4px solid #B5E303;
+}
+
+/* ❌ Error */
+.custom-toast[data-type="error"] {
+  border-left: 4px solid #FF4D4F;
+}
+
+/* ℹ️ Info */
+.custom-toast[data-type="info"] {
+  border-left: 4px solid #2F86EB;
+}
+
+/* ⚠️ Warning */
+/* .custom-toast[data-type="warning"] {
+  border-left: 4px solid #FFA500;
+} */
+
