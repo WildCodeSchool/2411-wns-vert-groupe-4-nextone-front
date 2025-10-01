@@ -23,7 +23,7 @@ const httpLink = new HttpLink({
 
 export const client = new ApolloClient({
   cache: new InMemoryCache({
-    addTypename: false,
+    addTypename: true,
   }),
   link: from([httpLink]),
   credentials: "include",
@@ -39,6 +39,7 @@ client
         }
       }
     `,
+    fetchPolicy: "network-only",
   })
   .then((response) => {
     console.log("GraphQL API is reachable. Response:", response);
