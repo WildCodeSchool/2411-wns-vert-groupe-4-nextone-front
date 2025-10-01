@@ -52,7 +52,9 @@ export default function DashboardMenuTooltip({
               <p>Administrateur</p>
             </DropdownMenuLabel>
             <DropdownMenuGroup>
-              <DropdownMenuItem>Paramètres</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate("/dashboard/settings")}>
+                Paramètres
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => handleLogout()}>
                 Déconnexion
               </DropdownMenuItem>

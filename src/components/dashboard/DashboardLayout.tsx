@@ -4,8 +4,7 @@ import { FaTicketSimple } from "react-icons/fa6";
 import { MdRoomService } from "react-icons/md";
 import { IoPerson } from "react-icons/io5";
 import { LuLayoutDashboard } from "react-icons/lu";
-import { IoIosSettings } from "react-icons/io";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 export type DashboardMenuItem = {
   name: string;
@@ -34,16 +33,11 @@ export default function DashboardLayout() {
       path: "/dashboard/tickets",
       icon: <FaTicketSimple size="1.2rem" />,
     },
-    {
-      name: "Paramètres de l'entreprise",
-      path: "/dashboard/company-settings",
-      icon: <IoIosSettings size="1.5rem" />,
-    },
   ];
 
   const dashboardUserSettingsMenuItem: DashboardMenuItem = {
     name: `${user?.firstName} ${user?.lastName}`,
-    path: "/dashboard/user-settings",
+    path: "/dashboard/settings",
     icon: <IoPerson size="1.2rem" />,
   };
 
