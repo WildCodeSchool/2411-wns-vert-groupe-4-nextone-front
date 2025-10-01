@@ -9,6 +9,7 @@ import DashboardServicesPage from "../pages/DashboardServicesPage.tsx";
 import TicketsDashboard from "../components/dashboard/tickets/TicketsDashboard.tsx";
 import TicketPage from "../components/dashboard/tickets/TicketPage.tsx";
 import TvPage from "../pages/TvPage.tsx";
+import SettingsPage from "@/pages/SettingsPage";
 
 export const router = createBrowserRouter([
   {
@@ -40,13 +41,16 @@ export const router = createBrowserRouter([
         element: <DashboardServicesPage />,
       },
       {
-
         path: "tickets",
         element: <TicketsDashboard />,
       },
       {
         path: "tickets/:id",
         element: <TicketPage />,
+      },
+      {
+        path: "/dashboard/settings",
+        element: <SettingsPage />,
       },
     ],
   },
