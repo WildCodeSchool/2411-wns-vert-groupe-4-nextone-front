@@ -46,6 +46,11 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  --color-status-done: var(--status-done);
+  --color-status-created: var(--status-created);
+  --color-status-canceled: var(--status-canceled);
+  --color-status-pending: var(--status-pending);
+  --color-status-inprogress: var(--status-inprogress);
 }
 
 :root {
@@ -81,6 +86,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --status-done: oklch(0.9612 0.0193 147.85);
+  --status-created: oklch(0.6861 0.129 149.18);
+  --status-canceled: oklch(0.398 0.07 227.392);
+  --status-pending: oklch(0.828 0.189 84.429);
+  --status-inprogress: oklch(0.769 0.188 70.08);
 }
 
 @layer base {

@@ -40,6 +40,7 @@ client
         }
       }
     `,
+    fetchPolicy: "network-only",
   })
   .then((response) => {
     console.log("GraphQL API is reachable. Response:", response);

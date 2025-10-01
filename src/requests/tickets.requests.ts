@@ -62,11 +62,3 @@ export const UPDATE_TICKET_STATUS = gql`
     }
   }
 `;
-
-export const DELETE_TICKET = gql`
-  mutation deleteTicket($id: ID!) {
-    deleteTicket(id: $id) {
-      id
-    }
-  }
-`;
