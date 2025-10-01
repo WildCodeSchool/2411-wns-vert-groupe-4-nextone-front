@@ -122,6 +122,25 @@ export default function DashboardServiceCard({
       console.error(error);
     }
   };
+  
+  const handleTakeTicket = async (ticketId: string) => {
+    try {
+      await updateTicketStatus({
+        variables: {
+          updateTicketStatusData: {
+            id: ticketId,
+            status: "INPROGRESS", // le ticket passe en cours
+          },
+        },
+      });
+      toastSuccess("Le ticket est maintenant en cours de traitement");
+      onTicketsUpdate?.();
+    } catch (error) {
+      toastError("Erreur lors de la prise du ticket");
+      console.error(error);
+    }
+  };
+
 
   const handleFilterChange = (statusValue: string) => {
     const current = table.getColumn("status")?.getFilterValue() as string[] | undefined;
@@ -193,7 +212,10 @@ export default function DashboardServiceCard({
         return (
           <div className="flex justify-end items-center gap-2">
             {ticket.status === "PENDING" && (
-              <Button className="bg-[#1f2511] hover:bg-[#2a3217] text-white">
+              <Button 
+              className="bg-[#1f2511] hover:bg-[#2a3217] text-white"
+               onClick={() => handleTakeTicket(ticket.id)}
+               >
                 Prendre le ticket
               </Button>
             )}

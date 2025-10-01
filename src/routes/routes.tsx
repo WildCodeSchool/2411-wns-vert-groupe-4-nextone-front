@@ -33,12 +33,14 @@ export const router = createBrowserRouter([
       {
         path: "services",
         element: <DashboardServicesPage />,
+      },
+      {
 
-        path: "/dashboard/tickets",
+        path: "tickets",
         element: <TicketsDashboard />,
       },
       {
-        path: "/dashboard/tickets/:id",
+        path: "tickets/:id",
         element: <TicketPage />,
       },
     ],

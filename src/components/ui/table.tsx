@@ -1,4 +1,3 @@
-function Table({ className, ...props }: React.ComponentProps<"table">) {
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
