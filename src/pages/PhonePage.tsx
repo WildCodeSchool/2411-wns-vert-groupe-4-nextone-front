@@ -1,8 +1,8 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import logo from "../assets/logo.png";
-import { useTicket } from "@/context/useContextTicket";
-  import { useSearchParams } from "react-router-dom";
+import { useTicket } from "../context/useContextTicket";
+import { useSearchParams } from "react-router-dom";
 
 export default function PhonePage() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -11,7 +11,7 @@ export default function PhonePage() {
     const ticket = ticketFromQr ? JSON.parse(ticketFromQr) : useTicket().ticket;
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-gray-50 p-4 space-y-8">
+    <div className="flex flex-col items-center min-h-screen bg-[#F3F4FB] p-4 space-y-8">
         <div className="w-full max-w-sm flex justify-between items-center bg-white px-4 rounded-lg shadow">
             <div className="flex items-center space-x-2">
                 <img src={logo} className="w-30 h-30 object-contain" alt="Logo" />
@@ -20,15 +20,15 @@ export default function PhonePage() {
                 {ticket.code}
             </div>
         </div>
-        <div className="w-full max-w-sm bg-white rounded-lg shadow p-6 text-center space-y-6">
-            <p className="text-gray-600 text-[20px]">Bonjour {ticket.firstName},</p>
-            <p className="text-gray-500 text-[13px]">
+        <div className="w-full max-w-sm bg-white rounded-lg shadow p-6 text-center space-y-2">
+            <p className="text-[20px] text-font-archivo">Bonjour {ticket.firstName},</p>
+            <p className="text-[#6D6D6D] mb-8 text-[13px]">
                 Vous êtes en attente au service {ticket.serviceName}.
             </p>
             <div className="relative w-64 h-64 mx-auto">
                 <svg className="transform -rotate-90 w-full h-full" viewBox="0 0 36 36">
-                    <circle className="text-gray-300" strokeWidth="4" stroke="currentColor" fill="transparent" r="16" cx="18" cy="18"/>
-                    <circle className="text-primary" strokeWidth="4" strokeDasharray="25, 100" strokeLinecap="round" stroke="currentColor" fill="transparent" r="16" cx="18" cy="18"/>
+                    <circle className="text-gray-300" strokeWidth="3" stroke="currentColor" fill="transparent" r="16" cx="18" cy="18"/>
+                    <circle className="text-primary" strokeWidth="3"  strokeDasharray="25, 100" strokeLinecap="butt" stroke="currentColor" fill="transparent" r="16" cx="18" cy="18"/>
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4">
                     <span className="text-gray-500 text-[12px] italic">Vous êtes</span>
@@ -45,8 +45,8 @@ export default function PhonePage() {
             </div>
         </div>
         <div className="relative w-full max-w-sm">
-            <Button className="w-full bg-primary text-white" onClick={() => setIsDrawerOpen(!isDrawerOpen)}>
-            Voir mes informations de ticket
+            <Button className="w-full bg-primary text-white text-[16px]" onClick={() => setIsDrawerOpen(!isDrawerOpen)}>
+                Voir mes informations de ticket
             </Button>
             {isDrawerOpen && (
             <div className="mt-4 w-full bg-gray-50 rounded-lg shadow-lg p-4 transition-all duration-300 ease-out">

@@ -9,3 +9,23 @@ export const GET_SERVICES = gql`
     }
   }
 `;
+
+export const GET_SERVICE = gql`
+  query Service($id: UUID!) {
+    service(id: $id) {
+      id
+      name
+      isGloballyActive
+      # 🔜 Quand le schéma exposera les tickets côté Service :
+      # tickets {
+      #   id
+      #   code
+      #   status
+      #   createdAt
+      #   updatedAt
+      #   firstName
+      #   lastName
+      # }
+    }
+  }
+`;
