@@ -14,3 +14,22 @@ export const GET_TICKET_LOGS = gql`
     }
   }
 `;
+
+//PAGINATION
+export const GET_TICKET_LOGS_PAGINATED = gql`
+  query GetTicketLogs($pagination: PaginationInput) {
+    ticketLogs(pagination: $pagination) {
+      id
+      ticket {
+        id
+        code
+      }
+      manager {
+        id
+        email
+      }
+      status
+      createdAt
+    }
+  }
+`;
