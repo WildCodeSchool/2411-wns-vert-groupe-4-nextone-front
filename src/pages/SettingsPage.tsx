@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
-import UserInformationsForm from "@/components/dashboard/settings/forms/user/UserInformationsForm";
-import UserProfilePictureForm from "@/components/dashboard/settings/forms/user/UserProfilePictureForm";
+import UserInformationsForm from "@/components/dashboard/settings/user/forms/UserInformationsForm";
+import UserProfilePictureForm from "@/components/dashboard/settings/user/forms/UserProfilePictureForm";
 
 type TabEnum = "user" | "company";
 
