@@ -1,9 +1,9 @@
-import ChooseService from "@/components/terminal/ChooseService";
-import PersonnalInformation from "@/components/terminal/PersonnalInformation";
-import ContactInfo from "@/components/terminal/ContactInformation";
-import SuccessTicketPage from "@/components/terminal/SuccessTicketPage";
-import PhonePage from "@/pages/PhonePage";
-import { Screen } from "@/types/terminal";
+import ChooseService from "./ChooseService";
+import PersonnalInformation from "./PersonnalInformation";
+import ContactInfo from "./ContactInformation";
+import SuccessTicketPage from "./SuccessTicket";
+import PhonePage from "../../pages/PhonePage";
+import { Screen } from "../../types/terminal";
 
 type ScreenComponentProps = {
     setCurrentScreen: (screen: Screen) => void;

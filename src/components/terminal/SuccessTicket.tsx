@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import CompanyIllustration from "../../common/terminal/CompanyIllustration";
 import success from "../../assets/success.png";
 import QRCode from "react-qr-code";
-import { useTicket } from "@/context/useContextTicket";
+import { useTicket } from "../../context/useContextTicket";
 
 function SuccessTicketPage({isScanned, onTimeout}: {isScanned: boolean; onTimeout: () => void;}) {
     const { ticket } = useTicket();
@@ -30,8 +30,8 @@ function SuccessTicketPage({isScanned, onTimeout}: {isScanned: boolean; onTimeou
                 {!isScanned && (
                 <>
                     <p className="text-xs md:text-[20px] font-medium text-center">
-                    Surveillez l’écran d’appel,<br></br> ou scannez ce QR code pour suivre la file<br></br>
-                    depuis votre téléphone :
+                        Surveillez l’écran d’appel,<br></br> ou scannez ce QR code pour suivre la file<br></br>
+                        depuis votre téléphone :
                     </p>
                     <QRCode value={qrValue} size={120} fgColor="#000000" />
                 </>
