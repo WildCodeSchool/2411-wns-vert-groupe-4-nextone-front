@@ -66,7 +66,7 @@ export function usePagination({
     skip,
     take,
     setCurrentPage,
-    paginationRange,
+    paginationRange, 
     pageSize,
   };
 }

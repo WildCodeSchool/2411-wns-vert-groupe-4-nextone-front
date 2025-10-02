@@ -37,6 +37,22 @@ export const TOGGLE_GLOBAL_ACCESS_SERVICE = gql`
   }
 `;
 
+// PAGINATION
+export const GET_SERVICES_PAGINATED = gql`
+  query GetServices($pagination: PaginationInput) {
+    services(pagination: $pagination) {
+      id
+      name
+      createdAt
+      updatedAt
+      company {
+        id
+        name
+      }
+    }
+  }
+`;
+
         
 
 

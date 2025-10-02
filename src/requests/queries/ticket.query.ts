@@ -39,3 +39,49 @@ export const GET_TICKET_INFOS = gql`
     }
   }
 `;
+
+export const UPDATE_TICKET = gql`
+  mutation UpdateTicket($updateTicketData: UpdateTicketInput!) {
+    updateTicket(data: $updateTicketData) {
+      id
+      firstName
+      lastName
+      email
+      phone
+      status
+    }
+  }
+`;
+
+export const UPDATE_TICKET_STATUS = gql`
+  mutation Mutation($updateTicketStatusData: UpdateStatusTicketInput!) {
+    updateTicketStatus(data: $updateTicketStatusData) {
+      id
+      status
+      code
+    }
+  }
+`;
+//PAGINATION 
+
+export const GET_TICKETS_PAGINATED = gql`
+  query GetTicketsPaginated($pagination: PaginationInput) {
+    tickets(pagination: $pagination) {
+      id
+      firstName
+      code
+      createdAt
+      email
+      lastName
+      phone
+      status
+      updatedAt
+      service {
+        id
+        name
+      }
+    }
+  }
+`;
+
+
