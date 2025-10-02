@@ -35,7 +35,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { TicketActionMenu } from "./TicketActionMenu";
 import { useMutation } from "@apollo/client";
-import { UPDATE_TICKET_STATUS } from "@/requests/tickets.requests";
+import { UPDATE_TICKET_STATUS } from "@/requests/mutations/ticket.mutation";
 import { useToast } from "@/hooks/use-toast";
 import {
   TICKET_STATUS_OPTIONS,

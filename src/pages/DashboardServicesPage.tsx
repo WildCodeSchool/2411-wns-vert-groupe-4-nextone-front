@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
-import { GET_SERVICES } from "@/requests/services.requests";
-import { GET_TICKETS } from "@/requests/tickets.requests";
+import { GET_SERVICES } from "@/requests/queries/service.query";
+import { GET_TICKETS } from "@/requests/queries/ticket.query";
 
 import type { TicketStatus } from "@/utils/ticketStatus";
 

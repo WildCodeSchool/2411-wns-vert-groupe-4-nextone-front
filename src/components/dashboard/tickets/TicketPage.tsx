@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { IoIosArrowBack, IoIosMore } from "react-icons/io";
-import { GET_TICKET_INFOS } from "@/requests/tickets.requests";
+import { GET_TICKET_INFOS } from "@/requests/queries/ticket.query";
 import { useQuery } from "@apollo/client/react";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
@@ -9,7 +9,7 @@ import { MdRoomService } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaTicketSimple } from "react-icons/fa6";
-import { GET_TICKET_LOGS } from "@/requests/ticketLogs.requests";
+import { GET_TICKET_LOGS } from "@/requests/queries/ticketLogs.query";
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";

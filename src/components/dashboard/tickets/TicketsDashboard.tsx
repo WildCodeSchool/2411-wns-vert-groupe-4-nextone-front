@@ -1,4 +1,5 @@
-import { GET_TICKETS, UPDATE_TICKET_STATUS } from "@/requests/tickets.requests";
+import { UPDATE_TICKET_STATUS } from "@/requests/mutations/ticket.mutation";
+import { GET_TICKETS } from "@/requests/queries/ticket.query";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
 import {
