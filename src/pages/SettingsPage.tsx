@@ -4,6 +4,9 @@ import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
 import UserInformationsForm from "@/components/dashboard/settings/user/forms/UserInformationsForm";
 import UserProfilePictureForm from "@/components/dashboard/settings/user/forms/UserProfilePictureForm";
+import CompanyInformationsForm from "@/components/dashboard/settings/company/forms/CompanyInformationsForm";
+import CompanyLogoForm from "@/components/dashboard/settings/company/forms/CompanyLogoForm";
+import CompanyColorForm from "@/components/dashboard/settings/company/forms/CompanyColorForm";
 
 type TabEnum = "user" | "company";
 
@@ -54,12 +57,14 @@ export default function SettingsPage() {
             </div>
           </TabsContent>
           <TabsContent value="company">
-            <div className="flex flex-col gap-4 h-full justify-start items-start px-4">
-              <p>Logo de l'entreprise</p>
-              <p>Nom de l'entreprise</p>
-              <p>Adresse de l'entreprise</p>
-              <p>Numéro de téléphone de l'entreprise</p>
-              <p>Adresse e-mail de l'entreprise</p>
+            <div className="flex gap-24 h-full justify-start items-stretch px-4 mb-4">
+              <div className="flex flex-col gap-6 h-full justify-start items-start w-[50%]">
+                <CompanyInformationsForm />
+              </div>
+              <div className="flex flex-col gap-4 h-full justify-start items-start w-[50%]">
+                <CompanyLogoForm />
+                <CompanyColorForm />
+              </div>
             </div>
           </TabsContent>
           <TabsContent value="services">

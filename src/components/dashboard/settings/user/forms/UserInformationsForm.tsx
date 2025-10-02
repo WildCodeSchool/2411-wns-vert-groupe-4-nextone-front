@@ -1,7 +1,7 @@
 import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
-import { UPDATE_USER_INFORMATIONS } from "@/requests/queries/settings.query";
+import { UPDATE_USER_INFORMATIONS } from "@/requests/mutations/settings.mutation";
 import { useMutation } from "@apollo/client/react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
