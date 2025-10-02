@@ -1,13 +1,13 @@
 import { useState } from "react";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { TicketInfo, useTicket } from "@/context/useContextTicket";
+import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { TicketInfo, useTicket } from "../../context/useContextTicket";
 import NavigationActions from "../../common/terminal/NavigationActions";
 import CompanyIllustration from "../../common/terminal/CompanyIllustration";
 import Stepper from "../../common/terminal/Stepper";
 import { useQuery } from "@apollo/client";
-import { GET_SERVICES } from "@/requests/queries/service.query";
-import { Service, ChooseServiceProps } from "@/types/terminal";
-import { LoadingSpinner, Message } from "@/utils/message";
+import { GET_SERVICES } from "../../requests/queries/service.query";
+import { Service, ChooseServiceProps } from "../../types/terminal";
+import { LoadingSpinner, Message } from "../../utils/message";
 
 function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
   const { ticket, setTicket } = useTicket();

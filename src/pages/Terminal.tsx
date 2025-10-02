@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import logo from "../assets/logo.png";
 import QRCode from "react-qr-code";
-import CompanyIllustration from "@/common/terminal/CompanyIllustration";
-import { getScreenComponent } from "@/components/terminal/Screens"; 
-import { useTicket } from "@/context/useContextTicket";
-import { emptyTicket } from "@/utils/constants/ticket";
-import { Screen } from "@/types/terminal";
+import CompanyIllustration from "../common/terminal/CompanyIllustration";
+import { getScreenComponent } from "../components/terminal/Screens"; 
+import { useTicket } from "../context/useContextTicket";
+import { emptyTicket } from "../utils/constants/ticket";
+import { Screen } from "../types/terminal";
 
 function Terminal() {
   const [searchParams] = useSearchParams();
@@ -60,7 +60,7 @@ function Terminal() {
           prendre un ticket depuis votre smartphone
         </p>
         <div className="mt-2">
-          <QRCode value={`${window.location.origin}/terminal?screen=chooseService&scanned=true`} size={100} fgColor="#000000"/>
+          <QRCode data-testid="qr-code" value={`${window.location.origin}/terminal?screen=chooseService&scanned=true`} size={100} fgColor="#000000"/>
         </div>
       </div>
       <CompanyIllustration />

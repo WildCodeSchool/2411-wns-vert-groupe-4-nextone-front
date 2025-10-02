@@ -4,11 +4,11 @@ import NavigationActions from "../../common/terminal/NavigationActions";
 import CompanyIllustration from "../../common/terminal/CompanyIllustration";
 import Stepper from "../../common/terminal/Stepper";
 import InputWithLabel from "../dashboard/InputWithLabel";
-import { useTicket } from "@/context/useContextTicket";
+import { useTicket } from "../../context/useContextTicket";
 import { ChooseServiceProps, ContactInfo } from "@/types/terminal";
 import { useMutation } from "@apollo/client";
-import { CREATE_TICKET } from "@/requests/mutations/ticket.mutation";
-import { contactInfo } from "@/utils/validations/personnalInformationValidation";
+import { CREATE_TICKET } from "../../requests/mutations/ticket.mutation";
+import { contactInfo } from "../../utils/validations/personnalInformationValidation";
 
 function ContactInformation({ onBack, onNext, onCancel }: ChooseServiceProps) {
   const { ticket, setTicket } = useTicket();
@@ -64,7 +64,7 @@ function ContactInformation({ onBack, onNext, onCancel }: ChooseServiceProps) {
           <Stepper currentStep={3}/>
         </div>
         <div className="flex-1 flex flex-col justify-center">
-          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 md:gap-6">
+          <form data-testid="form" onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 md:gap-6">
             <InputWithLabel label="Votre adresse mail ?" type="email" placeholder="Adresse mail" {...register("email")} error={errors.email?.message}/>
             <InputWithLabel label="Votre numéro de téléphone ?" type="tel" placeholder="Numéro de téléphone" {...register("phone")} error={errors.phone?.message}/>
             <div className="flex flex-col items-start mt-2">

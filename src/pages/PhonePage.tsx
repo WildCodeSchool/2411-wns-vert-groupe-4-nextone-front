@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../components/ui/button";
 import logo from "../assets/logo.png";
-import { useTicket } from "@/context/useContextTicket";
+import { useTicket } from "../context/useContextTicket";
 import { useSearchParams } from "react-router-dom";
 
 export default function PhonePage() {
@@ -46,7 +46,7 @@ export default function PhonePage() {
         </div>
         <div className="relative w-full max-w-sm">
             <Button className="w-full bg-primary text-white text-[16px]" onClick={() => setIsDrawerOpen(!isDrawerOpen)}>
-            Voir mes informations de ticket
+                Voir mes informations de ticket
             </Button>
             {isDrawerOpen && (
             <div className="mt-4 w-full bg-gray-50 rounded-lg shadow-lg p-4 transition-all duration-300 ease-out">
