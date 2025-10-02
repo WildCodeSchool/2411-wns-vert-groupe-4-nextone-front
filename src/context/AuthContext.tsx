@@ -8,6 +8,8 @@ type CheckToken = {
     firstName: string;
     id: string;
     lastName: string;
+    companyId: string;
+    role: string;
   };
 };
 
@@ -47,11 +49,19 @@ function AuthProvider({ children }: Readonly<PropsWithChildren>) {
     getInfos: async () => {
       await checkToken({
         onCompleted(data) {
+          console.log(data);
+          if (!data.checkToken) {
+            setUser(null);
+            localStorage.removeItem("user");
+            return;
+          }
           const user = {
             email: data.checkToken.email ?? "",
             firstName: data.checkToken.firstName ?? "",
             id: data.checkToken.id ?? "",
             lastName: data.checkToken.lastName ?? "",
+            companyId: data.checkToken.companyId ?? "",
+            role: data.checkToken.role ?? "",
           };
           setUser(user);
           localStorage.setItem("user", JSON.stringify(user));

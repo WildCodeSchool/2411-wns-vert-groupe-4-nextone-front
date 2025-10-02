@@ -41,7 +41,6 @@ export default function SettingsPage() {
                     name="password"
                     type="password"
                     placeholder="••••••••"
-                    required
                     disabled
                     value="••••••••"
                     className="!text-base font-normal !bg-transparent !shadow-none w-full"
