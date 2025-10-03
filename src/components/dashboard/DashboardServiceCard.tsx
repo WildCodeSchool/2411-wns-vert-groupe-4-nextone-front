@@ -47,6 +47,7 @@ import { PaginationControls } from "@/components/ui/PaginationControls";
 import { ItemsPerPageSelector } from "@/components/dashboard/ItemsPerPageSelector";
 import { nextCreatedCursor, resetCursor } from "@/utils/pagination";
 import { usePagination } from "@/hooks/usePagination"; 
+import { GetTicketsPaginatedResult } from "@/types/tickets.types";
 
 
 type ServiceTicket = {
@@ -63,7 +64,6 @@ type DashboardService = {
   id: string;
   name: string;
   status: "Fluide" | "En attente" | "En cours";
-  tickets: ServiceTicket[];
 };
 
 export default function DashboardServiceCard({
@@ -107,14 +107,26 @@ export default function DashboardServiceCard({
 
     return { formatted, diffMinutes };
   }
-  const { data, loading, fetchMore, refetch } = useQuery(GET_TICKETS_PAGINATED, {
-    variables: {
-      pagination: { limit: itemsPerPage, order: "ASC", created: createdCursor },
-    },
-    fetchPolicy: "cache-and-network",
+
+  console.log("📦 Variables pagination envoyées :", {
+    limit: itemsPerPage,
+    order: "ASC",
+    created: createdCursor.toISOString(),
   });
 
-  const rawTickets = useMemo(() => data?.tickets ?? [], [data]);
+ const { data, loading, fetchMore, refetch } = useQuery<GetTicketsPaginatedResult>(
+    GET_TICKETS_PAGINATED,
+    {
+      variables: {
+        fields: { serviceId: service.id }, 
+      pagination: { limit: itemsPerPage, order: "ASC", cursor: createdCursor },
+      },
+      fetchPolicy: "cache-and-network",
+    }
+  );
+
+const rawTickets: RawTicket[] = useMemo(() => (data?.ticketsByProperties?.items ?? []) as RawTicket[], [data]);
+ 
 
   type RawTicket = {
     id: string;
@@ -123,15 +135,27 @@ export default function DashboardServiceCard({
     firstName?: string;
     status: string;
     createdAt: string;
-    service?: { id: string };
+    service?: { 
+      id: string; 
+      name?: string
+    };
+   totalCount?: number;
   };
 
   const [localTickets, setLocalTickets] = useState<ServiceTicket[]>([]);
 
   useEffect(() => {
-   
+    console.log("Service ID:", service.id);
+    console.log("Tickets reçus (bruts):", rawTickets); 
     const updated = (rawTickets as RawTicket[])
-    .filter((t) => t.service?.id === service.id && t.status !== "ARCHIVED")
+    
+    .filter((t) => {
+       if (!t.service || !t.service.id) return false;
+      const match = t.service.id === service.id; 
+      const notArchived = t.status !== "ARCHIVED";
+   
+      return match && notArchived;
+    })
     .map((t) => {
     const { formatted, diffMinutes } = calculateWaitTime(t.createdAt);
     return {
@@ -144,27 +168,33 @@ export default function DashboardServiceCard({
     waitTimeMinutes: diffMinutes,
     };
     });
+
+    console.log("Tickets filtrés :", updated); 
     setLocalTickets(updated);
   }, [rawTickets, service.id]);
 
   const [currentPage, setCurrentPage] = useState(1);
 
-  const loadNext = async () => {
-    if (!rawTickets.length) return; 
-    const last = rawTickets[rawTickets.length - 1]; 
-    const nextCursor = nextCreatedCursor(last.createdAt);
+ const loadNext = async () => {
+  if (!rawTickets.length) return;
+  const last = rawTickets[rawTickets.length - 1 ];
+  const nextCursor = nextCreatedCursor(last.createdAt);
 
-    cursorStack.current.push(createdCursor); 
-    setCreatedCursor(nextCursor);
+  const result = await fetchMore({
+    variables: {
+      fields: { serviceId: service.id }, 
+      pagination: { limit: itemsPerPage, order: "ASC", cursor: nextCursor },
+    },
+  });
 
-    await fetchMore({
-      variables: {
-        pagination: { limit: itemsPerPage, order: "ASC", created: nextCursor },
-      },
-    });
+const nextItems = (result?.data?.ticketsByProperties?.items as unknown) as RawTicket[];
+
+  if (nextItems.length > 0) {
+    cursorStack.current.push(createdCursor);
     setCreatedCursor(nextCursor);
     setCurrentPage((p) => p + 1);
-  };
+  }
+};
 
   const loadPrev = async () => {
     if (cursorStack.current.length === 0) return;
@@ -172,16 +202,17 @@ export default function DashboardServiceCard({
 
     setCreatedCursor(prevCursor);
     await refetch({
-      pagination: { limit: itemsPerPage, order: "ASC", created: prevCursor },
+       fields: { serviceId: service.id }, 
+    pagination: { limit: itemsPerPage, order: "ASC", cursor: prevCursor },
     });
     setCurrentPage((p) => Math.max(1, p - 1));
   };
 
   const { paginationRange, totalPages } = usePagination({
-    totalCount: rawTickets.length, 
-    pageSize: itemsPerPage,
-    currentPage,
-  });
+  totalCount: data?.ticketsByProperties?.totalCount ?? 0, 
+  pageSize: itemsPerPage,
+  currentPage,
+});
 
 
   const handleArchive = async (ticketId: string) => {
