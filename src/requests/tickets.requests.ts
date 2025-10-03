@@ -62,24 +62,27 @@ export const UPDATE_TICKET_STATUS = gql`
     }
   }
 `;
-//PAGINATION 
 
+//PAGINATION 
 export const GET_TICKETS_PAGINATED = gql`
-  query GetTicketsPaginated($pagination: PaginationInput) {
-    tickets(pagination: $pagination) {
-      id
-      firstName
-      code
-      createdAt
-      email
-      lastName
-      phone
-      status
-      updatedAt
-      service {
+  query GetTicketsPaginated($fields: TicketPropertiesInput, $pagination: PaginationInput) {
+    ticketsByProperties(fields: $fields, pagination: $pagination) {
+      items {
         id
-        name
+        firstName
+        code
+        createdAt
+        email
+        lastName
+        phone
+        status
+        updatedAt
+        service {
+          id
+          name
+        }
       }
+      totalCount
     }
   }
 `;
