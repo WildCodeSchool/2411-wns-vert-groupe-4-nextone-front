@@ -55,13 +55,15 @@ export function PaginationControls({
             key={page}
             size="sm"
             className={`w-8 h-8 p-0 text-sm ${
-              page === currentPage && page === 1
+              page === currentPage
                 ? "bg-[#B5E303] text-black hover:bg-[#a5d102]" 
-                : page === currentPage
-                ? "bg-primary text-white" 
                 : "bg-transparent text-gray-700 hover:bg-muted"
             }`}
-  onClick={() => onPageChange(Number(page))}
+  onClick={() => {
+                if (typeof page === "number" && !isNaN(page)) {
+                  onPageChange(page);
+                }
+              }}
 >
   {page}
 </Button>

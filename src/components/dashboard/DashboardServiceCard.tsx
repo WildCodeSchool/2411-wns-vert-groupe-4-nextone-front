@@ -151,10 +151,8 @@ const rawTickets: RawTicket[] = useMemo(() => (data?.ticketsByProperties?.items 
     
     .filter((t) => {
        if (!t.service || !t.service.id) return false;
-      const match = t.service.id === service.id; 
-      const notArchived = t.status !== "ARCHIVED";
-   
-      return match && notArchived;
+      return t.service.id === service.id;
+
     })
     .map((t) => {
     const { formatted, diffMinutes } = calculateWaitTime(t.createdAt);
@@ -177,8 +175,19 @@ const rawTickets: RawTicket[] = useMemo(() => (data?.ticketsByProperties?.items 
 
  const loadNext = async () => {
   if (!rawTickets.length) return;
+
   const last = rawTickets[rawTickets.length - 1 ];
-  const nextCursor = nextCreatedCursor(last.createdAt);
+ if (!last) return;
+const nextCursor = nextCreatedCursor(last.createdAt);
+
+ console.log("Passage à la page suivante :", {
+    currentPage,
+    totalPages,
+    nextCursor,
+    lastTicketId: last.id,
+    lastCreatedAt: last.createdAt,
+  });
+
 
   const result = await fetchMore({
     variables: {
@@ -212,6 +221,14 @@ const nextItems = (result?.data?.ticketsByProperties?.items as unknown) as RawTi
   totalCount: data?.ticketsByProperties?.totalCount ?? 0, 
   pageSize: itemsPerPage,
   currentPage,
+  
+});
+
+console.log({
+  totalCount: data?.ticketsByProperties?.totalCount,
+  pageSize: itemsPerPage,
+  totalPages,
+  currentPage,
 });
 
 
@@ -222,8 +239,7 @@ const nextItems = (result?.data?.ticketsByProperties?.items as unknown) as RawTi
         variables: { updateTicketStatusData: { id: ticketId, status: archivedStatus } },
       });
       toastSuccess("Ticket archivé avec succès");
-      setLocalTickets((prev) => prev.filter((t) => t.id !== ticketId));
-
+    await refetch();
     } catch (error) {
       toastError("Erreur lors de l’archivage du ticket");
       console.error(error);

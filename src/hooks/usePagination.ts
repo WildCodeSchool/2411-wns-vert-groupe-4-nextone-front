@@ -1,21 +1,24 @@
-import { useState, useMemo } from "react";
+import { useMemo } from "react";
 
 export type UsePaginationProps = {
   totalCount: number; 
   pageSize?: number;  
   siblingCount?: number; 
-  currentPage?: number; 
+  currentPage: number; 
 };
 
 export function usePagination({
   totalCount,
   pageSize = 10,
   siblingCount = 1,
-  currentPage: initialPage = 1,
+  currentPage,
 }: UsePaginationProps) {
-  const [currentPage, setCurrentPage] = useState(initialPage);
 
-  const totalPages = Math.ceil(totalCount / pageSize);
+
+  // Calculate total pages
+   const totalPages = useMemo(() => {
+    return Math.max(1, Math.ceil((totalCount || 0) / pageSize));
+  }, [totalCount, pageSize]);
 
   const paginationRange = useMemo(() => {
     const totalPageNumbers = siblingCount * 2 + 5;
@@ -32,8 +35,9 @@ export function usePagination({
 
     const range: (number | string)[] = [];
 
-    if (!showLeftDots && showRightDots) {
-      for (let i = 1; i <= 3 + 2 * siblingCount; i++) {
+   if (!showLeftDots && showRightDots) {
+      const leftItemCount = 3 + 2 * siblingCount;
+      for (let i = 1; i <= leftItemCount; i++) {
         range.push(i);
       }
       range.push("...");
@@ -41,7 +45,8 @@ export function usePagination({
     } else if (showLeftDots && !showRightDots) {
       range.push(1);
       range.push("...");
-      for (let i = totalPages - (3 + 2 * siblingCount) + 1; i <= totalPages; i++) {
+      const rightItemCount = 3 + 2 * siblingCount;
+      for (let i = totalPages - rightItemCount + 1; i <= totalPages; i++) {
         range.push(i);
       }
     } else if (showLeftDots && showRightDots) {
@@ -52,6 +57,10 @@ export function usePagination({
       }
       range.push("...");
       range.push(totalPages);
+    } else {
+      for (let i = 1; i <= totalPages; i++) {
+        range.push(i);
+      }
     }
 
     return range;
@@ -61,11 +70,9 @@ export function usePagination({
   const take = pageSize;
 
   return {
-    currentPage,
     totalPages,
     skip,
     take,
-    setCurrentPage,
     paginationRange, 
     pageSize,
   };
