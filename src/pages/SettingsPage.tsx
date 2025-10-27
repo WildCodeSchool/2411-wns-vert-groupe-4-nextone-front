@@ -7,6 +7,9 @@ import UserProfilePictureForm from "@/components/dashboard/settings/user/forms/U
 import CompanyInformationsForm from "@/components/dashboard/settings/company/forms/CompanyInformationsForm";
 import CompanyLogoForm from "@/components/dashboard/settings/company/forms/CompanyLogoForm";
 import CompanyColorForm from "@/components/dashboard/settings/company/forms/CompanyColorForm";
+import ServicesManagementForm from "@/components/dashboard/settings/services/forms/ServicesManagementForm";
+import AddServiceDialog from "@/components/dashboard/settings/company/dialogs/AddServiceDialog";
+import SettingsHeader from "@/components/dashboard/settings/SettingsHeader";
 
 type TabEnum = "user" | "company";
 
@@ -24,19 +27,39 @@ export default function SettingsPage() {
           className="w-full"
           onValueChange={(value) => setCurrentTab(value as TabEnum)}
         >
-          <TabsList className="mb-8 gap-4">
-            <TabsTrigger value="user">
+          <TabsList className="mb-8 gap-4 h-fit">
+            <TabsTrigger
+              value="user"
+              className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+            >
               Informations de l'utilisateur
             </TabsTrigger>
-            <TabsTrigger value="company">
+            <TabsTrigger
+              value="company"
+              className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+            >
               Informations de l'entreprise
             </TabsTrigger>
-            <TabsTrigger value="services">Gestion des services</TabsTrigger>
-            <TabsTrigger value="users">Gestion des utilisateurs</TabsTrigger>
+            <TabsTrigger
+              value="services"
+              className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+            >
+              Gestion des services
+            </TabsTrigger>
+            <TabsTrigger
+              value="users"
+              className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+            >
+              Gestion des utilisateurs
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="user">
             <div className="flex gap-24 h-full justify-start items-stretch px-4 mb-4">
-              <div className="flex flex-col gap-6 h-full justify-start items-start w-[50%]">
+              <div className="flex flex-col gap-4 h-full justify-start items-start w-[50%]">
+                <SettingsHeader
+                  title="Modifier les informations de l'utilisateur"
+                  description="Vous pouvez modifier le nom, l'adresse e-mail et le numéro de téléphone de l'utilisateur."
+                />
                 <UserInformationsForm />
                 <div className="flex gap-6 items-end justify-start mt-6">
                   <InputWithLabel
@@ -46,12 +69,15 @@ export default function SettingsPage() {
                     placeholder="••••••••"
                     disabled
                     value="••••••••"
-                    className="!text-base font-normal !bg-transparent !shadow-none w-full"
                   />
                   <Button>Réinitialiser le mot de passe</Button>
                 </div>
               </div>
               <div className="flex flex-col gap-4 h-full justify-start items-start w-[50%]">
+                <SettingsHeader
+                  title="Personnaliser l'avatar de l'utilisateur"
+                  description="Vous pouvez personnaliser l'avatar de l'utilisateur en téléchargeant une nouvelle image."
+                />
                 <UserProfilePictureForm />
               </div>
             </div>
@@ -59,17 +85,25 @@ export default function SettingsPage() {
           <TabsContent value="company">
             <div className="flex gap-24 h-full justify-start items-stretch px-4 mb-4">
               <div className="flex flex-col gap-6 h-full justify-start items-start w-[50%]">
+                <SettingsHeader
+                  title="Modifier les informations de l'entreprise"
+                  description="Vous pouvez modifier le nom, l'adresse et les informations de contact de votre entreprise."
+                />
                 <CompanyInformationsForm />
               </div>
               <div className="flex flex-col gap-4 h-full justify-start items-start w-[50%]">
+                <SettingsHeader
+                  title="Personnaliser l'apparence de l'entreprise"
+                  description="Vous pouvez personnaliser le logo et les couleurs de votre entreprise pour refléter votre identité visuelle."
+                />
                 <CompanyLogoForm />
                 <CompanyColorForm />
               </div>
             </div>
           </TabsContent>
           <TabsContent value="services">
-            <div className="flex flex-col gap-4 h-full">
-              <p>Services de l'entreprise</p>
+            <div className="flex flex-col gap-4 h-full justify-start items-stretch px-4 mb-4">
+              <ServicesManagementForm />
             </div>
           </TabsContent>
           <TabsContent value="users">

@@ -82,7 +82,7 @@ export default function DashboardLayout() {
           logout={logout}
         />
       </div>
-      <div className="flex-1 p-8 overflow-y-auto flex flex-col justify-start items-start">
+      <div className="flex-1 p-8 overflow-y-auto flex flex-col justify-start items-start font-archivo">
         <Outlet />
       </div>
     </div>

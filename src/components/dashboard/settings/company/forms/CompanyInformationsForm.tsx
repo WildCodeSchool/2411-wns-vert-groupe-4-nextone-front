@@ -12,7 +12,7 @@ import * as yup from "yup";
 export default function CompanyInformationsForm() {
   const { user } = useAuth();
 
-  const companyId = user?.companyId || "ae57c731-d488-46e2-98c1-4c09c3dc4030";
+  const companyId = user?.companyId || "d2315259-5926-4f5b-8490-f01a983ad33d";
 
   const { data: companyData } = useQuery(GET_COMPANY_INFORMATIONS, {
     variables: { companyId: companyId },
@@ -172,7 +172,6 @@ export default function CompanyInformationsForm() {
           required
           disabled
           value={companyEmail}
-          className="!text-base font-normal !bg-transparent !shadow-none w-full"
         />
         <InputWithLabel
           label="Numéro de téléphone"
@@ -186,6 +185,7 @@ export default function CompanyInformationsForm() {
       <Button
         onClick={handleSubmit(onSubmit)}
         disabled={!isValid || !isDirty || updateLoading}
+        className="mt-2"
       >
         Enregistrer les informations de l'entreprise
       </Button>

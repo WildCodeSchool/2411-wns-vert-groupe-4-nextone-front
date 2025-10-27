@@ -97,12 +97,12 @@ export default function UserInformationsForm() {
         required
         disabled
         value={userEmail}
-        className="!text-base font-normal !bg-transparent !shadow-none w-full"
       />
 
       <Button
         disabled={!isValid || !isDirty || updateLoading}
         onClick={handleSubmit(onSubmit)}
+        className="mt-2"
       >
         {updateLoading ? "Enregistrement..." : "Enregistrer les modifications"}
       </Button>
