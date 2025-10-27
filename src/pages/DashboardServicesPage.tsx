@@ -1,53 +1,16 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
 import { GET_SERVICES } from "@/requests/queries/service.query";
-import { GET_TICKETS } from "@/requests/queries/ticket.query";
-
-import type { TicketStatus } from "@/utils/ticketStatus";
-
-type ServiceTicket = {
-  id: string;
-  ticket: string;
-  lastname?: string;
-  name?: string;
-  status: TicketStatus; 
-  waitTime?: string;
-};
 
 type DashboardService = {
   id: string;
   name: string;
   status: "Fluide" | "En attente" | "En cours";
-  tickets: ServiceTicket[];
 };
 
-function calculateWaitTime(createdAt: string): string {
-  const created = new Date(createdAt);
-  const now = new Date();
-  const diffMs = now.getTime() - created.getTime();
-  const diffMinutes = Math.floor(diffMs / 60000);
-  if (diffMinutes < 1) return "< 1 min";
-  if (diffMinutes === 1) return "1 minute";
-  return `${diffMinutes} minutes`;
-}
-
-// API types
 type GetServicesResult = {
   services: { id: string; name: string; isGloballyActive: boolean }[];
-};
-
-type GetTicketsResult = {
-  tickets: Array<{
-    id: string;
-    code: string;
-    firstName?: string | null;
-    lastName?: string | null;
-    status: string;
-    createdAt: string;
-    updatedAt: string;
-    service?: { id: string; name: string } | null;
-  }>;
 };
 
 export default function DashboardServicesPage() {
@@ -60,53 +23,19 @@ export default function DashboardServicesPage() {
     refetch: refetchServices,
   } = useQuery<GetServicesResult>(GET_SERVICES, { fetchPolicy: "cache-and-network" });
 
-  const {
-    data: ticketsData,
-    loading: loadingTickets,
-    error: errorTickets,
-    refetch: refetchTickets,
-  } = useQuery<GetTicketsResult>(GET_TICKETS, { fetchPolicy: "cache-and-network" });
 
-  const loading = loadingServices || loadingTickets;
-  const error = errorServices || errorTickets;
+  const loading = loadingServices; 
+  const error = errorServices;     
 
   const handleToggle = (id: string) => {
     setOpenCardId((prev) => (prev === id ? "" : id));
   };
 
-  const ticketsByServiceId = useMemo(() => {
-    const map = new Map<string, ServiceTicket[]>();
-    const all = ticketsData?.tickets ?? [];
-
-    for (const t of all) {
-      const serviceId = t.service?.id;
-      if (!serviceId) continue;
-
-       if (t.status === "ARCHIVED") continue; // Skip archived tickets
-
-      const uiTicket: ServiceTicket = {
-        id: t.id,
-        ticket: t.code,
-        lastname: t.lastName ?? undefined,
-        name: t.firstName ?? undefined,
-        status: t.status as TicketStatus, 
-        waitTime: calculateWaitTime(t.createdAt),
-      };
-
-      if (!map.has(serviceId)) map.set(serviceId, []);
-      map.get(serviceId)!.push(uiTicket);
-    }
-    return map;
-  }, [ticketsData]);
-
-  const mappedServices: DashboardService[] = useMemo(() => {
-    const apiServices = servicesData?.services ?? [];
-    return apiServices.map((s) => {
-      const status: DashboardService["status"] = s.isGloballyActive ? "Fluide" : "En attente";
-      const tickets = ticketsByServiceId.get(s.id) ?? [];
-      return { id: s.id, name: s.name, status, tickets };
-    });
-  }, [servicesData, ticketsByServiceId]);
+  const mappedServices: DashboardService[] = (servicesData?.services ?? []).map((s) => ({
+    id: s.id,
+    name: s.name,
+    status: s.isGloballyActive ? "Fluide" : "En attente",
+  }));
 
   useEffect(() => {
     if (mappedServices.length > 0) {
@@ -117,7 +46,7 @@ export default function DashboardServicesPage() {
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center py-16">
-        <p className="text-muted-foreground">Chargement des services et tickets…</p>
+        <p className="text-muted-foreground">Chargement des services…</p> 
       </div>
     );
   }
@@ -141,7 +70,7 @@ export default function DashboardServicesPage() {
           </p>
           <div className="mt-3 flex gap-2">
             <button
-              onClick={() => { refetchServices(); refetchTickets(); }}
+              onClick={() => { refetchServices(); }} 
               className="px-3 py-1 rounded-md border hover:bg-muted"
             >
               Réessayer
@@ -172,7 +101,6 @@ export default function DashboardServicesPage() {
             service={service}
             isOpen={openCardId === service.id}
             onToggle={() => handleToggle(service.id)}
-            onTicketsUpdate={() => { refetchTickets(); }}
           />
         ))}
         {mappedServices.length === 0 && (
