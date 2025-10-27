@@ -40,6 +40,7 @@ export default function UpdateServiceDialog({
           refetch={refetch}
           serviceData={serviceData || null}
           handleClose={() => setOpen(false)}
+          updateMode={true}
         />
       </DialogContent>
     </Dialog>

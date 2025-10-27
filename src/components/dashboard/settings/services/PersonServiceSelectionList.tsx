@@ -7,13 +7,17 @@ export default function PersonServiceSelectionList({
   personList,
   personType,
 }: {
-  listToWatch: string[];
+  listToWatch: string[] | null;
   setValue: any;
-  personList: { value: string; label: string }[];
+  personList: { value: string; label: string }[] | null;
   personType: "operators" | "administrators";
 }) {
   const personLabel =
     personType === "operators" ? "opérateur" : "administrateur";
+
+  if (listToWatch === null || personList === null) {
+    return null;
+  }
 
   return (
     <div

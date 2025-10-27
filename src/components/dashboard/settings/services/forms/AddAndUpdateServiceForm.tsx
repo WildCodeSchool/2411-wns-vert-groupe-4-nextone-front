@@ -17,10 +17,12 @@ import { MultiSelectPopover } from "@/components/ui/multiselect-popover";
 import PersonServiceSelectionList from "../PersonServiceSelectionList";
 import { useToast } from "@/hooks/use-toast";
 
-type Manager = {
+export type Manager = {
   id: string;
   firstName: string;
   lastName: string;
+  isGloballyActive: boolean;
+  email: string;
 };
 
 type GET_ALL_MANAGERS = {
@@ -242,72 +244,79 @@ export default function AddAndUpdateServiceForm({
           error={errors.serviceName?.message}
           className="mb-4"
         />
-        <div className="flex items-center justify-between mb-2">
-          <Label className="text-base font-normal text-gray-800">
-            Administrateurs
-          </Label>
-          <Controller
-            name="administrators"
-            control={control}
-            defaultValue={[]}
-            render={({ field }) => (
-              <MultiSelectPopover
-                trigger={
-                  <Button type="button">Choisir des administrateurs</Button>
-                }
-                options={administratorOptions ?? []}
-                selected={field.value ?? []}
-                onChange={(vals) => {
-                  // on met à jour react-hook-form proprement
-                  setValue("administrators", vals, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  });
-                }}
-                placeholder="Sélectionner des administrateurs..."
-                emptyText="Aucun opérateur."
+        {data?.managers && (
+          <>
+            <div className="flex items-center justify-between mb-2">
+              <Label className="text-base font-normal text-gray-800">
+                Administrateurs
+              </Label>
+              <Controller
+                name="administrators"
+                control={control}
+                defaultValue={[]}
+                render={({ field }) => (
+                  <MultiSelectPopover
+                    trigger={
+                      <Button type="button">Choisir des administrateurs</Button>
+                    }
+                    options={administratorOptions ?? []}
+                    selected={field.value ?? []}
+                    onChange={(vals) => {
+                      // on met à jour react-hook-form proprement
+                      setValue("administrators", vals, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
+                    }}
+                    placeholder="Sélectionner des administrateurs..."
+                    emptyText="Aucun opérateur."
+                  />
+                )}
               />
-            )}
-          />
-        </div>
-        <PersonServiceSelectionList
-          listToWatch={watch("administrators")}
-          setValue={setValue}
-          personList={options}
-          personType="administrators"
-        />
-        <div className="flex items-center justify-between mb-2 mt-10">
-          <Label className="text-base font-normal text-gray-800">
-            Opérateurs
-          </Label>
-          <Controller
-            name="operators"
-            control={control}
-            defaultValue={[]}
-            render={({ field }) => (
-              <MultiSelectPopover
-                trigger={<Button type="button">Choisir des opérateurs</Button>}
-                options={operatorOptions ?? []}
-                selected={field.value ?? []}
-                onChange={(vals) => {
-                  // on met à jour react-hook-form proprement
-                  setValue("operators", vals, {
-                    shouldDirty: true,
-                    shouldValidate: true,
-                  });
-                }}
-                placeholder="Sélectionner des opérateurs..."
-                emptyText="Aucun opérateur."
+            </div>
+            <PersonServiceSelectionList
+              listToWatch={watch("administrators")}
+              setValue={setValue}
+              personList={options}
+              personType="administrators"
+            />
+
+            <div className="flex items-center justify-between mb-2 mt-10">
+              <Label className="text-base font-normal text-gray-800">
+                Opérateurs
+              </Label>
+              <Controller
+                name="operators"
+                control={control}
+                defaultValue={[]}
+                render={({ field }) => (
+                  <MultiSelectPopover
+                    trigger={
+                      <Button type="button">Choisir des opérateurs</Button>
+                    }
+                    options={operatorOptions ?? []}
+                    selected={field.value ?? []}
+                    onChange={(vals) => {
+                      // on met à jour react-hook-form proprement
+                      setValue("operators", vals, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
+                    }}
+                    placeholder="Sélectionner des opérateurs..."
+                    emptyText="Aucun opérateur."
+                  />
+                )}
               />
-            )}
-          />
-        </div>
-        <PersonServiceSelectionList
-          listToWatch={watch("operators")}
-          setValue={setValue}
-          personList={options}
-          personType="operators"
-        />
+            </div>
+            <PersonServiceSelectionList
+              listToWatch={watch("operators")}
+              setValue={setValue}
+              personList={options}
+              personType="operators"
+            />
+          </>
+        )}
         <DialogFooter className="mt-8">
           <Button type="submit" disabled={!isValid || !isDirty}>
             {serviceData ? "Modifier le service" : "Ajouter le service"}

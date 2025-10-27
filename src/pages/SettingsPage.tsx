@@ -8,8 +8,8 @@ import CompanyInformationsForm from "@/components/dashboard/settings/company/for
 import CompanyLogoForm from "@/components/dashboard/settings/company/forms/CompanyLogoForm";
 import CompanyColorForm from "@/components/dashboard/settings/company/forms/CompanyColorForm";
 import ServicesManagementForm from "@/components/dashboard/settings/services/forms/ServicesManagementForm";
-import AddServiceDialog from "@/components/dashboard/settings/company/dialogs/AddServiceDialog";
 import SettingsHeader from "@/components/dashboard/settings/SettingsHeader";
+import ManagersManagementForm from "@/components/dashboard/settings/services/forms/ManagersManagementForm";
 
 type TabEnum = "user" | "company";
 
@@ -108,7 +108,7 @@ export default function SettingsPage() {
           </TabsContent>
           <TabsContent value="users">
             <div className="flex flex-col gap-4 h-full">
-              <p>Gestion des utilisateurs</p>
+              <ManagersManagementForm />
             </div>
           </TabsContent>
         </Tabs>

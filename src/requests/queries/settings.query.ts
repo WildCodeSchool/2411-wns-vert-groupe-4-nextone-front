@@ -41,6 +41,8 @@ export const GET_ALL_MANAGERS = gql`
       id
       firstName
       lastName
+      email
+      isGloballyActive
     }
   }
 `;
