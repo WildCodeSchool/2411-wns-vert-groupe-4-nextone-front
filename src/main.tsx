@@ -13,9 +13,7 @@ import ToasterProvider from "./components/ui/toaster";
 import { TicketProvider } from "./context/useContextTicket";
 import AuthProvider from "./context/AuthContext";
 
-const uri = import.meta.env.DEV
-  ? "http://localhost:4005/graphql"
-  : "https://david4.wns.wilders.dev/graphql";
+const uri = import.meta.env.VITE_API_URL as string;
 
 const httpLink = new HttpLink({
   uri: uri,
@@ -23,11 +21,8 @@ const httpLink = new HttpLink({
 });
 
 export const client = new ApolloClient({
-  cache: new InMemoryCache({
-    addTypename: false,
-  }),
+  cache: new InMemoryCache(),
   link: from([httpLink]),
-  credentials: "include",
 });
 
 client
@@ -40,6 +35,7 @@ client
         }
       }
     `,
+    fetchPolicy: "network-only",
   })
   .then((response) => {
     console.log("GraphQL API is reachable. Response:", response);
