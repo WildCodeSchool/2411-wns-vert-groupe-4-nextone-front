@@ -20,11 +20,14 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { Manager } from "../../services/forms/AddAndUpdateServiceForm";
+import { Invitation } from "../../services/forms/ManagersManagementForm";
 
 export default function InvitUserDialog({
   managers,
+  invitations,
 }: {
   managers?: Manager[];
+  invitations?: Invitation[];
 }) {
   const [open, setOpen] = useState(false);
 
@@ -38,6 +41,14 @@ export default function InvitUserDialog({
         "Il existe déjà un utilisateur avec cette adresse e-mail",
         (value) =>
           managers ? !managers.find((manager) => manager.email === value) : true
+      )
+      .test(
+        "unique",
+        "Il existe déjà une invitation avec cette adresse e-mail",
+        (value) =>
+          invitations
+            ? !invitations.find((invitation) => invitation.email === value)
+            : true
       ),
     role: yup.string().oneOf(["ADMIN", "OPERATOR"]).required(),
   });
