@@ -89,8 +89,10 @@
   --status-done: oklch(0.9612 0.0193 147.85);
   --status-created: oklch(0.6861 0.129 149.18);
   --status-canceled: oklch(0.398 0.07 227.392);
-  --status-pending: oklch(0.828 0.189 84.429);
-  --status-inprogress: oklch(0.769 0.188 70.08);
+  /* --status-pending: oklch(0.828 0.189 84.429); */
+  /* --status-inprogress: oklch(0.769 0.188 70.08); */
+  --status-pending: #fffae7;
+  --status-inprogress: #eaf6eb;
 }
 
 @layer base {
