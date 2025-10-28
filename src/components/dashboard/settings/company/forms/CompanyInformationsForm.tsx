@@ -12,7 +12,7 @@ import * as yup from "yup";
 export default function CompanyInformationsForm() {
   const { user } = useAuth();
 
-  const companyId = user?.companyId || "d2315259-5926-4f5b-8490-f01a983ad33d";
+  const companyId = user?.companyId;
 
   const { data: companyData } = useQuery(GET_COMPANY_INFORMATIONS, {
     variables: { companyId: companyId },

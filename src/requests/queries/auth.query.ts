@@ -15,6 +15,8 @@ export const CHECK_TOKEN = gql`
       firstName
       id
       lastName
+      role
+      companyId
     }
   }
 `;
