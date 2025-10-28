@@ -1,14 +1,14 @@
-import { TicketInfo } from "../../context/useContextTicket";
+import { TicketInfo } from "../../types/ticket";
 
 export const defaultTicket = {
-    serviceId: "",
-    serviceName: "",
-    name: "",
-    firstName: "",
-    email: "",
-    phone: "",
-    code: "",
-    rgpdAccepted: false,
+  serviceId: "",
+  serviceName: "",
+  name: "",
+  firstName: "",
+  email: "",
+  phone: "",
+  code: "",
+  rgpdAccepted: false,
 };
 
 export const ticket: TicketInfo = { 
