@@ -1,4 +1,4 @@
-import { CHECK_TOKEN, LOGOUT } from "@/requests/queries/auth.query";
+import { CHECK_TOKEN, LOGOUT } from "../requests/queries/auth.query";
 import { useLazyQuery } from "@apollo/client";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 

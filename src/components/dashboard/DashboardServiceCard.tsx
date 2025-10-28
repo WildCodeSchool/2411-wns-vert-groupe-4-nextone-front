@@ -15,33 +15,33 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "../../components/ui/table";
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "../../components/ui/card";
 import { ChevronDown, Filter } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "../../components/ui/button";
 import StatusBadge from "./StatusBadge";
 import { useMemo, useRef, useState, useEffect } from "react"; 
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
+} from "../../components/ui/popover";
+import { Checkbox } from "../../components/ui/checkbox";
+import { Input } from "../../components/ui/input";
 import { TicketActionMenu } from "./TicketActionMenu";
 import { useMutation } from "@apollo/client";
-import { UPDATE_TICKET_STATUS } from "@/requests/mutations/ticket.mutation";
-import { useToast } from "@/hooks/use-toast";
+import { UPDATE_TICKET_STATUS } from "../../requests/mutations/ticket.mutation";
+import { useToast } from "../../hooks/use-toast";
 import {
   TICKET_STATUS_OPTIONS,
   STATUS_LABEL_TO_ENUM,
   TICKET_STATUS_LABELS, 
-} from "@/utils/ticketStatus";
+} from "../../utils/ticketStatus";
 import { RiArrowUpDownLine } from "react-icons/ri";
 
 type ServiceTicket = {
