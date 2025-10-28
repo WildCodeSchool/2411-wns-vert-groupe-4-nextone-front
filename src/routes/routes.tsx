@@ -10,6 +10,7 @@ import TicketsDashboard from "../components/dashboard/tickets/TicketsDashboard.t
 import TicketPage from "../components/dashboard/tickets/TicketPage.tsx";
 import TvPage from "../pages/TvPage.tsx";
 import SettingsPage from "@/pages/SettingsPage";
+import UserInvitationPage from "@/pages/UserInvitationPage";
 
 export const router = createBrowserRouter([
   {
@@ -57,5 +58,9 @@ export const router = createBrowserRouter([
   {
     path: "/login",
     element: <LoginPageAdmin />,
+  },
+  {
+    path: "/join",
+    element: <UserInvitationPage />,
   },
 ]);

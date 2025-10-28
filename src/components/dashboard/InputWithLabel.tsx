@@ -37,7 +37,7 @@ function InputWithLabelFunc(
           className
         )}
       />
-      {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
+      {error && <p className="text-sm text-red-500 mt-1 text-start">{error}</p>}
     </div>
   );
 }
