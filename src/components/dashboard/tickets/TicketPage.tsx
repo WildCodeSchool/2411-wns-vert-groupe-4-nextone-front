@@ -111,7 +111,7 @@ export default function TicketPage() {
         </span>
         <IoIosMore size={20} />
       </div>
-      <div className="flex flex-row items-stretch justify-between w-full h-full mt-10 gap-10">
+      <div className="flex flex-row items-stretch justify-between w-full h-full mt-8 gap-10">
         <div className="flex flex-col items-start justify-start gap-6 w-full">
           <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full mr-4">
             <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">

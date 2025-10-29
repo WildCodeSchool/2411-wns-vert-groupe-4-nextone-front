@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "../../components/ui/tabs";
+import { TicketInfo } from "../../types/ticket";
 import { useTicket } from "../../context/useContextTicket";
 import NavigationActions from "../../common/terminal/NavigationActions";
 import CompanyIllustration from "../../common/terminal/CompanyIllustration";

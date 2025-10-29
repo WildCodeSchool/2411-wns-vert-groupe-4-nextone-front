@@ -15,10 +15,11 @@ vi.mock("@apollo/client", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@apollo/client")>();
   return {
     ...actual,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useLazyQuery: vi.fn((query, { onCompleted }: any) => [
       vi.fn(async () => {
-        if (onCompleted) await onCompleted(); 
-        console.log(query)
+        if (onCompleted) await onCompleted();
+        console.log(query);
         return Promise.resolve({ data: { login: { token: "fake-token" } } });
       }),
     ]),
@@ -34,7 +35,9 @@ describe("LoginAdmin", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (useNavigate as any).mockReturnValue(mockNavigate);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (useAuth as any).mockReturnValue({ getInfos: mockGetInfos });
   });
   const setup = () => render(<LoginAdmin />);
@@ -42,7 +45,9 @@ describe("LoginAdmin", () => {
   it("displays the logo and title", () => {
     setup();
     expect(screen.getByAltText("Logo")).toBeInTheDocument();
-    expect(screen.getByText("Connectez-vous à votre compte")).toBeInTheDocument();
+    expect(
+      screen.getByText("Connectez-vous à votre compte")
+    ).toBeInTheDocument();
   });
 
   it("renders email and password fields", () => {
@@ -53,8 +58,12 @@ describe("LoginAdmin", () => {
 
   it("allows you to enter email and password", () => {
     setup();
-    const emailInput = screen.getByLabelText(/Adresse mail/i) as HTMLInputElement;
-    const passwordInput = screen.getByLabelText(/Mot de passe/i) as HTMLInputElement;
+    const emailInput = screen.getByLabelText(
+      /Adresse mail/i
+    ) as HTMLInputElement;
+    const passwordInput = screen.getByLabelText(
+      /Mot de passe/i
+    ) as HTMLInputElement;
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
     fireEvent.change(passwordInput, { target: { value: "mypassword" } });
@@ -65,7 +74,9 @@ describe("LoginAdmin", () => {
 
   it("manages the 'Stay logged in' button", () => {
     setup();
-    const checkboxButton = screen.getByRole("checkbox", { name: /Rester connecté/i });
+    const checkboxButton = screen.getByRole("checkbox", {
+      name: /Rester connecté/i,
+    });
     expect(checkboxButton).toHaveAttribute("aria-checked", "false");
 
     fireEvent.click(checkboxButton);
@@ -85,8 +96,8 @@ describe("LoginAdmin", () => {
     });
     fireEvent.submit(screen.getByRole("button", { name: /Me connecter/i }));
     await waitFor(() => {
-    expect(mockGetInfos).toHaveBeenCalled();
-    expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
+      expect(mockGetInfos).toHaveBeenCalled();
+      expect(mockNavigate).toHaveBeenCalledWith("/dashboard");
     });
   });
 });
