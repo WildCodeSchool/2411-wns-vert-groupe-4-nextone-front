@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
-import { GET_SERVICES } from "@/requests/queries/service.query";
+import { GET_SERVICES } from "../requests/queries/service.query";
 
 type DashboardService = {
   id: string;

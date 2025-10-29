@@ -18,6 +18,7 @@ vi.mock("@apollo/client", async (importOriginal) => {
     useLazyQuery: vi.fn((query, { onCompleted }: any) => [
       vi.fn(async () => {
         if (onCompleted) await onCompleted(); 
+        console.log(query)
         return Promise.resolve({ data: { login: { token: "fake-token" } } });
       }),
     ]),
