@@ -1,4 +1,5 @@
-import { GET_TICKETS, UPDATE_TICKET_STATUS } from "@/requests/tickets.requests";
+import { UPDATE_TICKET_STATUS } from "../../../requests/mutations/ticket.mutation";
+import { GET_TICKETS } from "../../../requests/queries/ticket.query";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -8,7 +9,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "../../../components/ui/table";
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -22,7 +23,7 @@ import {
 import { Ticket } from "./TicketPage";
 import { useState } from "react";
 import { RiArrowUpDownLine } from "react-icons/ri";
-import { Input } from "@/components/ui/input";
+import { Input } from "../../../components/ui/input";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/fr";
@@ -30,16 +31,16 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover";
-import { Label } from "@/components/ui/label";
-import { Button } from "@/components/ui/button";
+} from "../../../components/ui/popover";
+import { Label } from "../../../components/ui/label";
+import { Button } from "../../../components/ui/button";
 import { RiFilterLine } from "react-icons/ri";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "../../../components/ui/badge";
 import { IoIosMore } from "react-icons/io";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Checkbox } from "../../../components/ui/checkbox";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { statusOptions } from "@/lib/ticketUtils";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { statusOptions } from "../../../utils/constants/ticket";
+import { ScrollArea } from "../../../components/ui/scroll-area";
 
 dayjs.extend(relativeTime);
 
