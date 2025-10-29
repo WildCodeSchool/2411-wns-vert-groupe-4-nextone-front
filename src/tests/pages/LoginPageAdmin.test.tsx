@@ -18,8 +18,8 @@ vi.mock("@apollo/client", async (importOriginal) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     useLazyQuery: vi.fn((query, { onCompleted }: any) => [
       vi.fn(async () => {
-        if (onCompleted) await onCompleted();
-        console.log(query);
+        if (onCompleted) await onCompleted(); 
+        console.log(query)
         return Promise.resolve({ data: { login: { token: "fake-token" } } });
       }),
     ]),
