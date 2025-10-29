@@ -46,7 +46,11 @@ import { RiArrowUpDownLine } from "react-icons/ri";
 import { PaginationControls } from "../../components/ui/PaginationControls";
 import { ItemsPerPageSelector } from "../../components/dashboard/ItemsPerPageSelector";
 import { nextCreatedCursor, resetCursor } from "../../utils/pagination";
+<<<<<<< HEAD
 import { usePagination } from "../../hooks/usePagination";
+=======
+import { usePagination } from "../../hooks/usePagination"; 
+>>>>>>> 8426c08cec6ad0283be7d7705438d3b590c73156
 import { GetTicketsPaginatedResult } from "../../types/tickets.types";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { RiFilterLine } from "react-icons/ri";
