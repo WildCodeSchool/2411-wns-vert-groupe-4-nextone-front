@@ -34,23 +34,20 @@ import {
 import { Checkbox } from "../../components/ui/checkbox";
 import { Input } from "../../components/ui/input";
 import { TicketActionMenu } from "./TicketActionMenu";
-import { useMutation, useQuery } from "@apollo/client";
-import {
-  UPDATE_TICKET_STATUS,
-  GET_TICKETS_PAGINATED,
-} from "@/requests/queries/ticket.query";
-import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery } from "@apollo/client"; 
+import { UPDATE_TICKET_STATUS, GET_TICKETS_PAGINATED } from "../../requests/queries/ticket.query"; 
+import { useToast } from "../../hooks/use-toast";
 import {
   TICKET_STATUS_OPTIONS,
   STATUS_LABEL_TO_ENUM,
   TICKET_STATUS_LABELS,
 } from "../../utils/ticketStatus";
 import { RiArrowUpDownLine } from "react-icons/ri";
-import { PaginationControls } from "@/components/ui/PaginationControls";
-import { ItemsPerPageSelector } from "@/components/dashboard/ItemsPerPageSelector";
-import { nextCreatedCursor, resetCursor } from "@/utils/pagination";
-import { usePagination } from "@/hooks/usePagination";
-import { GetTicketsPaginatedResult } from "@/types/tickets.types";
+import { PaginationControls } from "../../components/ui/PaginationControls";
+import { ItemsPerPageSelector } from "../../components/dashboard/ItemsPerPageSelector";
+import { nextCreatedCursor, resetCursor } from "../../utils/pagination";
+import { usePagination } from "../../hooks/usePagination"; 
+import { GetTicketsPaginatedResult } from "../../types/tickets.types";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { RiFilterLine } from "react-icons/ri";
 import dayjs from "dayjs";

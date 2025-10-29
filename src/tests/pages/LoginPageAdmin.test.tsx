@@ -9,7 +9,7 @@ class ResizeObserver {
   unobserve() {}
   disconnect() {}
 }
-global.ResizeObserver = ResizeObserver;
+global.ResizeObserver = ResizeObserver
 
 vi.mock("@apollo/client", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@apollo/client")>();

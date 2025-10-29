@@ -9,6 +9,7 @@ import { useQuery } from "@apollo/client";
 import { GET_SERVICES } from "../../requests/queries/service.query";
 import { Service, ChooseServiceProps } from "../../types/terminal";
 import { LoadingSpinner, Message } from "../../utils/message";
+import { TicketInfo } from "@/types/ticket";
 
 function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
   const { ticket, setTicket } = useTicket();
