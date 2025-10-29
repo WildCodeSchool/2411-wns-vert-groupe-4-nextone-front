@@ -1,5 +1,21 @@
 import { createContext, useContext, useState, ReactNode } from "react";
-import { TicketInfo, TicketContextType } from "../types/ticket";
+
+export type TicketInfo = {
+  id?: string,
+  serviceId: string;  
+  serviceName?: string;    
+  name: string;
+  firstName: string;
+  email: string;
+  phone: string;
+  code?: string,
+  rgpdAccepted: boolean;
+};
+
+type TicketContextType = {
+  ticket: TicketInfo;
+  setTicket: (ticket: TicketInfo) => void;
+};
 
 const TicketContext = createContext<TicketContextType | undefined>(undefined);
 

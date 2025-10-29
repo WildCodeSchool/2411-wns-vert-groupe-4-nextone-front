@@ -5,7 +5,7 @@ import { MdRoomService } from "react-icons/md";
 import { IoPerson } from "react-icons/io5";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { IoIosSettings } from "react-icons/io";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "@/context/AuthContext";
 
 export type DashboardMenuItem = {
   name: string;
