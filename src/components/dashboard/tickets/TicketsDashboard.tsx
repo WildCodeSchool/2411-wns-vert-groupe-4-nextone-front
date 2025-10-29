@@ -1,5 +1,7 @@
-import { UPDATE_TICKET_STATUS } from "@/requests/mutations/ticket.mutation";
-import { GET_TICKETS } from "@/requests/queries/ticket.query";
+import {
+  UPDATE_TICKET_STATUS,
+  GET_TICKETS_PAGINATED,
+} from "@/requests/queries/ticket.query";
 import { useMutation, useQuery } from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -21,7 +23,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Ticket } from "./TicketPage";
-import { useState } from "react";
+import { useRef, useState, useMemo, useEffect } from "react";
 import { RiArrowUpDownLine } from "react-icons/ri";
 import { Input } from "@/components/ui/input";
 import dayjs from "dayjs";
@@ -39,124 +41,32 @@ import { Badge } from "@/components/ui/badge";
 import { IoIosMore } from "react-icons/io";
 import { Checkbox } from "@/components/ui/checkbox";
 import { FaRegTrashAlt } from "react-icons/fa";
-import { statusOptions } from "@/lib/ticketUtils";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { statusOptions } from "../../../utils/constants/ticket";
+// MR
+import { ItemsPerPageSelector } from "@/components/dashboard/ItemsPerPageSelector";
+import { PaginationControls } from "@/components/ui/PaginationControls";
+import { nextCreatedCursor, resetCursor } from "@/utils/pagination";
+import { usePagination } from "@/hooks/usePagination";
+import { GetTicketsPaginatedResult } from "@/types/tickets.types";
+// MR end
 
 dayjs.extend(relativeTime);
 
 export default function TicketsDashboard() {
-  const columns: ColumnDef<Ticket>[] = [
-    {
-      accessorKey: "code",
-      header: "Code",
-    },
-    {
-      accessorKey: "lastName",
-      header: ({ column }) => {
-        return (
-          <div
-            className="flex flex-row items-center cursor-pointer select-none gap-4"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Nom
-            <RiArrowUpDownLine />
-          </div>
-        );
-      },
-    },
-    {
-      accessorKey: "firstName",
-      header: "Prénom",
-    },
-    {
-      accessorKey: "status",
-      header: ({ column }) => {
-        return (
-          <div
-            className="flex flex-row items-center cursor-pointer select-none gap-4"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Statut
-            <RiArrowUpDownLine />
-          </div>
-        );
-      },
-      filterFn: (row, columnId, filterValue) => {
-        if (!filterValue || filterValue.length === 0) return true;
-        return filterValue.includes(row.getValue(columnId));
-      },
-      cell: ({ getValue }) => {
-        const status = getValue<string>();
-        const statusOption = statusOptions.find(
-          (option) => option.value === status
-        );
-        const label = statusOption ? statusOption.label : status;
+  const navigate = useNavigate();
 
-        return (
-          <Badge className={`${statusOption?.badgeStyle} font-light px-4 py-2`}>
-            {label}
-          </Badge>
-        );
-      },
-    },
-    {
-      id: "service.name",
-      accessorFn: (row) => row.service?.name ?? "",
-      header: "Service",
-      filterFn: (row, columnId, filterValue) => {
-        if (!filterValue || filterValue.length === 0) return true;
-        return filterValue.includes(row.getValue(columnId));
-      },
-      cell: ({ getValue }) => {
-        return (
-          <Badge className="px-3 py-1 rounded-4xl border-1 border-primary/10 bg-primary/5 text-primary font-light">
-            {getValue<string>()}
-          </Badge>
-        );
-      },
-    },
-    {
-      accessorKey: "updatedAt",
-      header: ({ column }) => {
-        return (
-          <div
-            className="flex flex-row items-center cursor-pointer select-none gap-4"
-            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-          >
-            Dernière modification
-            <RiArrowUpDownLine />
-          </div>
-        );
-      },
-      cell: ({ getValue }) => {
-        const date = dayjs(getValue<string>());
-        return date.locale("fr").fromNow();
-      },
-    },
-    {
-      accessorKey: "options",
-      header: "",
-      cell: ({ row }) => {
-        return (
-          <div className="flex flex-row items-center justify-end gap-6">
-            {(row.getValue("status") === "PENDING" ||
-              row.getValue("status") === "CREATED") && (
-              <Button
-                className="cursor-pointer"
-                onClick={(event) => {
-                  event.stopPropagation();
-                  handleUpdateTicketToInProgress(row.original.id);
-                }}
-              >
-                Prendre le ticket
-              </Button>
-            )}
-            <IoIosMore size={20} className="cursor-pointer" />
-          </div>
-        );
-      },
-    },
-  ];
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [createdCursor, setCreatedCursor] = useState<Date>(resetCursor());
+  const cursorStack = useRef<Date[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = 0;
+    }
+  }, [currentPage]);
 
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
@@ -166,27 +76,194 @@ export default function TicketsDashboard() {
     },
   ]);
 
-  const { data, loading, error } = useQuery(GET_TICKETS);
+  const { data, loading, error, fetchMore, refetch } =
+    useQuery<GetTicketsPaginatedResult>(GET_TICKETS_PAGINATED, {
+      variables: {
+        fields: {},
+        pagination: {
+          limit: itemsPerPage,
+          order: "ASC",
+          cursor: createdCursor,
+        },
+      },
+      fetchPolicy: "cache-and-network",
+    });
 
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
 
-  const handleUpdateTicketToInProgress = (ticketId: string) => {
-    updateTicketStatus({
+  const handleUpdateTicketToInProgress = async (ticketId: string) => {
+    await updateTicketStatus({
       variables: {
         updateTicketStatusData: {
           id: ticketId,
           status: "INPROGRESS",
         },
       },
-      refetchQueries: [{ query: GET_TICKETS }],
+      refetchQueries: [{ query: GET_TICKETS_PAGINATED }],
     });
   };
 
-  const tickets = data?.tickets ?? [];
+  const rawTickets = useMemo(
+    () => (data?.ticketsByProperties?.items ?? []) as Ticket[],
+    [data]
+  );
+
+  const totalCount = data?.ticketsByProperties?.totalCount ?? 0;
+
+  const loadNext = async () => {
+    if (!rawTickets.length) return;
+    const last = rawTickets[rawTickets.length - 1];
+    if (!last) return;
+
+    const nextCursor = nextCreatedCursor(last.createdAt);
+    const result = await fetchMore({
+      variables: {
+        fields: {},
+        pagination: { limit: itemsPerPage, order: "ASC", cursor: nextCursor },
+      },
+    });
+
+    const nextItems = result?.data?.ticketsByProperties
+      ?.items as unknown as Ticket[];
+    if (nextItems.length > 0) {
+      cursorStack.current.push(createdCursor);
+      setCreatedCursor(nextCursor);
+      setCurrentPage((p) => p + 1);
+    }
+  };
+
+  const loadPrev = async () => {
+    if (cursorStack.current.length === 0) return;
+    const prevCursor = cursorStack.current.pop()!;
+    setCreatedCursor(prevCursor);
+    await refetch({
+      fields: {},
+      pagination: { limit: itemsPerPage, order: "ASC", cursor: prevCursor },
+    });
+    setCurrentPage((p) => Math.max(1, p - 1));
+  };
+
+  const { paginationRange, totalPages } = usePagination({
+    totalCount,
+    pageSize: itemsPerPage,
+    currentPage,
+  });
 
   const table = useReactTable({
-    data: tickets,
-    columns,
+    data: rawTickets,
+    columns: useMemo<ColumnDef<Ticket>[]>(
+      () => [
+        {
+          accessorKey: "code",
+          header: "Code",
+        },
+        {
+          accessorKey: "lastName",
+          header: ({ column }) => (
+            <div
+              className="flex flex-row items-center cursor-pointer select-none gap-4"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Nom
+              <RiArrowUpDownLine />
+            </div>
+          ),
+        },
+        {
+          accessorKey: "firstName",
+          header: "Prénom",
+        },
+        {
+          accessorKey: "status",
+          header: ({ column }) => (
+            <div
+              className="flex flex-row items-center cursor-pointer select-none gap-4"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Statut
+              <RiArrowUpDownLine />
+            </div>
+          ),
+          filterFn: (row, columnId, filterValue) => {
+            if (!filterValue || filterValue.length === 0) return true;
+            return filterValue.includes(row.getValue(columnId));
+          },
+          cell: ({ getValue }) => {
+            const status = getValue<string>();
+            const statusOption = statusOptions.find(
+              (option) => option.value === status
+            );
+            const label = statusOption ? statusOption.label : status;
+
+            return (
+              <Badge
+                className={`${statusOption?.badgeStyle} font-light px-4 py-2`}
+              >
+                {label}
+              </Badge>
+            );
+          },
+        },
+        {
+          id: "service.name",
+          accessorFn: (row) => row.service?.name ?? "",
+          header: "Service",
+          filterFn: (row, columnId, filterValue) => {
+            if (!filterValue || filterValue.length === 0) return true;
+            return filterValue.includes(row.getValue(columnId));
+          },
+          cell: ({ getValue }) => (
+            <Badge className="px-3 py-1 rounded-4xl border-1 border-primary/10 bg-primary/5 text-primary font-light">
+              {getValue<string>()}
+            </Badge>
+          ),
+        },
+        {
+          accessorKey: "updatedAt",
+          header: ({ column }) => (
+            <div
+              className="flex flex-row items-center cursor-pointer select-none gap-4"
+              onClick={() =>
+                column.toggleSorting(column.getIsSorted() === "asc")
+              }
+            >
+              Dernière modification
+              <RiArrowUpDownLine />
+            </div>
+          ),
+          cell: ({ getValue }) => {
+            const date = dayjs(getValue<string>());
+            return date.locale("fr").fromNow();
+          },
+        },
+        {
+          accessorKey: "options",
+          header: "",
+          cell: ({ row }) => (
+            <div className="flex flex-row items-center justify-end gap-6">
+              {(row.getValue("status") === "PENDING" ||
+                row.getValue("status") === "CREATED") && (
+                <Button
+                  className="cursor-pointer"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    handleUpdateTicketToInProgress(row.original.id);
+                  }}
+                >
+                  Prendre le ticket
+                </Button>
+              )}
+              <IoIosMore size={20} className="cursor-pointer" />
+            </div>
+          ),
+        },
+      ],
+      []
+    ),
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
@@ -198,11 +275,9 @@ export default function TicketsDashboard() {
     },
   });
 
-  const navigate = useNavigate();
-
   const servicesNames: string[] = Array.from(
     new Set(
-      tickets.map((ticket: Ticket) => ticket.service?.name).filter(Boolean)
+      rawTickets.map((ticket: Ticket) => ticket.service?.name).filter(Boolean)
     )
   );
 
@@ -221,6 +296,14 @@ export default function TicketsDashboard() {
       ?.setFilterValue(newFilterValues.length ? newFilterValues : undefined);
   };
 
+  console.log("🧭 PAGINATION DEBUG", {
+    totalCount,
+    totalPages,
+    currentPage,
+    itemsPerPage,
+    paginationRange,
+  });
+
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error.message}</p>;
   if (!data) return <p>Aucun ticket trouvé</p>;
@@ -229,10 +312,10 @@ export default function TicketsDashboard() {
     <>
       <div className="flex flex-row items-center justify-start w-full">
         <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
-          Tickets ({tickets.length})
+          Tickets ({totalCount})
         </h1>
       </div>
-      <div className="mt-8 bg-card p-8 rounded-lg w-full h-full overflow-hidden">
+      <div className="mt-8 bg-card p-8 rounded-lg w-full overflow-visible shadow-sm">
         <div className="w-full flex flex-row items-center justify-between">
           <div className="w-full flex flex-row items-center justify-start gap-4">
             <Input
@@ -312,7 +395,7 @@ export default function TicketsDashboard() {
           {columnFilters.length > 0 && (
             <Button
               variant="outline"
-              className="[&&]:bg-red-600 text-white :hover:bg-red-700 :hover:text-white"
+              className="[&&]:bg-red-600 text-white hover:bg-red-700 hover:text-white"
               onClick={() => {
                 setColumnFilters([]);
               }}
@@ -322,36 +405,45 @@ export default function TicketsDashboard() {
             </Button>
           )}
         </div>
-        <ScrollArea className="mt-6 bg-popover px-6 py-2 rounded-lg h-[90%] overflow-y-auto">
-          <Table className="w-full" noWrapper>
-            <TableHeader className="sticky top-0 z-10 w-full bg-popover">
+
+        {/* Table Header - Fixed */}
+        <div className="mt-6 bg-popover px-[24px] rounded-t-lg">
+          <Table className="table-fixed">
+            <TableHeader className="bg-popover">
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id} className="w-full">
-                  {headerGroup.headers.map((header) => {
-                    return (
-                      <TableHead
-                        key={header.id}
-                        className="uppercase text-base font-light text-left py-4"
-                      >
-                        {header.isPlaceholder
-                          ? null
-                          : flexRender(
-                              header.column.columnDef.header,
-                              header.getContext()
-                            )}
-                      </TableHead>
-                    );
-                  })}
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      className="uppercase text-base font-light text-left py-4"
+                    >
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
+                  ))}
                 </TableRow>
               ))}
             </TableHeader>
+          </Table>
+        </div>
+
+        {/* Table Body - Scrollable */}
+        <div
+          ref={scrollRef}
+          className="bg-popover px-[24px] rounded-b-lg max-h-[300px] min-h-[300px] overflow-y-scroll"
+        >
+          <Table className="table-fixed">
             <TableBody>
               {table.getRowModel().rows?.length ? (
                 table.getRowModel().rows.map((row) => (
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className="cursor-pointer text-base text-left"
+                    className="cursor-pointer text-base text-left bg-popover hover:bg-muted/30 transition-colors"
                     onClick={() =>
                       navigate(`/dashboard/tickets/${row.original.id}`)
                     }
@@ -369,7 +461,7 @@ export default function TicketsDashboard() {
               ) : (
                 <TableRow>
                   <TableCell
-                    colSpan={columns.length}
+                    colSpan={table.getAllColumns().length}
                     className="h-24 text-center"
                   >
                     Aucun résultat.
@@ -378,7 +470,29 @@ export default function TicketsDashboard() {
               )}
             </TableBody>
           </Table>
-        </ScrollArea>
+        </div>
+
+        {/* Pagination */}
+        <div className="flex flex-col sm:flex-row items-center justify-between px-[24px] pt-4 gap-4">
+          <ItemsPerPageSelector
+            value={itemsPerPage}
+            onChange={(val) => {
+              setItemsPerPage(val);
+              setCreatedCursor(resetCursor());
+              setCurrentPage(1);
+              cursorStack.current = [];
+            }}
+          />
+          <PaginationControls
+            paginationRange={paginationRange}
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={(page: number) => {
+              if (page > currentPage) loadNext();
+              else if (page < currentPage) loadPrev();
+            }}
+          />
+        </div>
       </div>
     </>
   );

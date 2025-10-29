@@ -11,7 +11,7 @@ export type TicketStatus =
 // Liste des statuts avec libellés "humains"
 export const TICKET_STATUS_LABELS: Record<TicketStatus, string> = {
   PENDING: "En attente",
-  INPROGRESS: "En cours de traitement",
+  INPROGRESS: "En cours",
   CREATED: "Créé",
   DONE: "Terminé",
   CANCELED: "Annulé",
