@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
-import { GET_SERVICES } from "@/requests/queries/service.query";
+import { GET_SERVICES } from "../requests/queries/service.query";
 
 type DashboardService = {
   id: string;
@@ -21,21 +21,24 @@ export default function DashboardServicesPage() {
     loading: loadingServices,
     error: errorServices,
     refetch: refetchServices,
-  } = useQuery<GetServicesResult>(GET_SERVICES, { fetchPolicy: "cache-and-network" });
+  } = useQuery<GetServicesResult>(GET_SERVICES, {
+    fetchPolicy: "cache-and-network",
+  });
 
-
-  const loading = loadingServices; 
-  const error = errorServices;     
+  const loading = loadingServices;
+  const error = errorServices;
 
   const handleToggle = (id: string) => {
     setOpenCardId((prev) => (prev === id ? "" : id));
   };
 
-  const mappedServices: DashboardService[] = (servicesData?.services ?? []).map((s) => ({
-    id: s.id,
-    name: s.name,
-    status: s.isGloballyActive ? "Fluide" : "En attente",
-  }));
+  const mappedServices: DashboardService[] = (servicesData?.services ?? []).map(
+    (s) => ({
+      id: s.id,
+      name: s.name,
+      status: s.isGloballyActive ? "Fluide" : "En attente",
+    })
+  );
 
   useEffect(() => {
     if (mappedServices.length > 0) {
@@ -46,7 +49,7 @@ export default function DashboardServicesPage() {
   if (loading) {
     return (
       <div className="w-full flex items-center justify-center py-16">
-        <p className="text-muted-foreground">Chargement des services…</p> 
+        <p className="text-muted-foreground">Chargement des services…</p>
       </div>
     );
   }
@@ -54,14 +57,14 @@ export default function DashboardServicesPage() {
   if (error) {
     return (
       <div className="w-full">
-        <div className="mb-4 flex items-center justify-between">
+        <div className="flex items-center justify-between w-full mb-2">
           <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
             Services
           </h1>
           <img
             src="/src/assets/images/icon_img.jpg"
             alt="Logo"
-            className="w-40 h-16 object-contain rounded-full bg-white shadow-md"
+            className="absolute right-0 -top-2 w-24 h-10 object-contain rounded-full bg-white shadow-md"
           />
         </div>
         <div className="rounded-lg border p-4">
@@ -70,7 +73,9 @@ export default function DashboardServicesPage() {
           </p>
           <div className="mt-3 flex gap-2">
             <button
-              onClick={() => { refetchServices(); }} 
+              onClick={() => {
+                refetchServices();
+              }}
               className="px-3 py-1 rounded-md border hover:bg-muted"
             >
               Réessayer
@@ -83,7 +88,7 @@ export default function DashboardServicesPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between w-full mb-8">
+      <div className="flex items-center justify-between w-full mb-4">
         <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
           Services
         </h1>

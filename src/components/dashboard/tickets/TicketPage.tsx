@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { IoIosArrowBack, IoIosMore } from "react-icons/io";
-import { GET_TICKET_INFOS } from "@/requests/queries/ticket.query";
+import { GET_TICKET_INFOS } from "../../../requests/queries/ticket.query";
 import { useQuery } from "@apollo/client/react";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
@@ -9,11 +9,11 @@ import { MdRoomService } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaTicketSimple } from "react-icons/fa6";
-import { GET_TICKET_LOGS } from "@/requests/queries/ticketLogs.query";
+import { GET_TICKET_LOGS } from "../../../requests/queries/ticketLogs.query";
 import { useState } from "react";
-import { Textarea } from "@/components/ui/textarea";
-import { Button } from "@/components/ui/button";
-import { statusOptions } from "@/lib/ticketUtils";
+import { Textarea } from "../../../components/ui/textarea";
+import { Button } from "../../../components/ui/button";
+import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
 
 type RouteParams = {
@@ -111,7 +111,7 @@ export default function TicketPage() {
         </span>
         <IoIosMore size={20} />
       </div>
-      <div className="flex flex-row items-stretch justify-between w-full h-full mt-10 gap-10">
+      <div className="flex flex-row items-stretch justify-between w-full h-full mt-8 gap-10">
         <div className="flex flex-col items-start justify-start gap-6 w-full">
           <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full mr-4">
             <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">

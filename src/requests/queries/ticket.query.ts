@@ -63,9 +63,12 @@ export const UPDATE_TICKET_STATUS = gql`
   }
 `;
 
-//PAGINATION 
+//PAGINATION
 export const GET_TICKETS_PAGINATED = gql`
-  query GetTicketsPaginated($fields: TicketPropertiesInput, $pagination: PaginationInput) {
+  query GetTicketsPaginated(
+    $fields: TicketPropertiesInput
+    $pagination: PaginationInput
+  ) {
     ticketsByProperties(fields: $fields, pagination: $pagination) {
       items {
         id
@@ -86,5 +89,3 @@ export const GET_TICKETS_PAGINATED = gql`
     }
   }
 `;
-
-
