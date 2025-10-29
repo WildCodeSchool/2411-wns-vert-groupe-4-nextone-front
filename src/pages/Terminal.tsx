@@ -2,11 +2,11 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import logo from "../assets/logo.png";
 import QRCode from "react-qr-code";
-import CompanyIllustration from "../common/terminal/CompanyIllustration";
-import { getScreenComponent } from "../components/terminal/Screens"; 
-import { useTicket } from "../context/useContextTicket";
-import { emptyTicket } from "../utils/constants/ticket";
-import { Screen } from "../types/terminal";
+import CompanyIllustration from "@/components/terminal/CompanyIllustration";
+import { getScreenComponent } from "@/components/terminal/Screens"; 
+import { useTicket } from "@/context/useContextTicket";
+import { emptyTicket } from "@/utils/constants/ticket";
+import { Screen } from "@/types/terminal";
 
 function Terminal() {
   const [searchParams] = useSearchParams();
@@ -39,28 +39,28 @@ function Terminal() {
   return (
     <div className="h-screen flex flex-col md:flex-row bg-white font-[Archivo]">
       <div className="w-full md:w-1/2 p-4 flex flex-col justify-start items-center gap-4 mt-4 md:mt-10">
-        <img src={logo} alt="logo" className="h-10 md:h-14 opacity-100" />
-        <h1 className="text-3xl md:text-4xl font-semibold text-center mb-8">Bienvenue</h1>
+        <img src={logo} alt="logo" className="h-10 md:h-12 opacity-100" />
+        <h1 className="text-3xl md:text-4xl font-semibold text-center">Bienvenue</h1>
         <p className="text-center text-base md:text-lg">
           Rejoignez la file d’attente directement
           <br />
           depuis cette borne
         </p>
-        <button onClick={() => setCurrentScreen("chooseService")} className="bg-primary text-white text-base py-3 px-4 rounded-md w-full max-w-[400px] transition font-semibold">
+        <button onClick={() => setCurrentScreen("chooseService")} className="bg-primary text-white text-base py-2 px-4 rounded-md w-full max-w-[400px] transition font-semibold">
           Rejoindre la file d’attente
         </button>
-        <div className="flex items-center gap-2 justify-center my-4 text-black">
+        <div className="flex items-center gap-2 justify-center mt-2 text-black">
           <hr className="w-6 md:w-8 border-t border-black" />
             <span className="text-sm">OU</span>
           <hr className="w-6 md:w-8 border-t border-black" />
         </div>
-        <p className="text-center text-base md:text-lg">
+        <p className="text-center text-sm md:text-base mt-2">
           Scannez ce QR code pour
           <br />
           prendre un ticket depuis votre smartphone
         </p>
         <div className="mt-2">
-          <QRCode data-testid="qr-code" value={`${window.location.origin}/terminal?screen=chooseService&scanned=true`} size={100} fgColor="#000000"/>
+          <QRCode value={`${window.location.origin}/terminal?screen=chooseService&scanned=true`} size={120} fgColor="#000000"/>
         </div>
       </div>
       <CompanyIllustration />

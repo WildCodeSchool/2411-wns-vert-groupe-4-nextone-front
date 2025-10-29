@@ -8,8 +8,6 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    },
-    "types": ["vitest/globals", "node"]
-  },
-  "types": ["node", "jest", "@testing-library/jest-dom"],
+    }
+  }
 }

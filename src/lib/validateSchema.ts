@@ -9,8 +9,7 @@ export const contactInfo = yup.object({
     email: yup.string().email("Adresse email invalide").required("Email requis"),
     phone: yup
         .string()
-        .required("Téléphone requis")
-        .matches(/^[0-9+\- ]{10,15}$/, "Numéro de téléphone invalide"),
-        
+        .matches(/^[0-9+\- ]{10,15}$/, "Numéro de téléphone invalide")
+        .required("Téléphone requis"),
     rgpdAccepted: yup.boolean().default(false).oneOf([true], "Vous devez accepter la RGPD"),
 });
