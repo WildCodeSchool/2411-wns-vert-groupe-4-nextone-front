@@ -11,6 +11,7 @@ import TicketPage from "../../components/dashboard/tickets/TicketPage";
 import PhonePage from "../../pages/PhonePage";
 import type { RouteObject } from "react-router-dom";
 import { isValidElement } from "react";
+import TvPage from "../../pages/TvPage";
 
 describe("Router", () => {
   const routes = router.routes as RouteObject[];
@@ -26,6 +27,7 @@ describe("Router", () => {
     expect(paths).toContain("/phone");
     expect(paths).toContain("/login");
     expect(paths).toContain("/dashboard");
+    expect(paths).toContain("/tv");
   });
 
   it("must have the correct components for the main routes", () => {
@@ -35,9 +37,8 @@ describe("Router", () => {
     expect(getElementType(findRoute("/terminal")?.element)).toBe(Terminal);
     expect(getElementType(findRoute("/phone")?.element)).toBe(PhonePage);
     expect(getElementType(findRoute("/login")?.element)).toBe(LoginPageAdmin);
-    expect(getElementType(findRoute("/dashboard")?.element)).toBe(
-      DashboardLayout
-    );
+    expect(getElementType(findRoute("/dashboard")?.element)).toBe(DashboardLayout);
+    expect(getElementType(findRoute("/tv")?.element)).toBe(TvPage);
   });
 
   it("must have the correct sub-routes for the main road dashboard", () => {
