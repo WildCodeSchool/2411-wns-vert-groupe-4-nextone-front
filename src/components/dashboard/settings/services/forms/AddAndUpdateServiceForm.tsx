@@ -17,6 +17,7 @@ import { MultiSelectPopover } from "@/components/ui/multiselect-popover";
 import PersonServiceSelectionList from "../PersonServiceSelectionList";
 import { useToast } from "@/hooks/use-toast";
 import { FormattedServiceRow } from "./ServicesManagementForm";
+import { useAuth } from "@/context/AuthContext";
 
 export type Manager = {
   id: string;
@@ -27,7 +28,10 @@ export type Manager = {
 };
 
 type GET_ALL_MANAGERS = {
-  managers: Manager[];
+  SortedManagers: {
+    active: Manager[];
+    disable: Manager[];
+  };
 };
 
 export default function AddAndUpdateServiceForm({
@@ -39,12 +43,15 @@ export default function AddAndUpdateServiceForm({
   handleClose: () => void;
   serviceData?: FormattedServiceRow | null;
 }) {
-  const { data } = useQuery<GET_ALL_MANAGERS>(GET_ALL_MANAGERS);
+  const { user } = useAuth();
+
+  const { data: { SortedManagers } = { active: [], disable: [] } } =
+    useQuery<GET_ALL_MANAGERS>(GET_ALL_MANAGERS);
 
   const { toastSuccess, toastError } = useToast();
 
   const options =
-    data?.managers.map((manager) => ({
+    SortedManagers?.active.map((manager) => ({
       value: manager.id,
       label: `${manager.firstName} ${manager.lastName}`,
     })) || null;
@@ -193,7 +200,7 @@ export default function AddAndUpdateServiceForm({
         variables: {
           data: {
             name: data.serviceName,
-            companyId: "d2315259-5926-4f5b-8490-f01a983ad33d",
+            companyId: user?.companyId,
           },
         },
       });
@@ -246,7 +253,7 @@ export default function AddAndUpdateServiceForm({
           error={errors.serviceName?.message}
           className="mb-4"
         />
-        {data?.managers && (
+        {SortedManagers?.active && (
           <>
             <div className="flex items-center justify-between mb-2">
               <Label className="text-base font-normal text-gray-800">
@@ -299,7 +306,6 @@ export default function AddAndUpdateServiceForm({
                     options={operatorOptions ?? []}
                     selected={field.value ?? []}
                     onChange={(vals) => {
-                      // on met à jour react-hook-form proprement
                       setValue("operators", vals, {
                         shouldDirty: true,
                         shouldValidate: true,
