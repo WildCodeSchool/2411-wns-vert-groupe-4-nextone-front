@@ -34,7 +34,7 @@ import {
 import { Checkbox } from "../../components/ui/checkbox";
 import { Input } from "../../components/ui/input";
 import { TicketActionMenu } from "./TicketActionMenu";
-import { useMutation, useQuery } from "@apollo/client"; 
+import { useMutation, useQuery, useSubscription } from "@apollo/client"; 
 import { UPDATE_TICKET_STATUS, GET_TICKETS_PAGINATED } from "../../requests/queries/ticket.query"; 
 import { useToast } from "../../hooks/use-toast";
 import {
@@ -53,6 +53,7 @@ import { RiFilterLine } from "react-icons/ri";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/fr";
+import { GET_TICKETS_PAGINATED_SUBSCRIPTION } from "../../requests/subscriptions/ticket.subscription";
 
 dayjs.extend(relativeTime);
 
@@ -128,6 +129,28 @@ export default function DashboardServiceCard({
         },
       },
       fetchPolicy: "cache-and-network",
+    });
+
+    useSubscription(GET_TICKETS_PAGINATED_SUBSCRIPTION, {
+      onData: ({ data }) => {
+        const newTicket = data.data?.ticketAdded;
+        if (!newTicket) return;
+
+        if (newTicket.service?.id !== service.id) return;
+
+        setLocalTickets((prev) => [
+          {
+            id: newTicket.id,
+            ticket: newTicket.code,
+            lastname: newTicket.lastName ?? undefined,
+            name: newTicket.firstName ?? undefined,
+            status: newTicket.status,
+            waitTime: dayjs(newTicket.createdAt).locale("fr").fromNow(),
+            waitTimeMinutes: 0,
+          },
+          ...prev,
+        ]);
+      },
     });
 
   const rawTickets: RawTicket[] = useMemo(

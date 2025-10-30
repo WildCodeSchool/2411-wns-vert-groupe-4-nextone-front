@@ -36,6 +36,7 @@
     "cmdk": "^1.1.1",
     "dayjs": "^1.11.18",
     "graphql": "^16.10.0",
+    "graphql-ws": "^6.0.6",
     "lucide-react": "^0.534.0",
     "motion": "^12.23.24",
     "qrcode.react": "^4.2.0",

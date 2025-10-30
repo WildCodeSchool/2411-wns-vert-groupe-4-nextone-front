@@ -83,7 +83,7 @@ function ContactInformation({ onBack, onNext, onCancel }: ChooseServiceProps) {
                 </span>
               )}
             </div>
-            <NavigationActions onBack={onBack} onNext={handleSubmit(onSubmit)} onCancel={onCancel} updateTicket={() => setTicketForGenerate()}/>
+            <NavigationActions onBack={onBack} onCancel={onCancel} updateTicket={() => setTicketForGenerate()}/>
           </form>
         </div>
       </div>
