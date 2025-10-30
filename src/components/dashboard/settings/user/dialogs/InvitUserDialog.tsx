@@ -30,8 +30,14 @@ export default function InvitUserDialog({
   invitations,
   refetchInvitations,
 }: {
-  managers?: Manager[];
-  invitations?: Invitation[];
+  managers?: {
+    active: Manager[];
+    disable: Manager[];
+  };
+  invitations?: {
+    expired: Invitation[];
+    pending: Invitation[];
+  };
   refetchInvitations: () => void;
 }) {
   const [open, setOpen] = useState(false);
@@ -59,14 +65,22 @@ export default function InvitUserDialog({
         "unique",
         "Il existe déjà un utilisateur avec cette adresse e-mail",
         (value) =>
-          managers ? !managers.find((manager) => manager.email === value) : true
+          managers
+            ? !managers.active.find((manager) => manager.email === value) &&
+              !managers.disable.find((manager) => manager.email === value)
+            : true
       )
       .test(
         "unique",
         "Il existe déjà une invitation avec cette adresse e-mail",
         (value) =>
           invitations
-            ? !invitations.find((invitation) => invitation.email === value)
+            ? !invitations.expired.find(
+                (invitation) => invitation.email === value
+              ) &&
+              !invitations.pending.find(
+                (invitation) => invitation.email === value
+              )
             : true
       ),
     role: yup.string().oneOf(["ADMIN", "OPERATOR"]).required(),

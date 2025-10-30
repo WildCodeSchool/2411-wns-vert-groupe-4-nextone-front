@@ -21,7 +21,7 @@ export type Manager = {
   id: string;
   firstName: string;
   lastName: string;
-  isGloballyActive: boolean;
+  isGloballyActive?: boolean;
   email: string;
 };
 

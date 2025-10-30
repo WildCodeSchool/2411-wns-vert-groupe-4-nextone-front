@@ -37,7 +37,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type GET_ALL_MANAGERS = {
-  managers: Manager[];
+  SortedManagers: {
+    active: Manager[];
+    disable: Manager[];
+  };
 };
 
 export type Invitation = {
@@ -49,19 +52,19 @@ export type Invitation = {
 type InvitationsTabEnum = "expired_invitations" | "pending_invitations";
 
 export default function ManagersManagementForm() {
-  const { data: { managers } = {}, refetch: refetchManagers } =
+  const { data: { SortedManagers } = {}, refetch: refetchManagers } =
     useQuery<GET_ALL_MANAGERS>(GET_ALL_MANAGERS);
 
   const disabledManagers = useMemo(
-    () => managers?.filter((manager) => !manager.isGloballyActive) || [],
-    [managers]
+    () => SortedManagers?.disable || [],
+    [SortedManagers]
   );
   const activeManagers = useMemo(
-    () => managers?.filter((manager) => manager.isGloballyActive) || [],
-    [managers]
+    () => SortedManagers?.active || [],
+    [SortedManagers]
   );
 
-  const { data: { invitations } = {}, refetch: refetchInvitations } =
+  const { data: { sortedInvitations } = {}, refetch: refetchInvitations } =
     useQuery(GET_ALL_INVITATIONS);
 
   const { toastSuccess, toastError } = useToast();
@@ -156,7 +159,7 @@ export default function ManagersManagementForm() {
           description="Gérez les utilisateurs de votre entreprise. Vous pouvez inviter de nouveaux utilisateurs, en supprimer ou en suspendre d'autres."
         />
         <InvitUserDialog
-          managers={managers}
+          managers={SortedManagers}
           refetchInvitations={refetchInvitations}
         />
       </div>
@@ -168,6 +171,11 @@ export default function ManagersManagementForm() {
           <div
             className={`mb-4 p-4 bg-popover rounded-md flex flex-col w-full`}
           >
+            {activeManagers.length === 0 && (
+              <div className="text-muted-foreground py-4">
+                Aucun utilisateur actif
+              </div>
+            )}
             {activeManagers.map((manager) => (
               <ManagerListItem
                 key={manager.id}
@@ -183,6 +191,11 @@ export default function ManagersManagementForm() {
             Utilisateurs suspendus
           </h3>
           <ScrollArea className="h-[100%] mb-4 p-4 bg-popover rounded-md flex flex-col w-full">
+            {activeManagers.length === 0 && (
+              <div className="text-muted-foreground py-4">
+                Aucun utilisateur suspendu
+              </div>
+            )}
             {disabledManagers.map((manager) => (
               <ManagerListItem
                 key={manager.id}
@@ -222,7 +235,12 @@ export default function ManagersManagementForm() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="pending_invitations">
-                {invitations?.map((invitation: Invitation) => (
+                {sortedInvitations?.pending.length === 0 && (
+                  <div className="text-muted-foreground py-4">
+                    Aucune invitation en cours
+                  </div>
+                )}
+                {sortedInvitations?.pending.map((invitation: Invitation) => (
                   <InvitationListItem
                     key={invitation.id}
                     invitation={invitation}
@@ -236,7 +254,12 @@ export default function ManagersManagementForm() {
                 ))}
               </TabsContent>
               <TabsContent value="expired_invitations">
-                {invitations?.map((invitation: Invitation) => (
+                {sortedInvitations?.expired.length === 0 && (
+                  <div className="text-muted-foreground py-4">
+                    Aucune invitation expirée
+                  </div>
+                )}
+                {sortedInvitations?.expired.map((invitation: Invitation) => (
                   <InvitationListItem
                     key={invitation.id}
                     invitation={invitation}

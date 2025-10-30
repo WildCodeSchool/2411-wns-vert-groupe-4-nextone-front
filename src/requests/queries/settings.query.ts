@@ -36,23 +36,37 @@ export const GET_SERVICES_THAT_CAN_BE_MANAGED = gql`
 `;
 
 export const GET_ALL_MANAGERS = gql`
-  query GetAllManagers {
-    managers {
-      id
-      firstName
-      lastName
-      email
-      isGloballyActive
+  query GetAllManagersForManagement {
+    SortedManagers {
+      active {
+        id
+        firstName
+        lastName
+        email
+      }
+      disable {
+        id
+        firstName
+        lastName
+        email
+      }
     }
   }
 `;
 
 export const GET_ALL_INVITATIONS = gql`
-  query GetAllInvitations {
-    invitations {
-      id
-      email
-      updatedAt
+  query SortedInvitations {
+    sortedInvitations {
+      expired {
+        id
+        email
+        updatedAt
+      }
+      pending {
+        id
+        email
+        updatedAt
+      }
     }
   }
 `;
