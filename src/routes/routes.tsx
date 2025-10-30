@@ -9,6 +9,8 @@ import DashboardServicesPage from "../pages/DashboardServicesPage.tsx";
 import TicketsDashboard from "../components/dashboard/tickets/TicketsDashboard.tsx";
 import TicketPage from "../components/dashboard/tickets/TicketPage.tsx";
 import TvPage from "../pages/TvPage.tsx";
+import SettingsPage from "@/pages/SettingsPage";
+import UserInvitationPage from "@/pages/UserInvitationPage";
 
 export const router = createBrowserRouter([
   {
@@ -40,7 +42,6 @@ export const router = createBrowserRouter([
         element: <DashboardServicesPage />,
       },
       {
-
         path: "tickets",
         element: <TicketsDashboard />,
       },
@@ -48,10 +49,18 @@ export const router = createBrowserRouter([
         path: "tickets/:id",
         element: <TicketPage />,
       },
+      {
+        path: "/dashboard/settings",
+        element: <SettingsPage />,
+      },
     ],
   },
   {
     path: "/login",
     element: <LoginPageAdmin />,
+  },
+  {
+    path: "/join",
+    element: <UserInvitationPage />,
   },
 ]);

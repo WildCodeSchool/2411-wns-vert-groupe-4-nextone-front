@@ -20,7 +20,7 @@ describe("Router", () => {
   };
 
   it("must contain the main routes", () => {
-    const paths = routes.map(r => r.path);
+    const paths = routes.map((r) => r.path);
     expect(paths).toContain("/");
     expect(paths).toContain("/terminal");
     expect(paths).toContain("/phone");
@@ -29,32 +29,38 @@ describe("Router", () => {
   });
 
   it("must have the correct components for the main routes", () => {
-    const findRoute = (path: string) => routes.find(r => r.path === path);
+    const findRoute = (path: string) => routes.find((r) => r.path === path);
 
     expect(getElementType(findRoute("/")?.element)).toBe(App);
     expect(getElementType(findRoute("/terminal")?.element)).toBe(Terminal);
     expect(getElementType(findRoute("/phone")?.element)).toBe(PhonePage);
     expect(getElementType(findRoute("/login")?.element)).toBe(LoginPageAdmin);
-    expect(getElementType(findRoute("/dashboard")?.element)).toBe(DashboardLayout);
+    expect(getElementType(findRoute("/dashboard")?.element)).toBe(
+      DashboardLayout
+    );
   });
 
   it("must have the correct sub-routes for the main road dashboard", () => {
-    const dashboardRoute = routes.find(r => r.path === "/dashboard");
+    const dashboardRoute = routes.find((r) => r.path === "/dashboard");
     expect(dashboardRoute?.children).toBeDefined();
     const children = dashboardRoute?.children as RouteObject[];
 
-    const childPaths = children.map(c => c.path ?? "index");
+    const childPaths = children.map((c) => c.path ?? "index");
     expect(childPaths).toContain("index");
     expect(childPaths).toContain("services");
     expect(childPaths).toContain("tickets");
     expect(childPaths).toContain("tickets/:id");
 
     const findChild = (path: string) =>
-      children.find(c => (c.path ?? "index") === path);
+      children.find((c) => (c.path ?? "index") === path);
 
     expect(getElementType(findChild("index")?.element)).toBe(HomeDashboard);
-    expect(getElementType(findChild("services")?.element)).toBe(DashboardServicesPage);
-    expect(getElementType(findChild("tickets")?.element)).toBe(TicketsDashboard);
+    expect(getElementType(findChild("services")?.element)).toBe(
+      DashboardServicesPage
+    );
+    expect(getElementType(findChild("tickets")?.element)).toBe(
+      TicketsDashboard
+    );
     expect(getElementType(findChild("tickets/:id")?.element)).toBe(TicketPage);
   });
 });
