@@ -27,32 +27,74 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Trash2 } from "lucide-react";
+import { useMemo } from "react";
 import UpdateServiceDialog from "../../company/dialogs/UpdateServiceDialog";
 import { DELETE_SERVICE } from "@/requests/mutations/settings.mutation";
 import { useToast } from "@/hooks/use-toast";
 
+type FormattedService = {
+  id: string;
+  name: string;
+  authorizations: {
+    manager: {
+      id: string;
+      firstName: string;
+      lastName: string;
+    };
+    isAdministrator: boolean;
+  }[];
+};
+
+type ServiceAuthorization = {
+  service: FormattedService;
+  isAdministrator: boolean;
+};
+
+type GET_SERVICES_THAT_CAN_BE_MANAGED = {
+  getEmployeeAuthorizations: Array<ServiceAuthorization>;
+};
+
+export type FormattedServiceRow = {
+  id: string;
+  name: string;
+  administrators: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  }[];
+  operators: {
+    id: string;
+    firstName: string;
+    lastName: string;
+  }[];
+};
+
 export default function ServicesManagementForm() {
   const { user } = useAuth();
 
-  const {
-    data: services,
-    error,
-    refetch,
-  } = useQuery(GET_SERVICES_THAT_CAN_BE_MANAGED, {
-    variables: { managerId: user?.id },
-    skip: !user?.id,
-    fetchPolicy: "network-only",
-  });
+  const { data: { getEmployeeAuthorizations: services } = {}, refetch } =
+    useQuery<GET_SERVICES_THAT_CAN_BE_MANAGED>(
+      GET_SERVICES_THAT_CAN_BE_MANAGED,
+      {
+        variables: { managerId: user?.id },
+        skip: !user?.id,
+        fetchPolicy: "network-only",
+      }
+    );
 
-  const [deleteService] = useMutation(DELETE_SERVICE);
+  const [deleteService] = useMutation(DELETE_SERVICE, {
+    onCompleted: () => {
+      toastSuccess("Service supprimé avec succès");
+      refetch();
+    },
+  });
 
   const { toastSuccess } = useToast();
 
-  const formattedServices = useMemo(() => {
+  const formattedServices: FormattedServiceRow[] = useMemo(() => {
     return (
-      services?.getEmployeeAuthorizations?.map((authorization: any) => {
+      services?.map((authorization: ServiceAuthorization) => {
         return {
           id: authorization.service.id,
           name: authorization.service.name,
@@ -63,7 +105,7 @@ export default function ServicesManagementForm() {
               firstName: a.manager.firstName,
               lastName: a.manager.lastName,
             })),
-          members: authorization.service.authorizations
+          operators: authorization.service.authorizations
             .filter((a) => !a.isAdministrator)
             .map((a) => ({
               id: a.manager.id,
@@ -75,7 +117,7 @@ export default function ServicesManagementForm() {
     );
   }, [services]);
 
-  const columns: ColumnDef<any>[] = useMemo(
+  const columns: ColumnDef<FormattedServiceRow>[] = useMemo(
     () => [
       {
         accessorKey: "name",
@@ -99,7 +141,7 @@ export default function ServicesManagementForm() {
         cell: ({ row }) => {
           return (
             <PersonsServiceColumnComponent
-              persons={row.original.members}
+              persons={row.original.operators}
               personType="member"
             />
           );
@@ -109,7 +151,6 @@ export default function ServicesManagementForm() {
         accessorKey: "options",
         header: "",
         cell: ({ row }) => {
-          console.log("row rendered");
           return (
             <div className="flex justify-end">
               <DropdownMenu>
@@ -125,12 +166,9 @@ export default function ServicesManagementForm() {
                   />
                   <DropdownMenuItem
                     onClick={async () => {
-                      console.log("Deleting service:", row.original.id);
                       await deleteService({
                         variables: { deleteServiceId: row.original.id },
                       });
-                      toastSuccess("Service supprimé avec succès");
-                      refetch();
                     }}
                   >
                     <Trash2 className="w-4 h-4 mr-2 text-red-500" />
@@ -143,7 +181,7 @@ export default function ServicesManagementForm() {
         },
       },
     ],
-    [deleteService, refetch, toastSuccess]
+    [deleteService, refetch]
   );
 
   const table = useReactTable({
@@ -193,9 +231,6 @@ export default function ServicesManagementForm() {
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
                   className="cursor-pointer text-base text-left"
-                  //   onClick={() =>
-                  //     navigate(`/dashboard/tickets/${row.original.id}`)
-                  //   }
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="text-left py-4">

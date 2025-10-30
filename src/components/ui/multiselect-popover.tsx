@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, Trash } from "lucide-react";
+import { Check } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import {
@@ -17,7 +17,6 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Badge } from "@/components/ui/badge";
 
 export type Option = {
   value: string;
@@ -44,9 +43,6 @@ export function MultiSelectPopover({
   options = [],
   selected,
   onChange,
-  placeholder = "Select options...",
-  emptyText = "No options found.",
-  className,
   trigger,
   open,
   onOpenChange,
@@ -60,32 +56,6 @@ export function MultiSelectPopover({
     },
     [selected, onChange]
   );
-
-  const selectedLabelsWithBadges = React.useMemo(() => {
-    return (
-      <div className="flex flex-wrap gap-1">
-        {selected.map((value) => {
-          const option = options.find((o) => o.value === value);
-          if (!option) return null;
-          return (
-            <Badge
-              key={value}
-              className="flex items-center gap-1 rounded-full px-2 py-1"
-            >
-              {option.label}
-              <Trash
-                className="h-3 w-3 cursor-pointer"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleSelect(value);
-                }}
-              />
-            </Badge>
-          );
-        })}
-      </div>
-    );
-  }, [selected, options, handleSelect]);
 
   const [query, setQuery] = React.useState("");
 

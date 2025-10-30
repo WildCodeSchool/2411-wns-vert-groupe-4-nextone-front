@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -11,13 +10,14 @@ import AddAndUpdateServiceForm from "../../services/forms/AddAndUpdateServiceFor
 import { useState } from "react";
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { Pencil } from "lucide-react";
+import { FormattedServiceRow } from "../../services/forms/ServicesManagementForm";
 
 export default function UpdateServiceDialog({
   refetch,
   serviceData,
 }: {
   refetch: () => void;
-  serviceData?: any;
+  serviceData?: FormattedServiceRow | null;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -40,7 +40,6 @@ export default function UpdateServiceDialog({
           refetch={refetch}
           serviceData={serviceData || null}
           handleClose={() => setOpen(false)}
-          updateMode={true}
         />
       </DialogContent>
     </Dialog>

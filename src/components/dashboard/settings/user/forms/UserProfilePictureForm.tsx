@@ -54,7 +54,7 @@ export default function UserProfilePictureForm() {
         {...register("profilePicture")}
         type="file"
         accept="image/png, image/jpeg"
-        className="!text-base font-normal !bg-transparent !shadow-none w-full"
+        className="text-base! font-normal bg-transparent! shadow-none! w-full"
         error={errors.profilePicture?.message}
       />
       <Button onClick={handleSubmit(onSubmit)} disabled={!isValid}>

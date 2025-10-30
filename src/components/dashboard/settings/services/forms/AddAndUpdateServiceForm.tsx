@@ -16,6 +16,7 @@ import * as yup from "yup";
 import { MultiSelectPopover } from "@/components/ui/multiselect-popover";
 import PersonServiceSelectionList from "../PersonServiceSelectionList";
 import { useToast } from "@/hooks/use-toast";
+import { FormattedServiceRow } from "./ServicesManagementForm";
 
 export type Manager = {
   id: string;
@@ -36,16 +37,17 @@ export default function AddAndUpdateServiceForm({
 }: {
   refetch: () => void;
   handleClose: () => void;
-  serviceData?: any;
+  serviceData?: FormattedServiceRow | null;
 }) {
   const { data } = useQuery<GET_ALL_MANAGERS>(GET_ALL_MANAGERS);
 
   const { toastSuccess, toastError } = useToast();
 
-  const options = data?.managers.map((manager) => ({
-    value: manager.id,
-    label: `${manager.firstName} ${manager.lastName}`,
-  }));
+  const options =
+    data?.managers.map((manager) => ({
+      value: manager.id,
+      label: `${manager.firstName} ${manager.lastName}`,
+    })) || null;
 
   const handleCloseFormAfterSubmit = () => {
     refetch();
@@ -59,11 +61,11 @@ export default function AddAndUpdateServiceForm({
       .required("Le nom du service est requis"),
     administrators: yup
       .array()
-      .of(yup.string())
+      .of(yup.string().required())
       .required("Les administrateurs sont requis"),
     operators: yup
       .array()
-      .of(yup.string())
+      .of(yup.string().required())
       .required("Les opérateurs sont requis"),
   });
 
@@ -82,10 +84,10 @@ export default function AddAndUpdateServiceForm({
     defaultValues: {
       serviceName: serviceData ? serviceData.name : "",
       administrators: serviceData
-        ? serviceData.administrators.map((admin: Manager) => admin.id)
+        ? serviceData.administrators.map((admin) => admin.id)
         : [],
       operators: serviceData
-        ? serviceData.members.map((operator: Manager) => operator.id)
+        ? serviceData.operators.map((operator) => operator.id)
         : [],
     },
   });
@@ -115,10 +117,10 @@ export default function AddAndUpdateServiceForm({
   const handleFormSubmit = async (data: ServiceFormData) => {
     if (serviceData) {
       const currentAdministrators: string[] = serviceData.administrators.map(
-        (admin: Manager) => admin.id
+        (admin) => admin.id
       );
       const currentOperators: string[] = serviceData.operators.map(
-        (operator: Manager) => operator.id
+        (operator) => operator.id
       );
 
       const administratorsToAdd = data.administrators.filter(

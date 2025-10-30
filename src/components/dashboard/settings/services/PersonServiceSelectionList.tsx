@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { UseFormSetValue } from "react-hook-form";
 import { IoPerson } from "react-icons/io5";
 
 export default function PersonServiceSelectionList({
@@ -8,7 +9,11 @@ export default function PersonServiceSelectionList({
   personType,
 }: {
   listToWatch: string[] | null;
-  setValue: any;
+  setValue: UseFormSetValue<{
+    operators: string[];
+    administrators: string[];
+    serviceName: string;
+  }>;
   personList: { value: string; label: string }[] | null;
   personType: "operators" | "administrators";
 }) {
@@ -35,7 +40,7 @@ export default function PersonServiceSelectionList({
         <>
           {listToWatch.map((personId, index) => {
             const person = personList.find(
-              (m: Manager) => m.value === personId
+              (manager) => manager.value === personId
             );
             return (
               <div
@@ -45,7 +50,7 @@ export default function PersonServiceSelectionList({
                 } ${index === 0 ? "pb-4" : "py-4"}
                     ${
                       index === listToWatch.length - 1 && index === 0
-                        ? "!pb-0"
+                        ? "pb-0!"
                         : ""
                     }
                     `}

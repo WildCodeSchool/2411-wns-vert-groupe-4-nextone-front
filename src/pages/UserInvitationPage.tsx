@@ -1,9 +1,7 @@
 import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useLazyQuery } from "@apollo/client/react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useSearchParams } from "react-router-dom";
 import * as yup from "yup";
@@ -75,7 +73,7 @@ export default function UserInvitationPage() {
                 label="Prénom"
                 placeholder="John"
                 required
-                className="!text-base font-normal !bg-transparent !shadow-none w-full"
+                className="text-base! font-normal bg-transparent! shadow-none! w-full"
                 {...register("firstName")}
                 error={errors.firstName?.message}
               />
@@ -83,7 +81,7 @@ export default function UserInvitationPage() {
                 label="Nom"
                 placeholder="Doe"
                 required
-                className="!text-base font-normal !bg-transparent !shadow-none w-full"
+                className="text-base! font-normal bg-transparent! shadow-none! w-full"
                 {...register("lastName")}
                 error={errors.lastName?.message}
               />
@@ -92,7 +90,7 @@ export default function UserInvitationPage() {
                 type="password"
                 placeholder="**********"
                 required
-                className="!text-base font-normal !bg-transparent !shadow-none"
+                className="text-base! font-normal bg-transparent! shadow-none!"
                 {...register("password")}
                 error={errors.password?.message}
               />
@@ -101,7 +99,7 @@ export default function UserInvitationPage() {
                 type="password"
                 placeholder="**********"
                 required
-                className="!text-base font-normal !bg-transparent !shadow-none"
+                className="text-base! font-normal bg-transparent! shadow-none!"
                 {...register("confirmPassword")}
                 error={errors.confirmPassword?.message}
               />
@@ -119,7 +117,7 @@ export default function UserInvitationPage() {
         <img
           src="/login-picture.jpg"
           alt="Accueil NextOne"
-          className="w-[100%] h-full object-cover rounded-lg"
+          className="w-full h-full object-cover rounded-lg"
         />
       </div>
     </div>

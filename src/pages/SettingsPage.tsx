@@ -35,7 +35,7 @@ export default function SettingsPage() {
           <TabsList className="mb-8 gap-4 h-fit">
             <TabsTrigger
               value="user"
-              className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+              className="data-[state=active]:bg-primary! data-[state=active]:text-white! px-4 py-2"
             >
               Informations de l'utilisateur
             </TabsTrigger>
@@ -43,19 +43,19 @@ export default function SettingsPage() {
               <>
                 <TabsTrigger
                   value="company"
-                  className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+                  className="data-[state=active]:bg-primary! data-[state=active]:text-white! px-4 py-2"
                 >
                   Informations de l'entreprise
                 </TabsTrigger>
                 <TabsTrigger
                   value="services"
-                  className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+                  className="data-[state=active]:bg-primary! data-[state=active]:text-white! px-4 py-2"
                 >
                   Gestion des services
                 </TabsTrigger>
                 <TabsTrigger
                   value="users"
-                  className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+                  className="data-[state=active]:bg-primary! data-[state=active]:text-white! px-4 py-2"
                 >
                   Gestion des utilisateurs
                 </TabsTrigger>

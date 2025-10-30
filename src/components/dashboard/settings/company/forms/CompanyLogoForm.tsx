@@ -52,7 +52,7 @@ export default function CompanyLogoForm() {
         {...register("logo")}
         type="file"
         accept="image/png, image/jpeg"
-        className="!text-base font-normal !bg-transparent !shadow-none w-full"
+        className="text-base! font-normal bg-transparent! shadow-none! w-full"
         error={errors.logo?.message}
       />
       <Button onClick={handleSubmit(onSubmit)} disabled={!isValid}>

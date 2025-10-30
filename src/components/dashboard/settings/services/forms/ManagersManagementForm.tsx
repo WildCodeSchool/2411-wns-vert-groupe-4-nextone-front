@@ -170,8 +170,8 @@ export default function ManagersManagementForm() {
           <h3 className="text-xl font-light tracking-tight text-balance text-muted-foreground mb-2 text-start">
             Utilisateurs actifs
           </h3>
-          <div
-            className={`mb-4 p-4 bg-popover rounded-md flex flex-col w-full`}
+          <ScrollArea
+            className={`mb-4 p-4 bg-popover rounded-md flex flex-col w-full h-80`}
           >
             {activeManagers.length === 0 && (
               <div className="text-muted-foreground py-4">
@@ -186,13 +186,13 @@ export default function ManagersManagementForm() {
                 onDelete={deleteManager}
               />
             ))}
-          </div>
+          </ScrollArea>
         </div>
         <div className="flex flex-col gap-4 h-full justify-start items-start w-[33%]">
           <h3 className="text-xl font-light tracking-tight text-balance text-muted-foreground mb-2 text-start">
             Utilisateurs suspendus
           </h3>
-          <ScrollArea className="h-[100%] mb-4 p-4 bg-popover rounded-md flex flex-col w-full">
+          <ScrollArea className="h-80 mb-4 p-4 bg-popover rounded-md flex flex-col w-full">
             {activeManagers.length === 0 && (
               <div className="text-muted-foreground py-4">
                 Aucun utilisateur suspendu
@@ -225,13 +225,13 @@ export default function ManagersManagementForm() {
               <TabsList className="mb-2 gap-4 h-fit">
                 <TabsTrigger
                   value="pending_invitations"
-                  className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+                  className="data-[state=active]:bg-primary! data-[state=active]:text-white! px-4 py-2"
                 >
                   Invitations en cours
                 </TabsTrigger>
                 <TabsTrigger
                   value="expired_invitations"
-                  className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+                  className="data-[state=active]:bg-primary! data-[state=active]:text-white! px-4 py-2"
                 >
                   Invitations expirées
                 </TabsTrigger>

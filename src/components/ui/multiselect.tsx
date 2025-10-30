@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ChevronsUpDown, Trash, X } from "lucide-react";
+import { Check, ChevronsUpDown, Trash } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -87,7 +87,7 @@ export function MultiSelect({
         })}
       </div>
     );
-  }, [selected, options]);
+  }, [selected, options, handleSelect]);
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
