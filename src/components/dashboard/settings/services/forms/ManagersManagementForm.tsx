@@ -35,6 +35,8 @@ import { Ban, Check, RefreshCw, Trash2 } from "lucide-react";
 import { IoIosMore } from "react-icons/io";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { motion } from "motion/react";
+import { tabContentEnterAnimation } from "@/lib/animations/settings.animation";
 
 type GET_ALL_MANAGERS = {
   SortedManagers: {
@@ -235,42 +237,54 @@ export default function ManagersManagementForm() {
                 </TabsTrigger>
               </TabsList>
               <TabsContent value="pending_invitations">
-                {sortedInvitations?.pending.length === 0 && (
-                  <div className="text-muted-foreground py-4">
-                    Aucune invitation en cours
-                  </div>
-                )}
-                {sortedInvitations?.pending.map((invitation: Invitation) => (
-                  <InvitationListItem
-                    key={invitation.id}
-                    invitation={invitation}
-                    onResend={() =>
-                      renewInvitationMutation({
-                        variables: { renewInvitationId: invitation.id },
-                      })
-                    }
-                    onDelete={deleteInvitation}
-                  />
-                ))}
+                <motion.div
+                  initial={tabContentEnterAnimation.initial}
+                  animate={tabContentEnterAnimation.animate}
+                  transition={tabContentEnterAnimation.transition}
+                >
+                  {sortedInvitations?.pending.length === 0 && (
+                    <div className="text-muted-foreground py-4">
+                      Aucune invitation en cours
+                    </div>
+                  )}
+                  {sortedInvitations?.pending.map((invitation: Invitation) => (
+                    <InvitationListItem
+                      key={invitation.id}
+                      invitation={invitation}
+                      onResend={() =>
+                        renewInvitationMutation({
+                          variables: { renewInvitationId: invitation.id },
+                        })
+                      }
+                      onDelete={deleteInvitation}
+                    />
+                  ))}
+                </motion.div>
               </TabsContent>
               <TabsContent value="expired_invitations">
-                {sortedInvitations?.expired.length === 0 && (
-                  <div className="text-muted-foreground py-4">
-                    Aucune invitation expirée
-                  </div>
-                )}
-                {sortedInvitations?.expired.map((invitation: Invitation) => (
-                  <InvitationListItem
-                    key={invitation.id}
-                    invitation={invitation}
-                    onResend={() =>
-                      renewInvitationMutation({
-                        variables: { renewInvitationId: invitation.id },
-                      })
-                    }
-                    onDelete={deleteInvitation}
-                  />
-                ))}
+                <motion.div
+                  initial={tabContentEnterAnimation.initial}
+                  animate={tabContentEnterAnimation.animate}
+                  transition={tabContentEnterAnimation.transition}
+                >
+                  {sortedInvitations?.expired.length === 0 && (
+                    <div className="text-muted-foreground py-4">
+                      Aucune invitation expirée
+                    </div>
+                  )}
+                  {sortedInvitations?.expired.map((invitation: Invitation) => (
+                    <InvitationListItem
+                      key={invitation.id}
+                      invitation={invitation}
+                      onResend={() =>
+                        renewInvitationMutation({
+                          variables: { renewInvitationId: invitation.id },
+                        })
+                      }
+                      onDelete={deleteInvitation}
+                    />
+                  ))}
+                </motion.div>
               </TabsContent>
             </Tabs>
           </div>

@@ -11,6 +11,8 @@ import ServicesManagementForm from "@/components/dashboard/settings/services/for
 import SettingsHeader from "@/components/dashboard/settings/SettingsHeader";
 import ManagersManagementForm from "@/components/dashboard/settings/services/forms/ManagersManagementForm";
 import { useAuth } from "@/context/AuthContext";
+import { motion } from "motion/react";
+import { tabContentEnterAnimation } from "@/lib/animations/settings.animation";
 
 type TabEnum = "user" | "company";
 
@@ -61,7 +63,13 @@ export default function SettingsPage() {
             )}
           </TabsList>
           <TabsContent value="user">
-            <div className="flex gap-24 h-full justify-start items-stretch px-4 mb-4">
+            <motion.div
+              className="flex gap-24 h-full justify-start items-stretch px-4 mb-4"
+              initial={tabContentEnterAnimation.initial}
+              animate={tabContentEnterAnimation.animate}
+              transition={tabContentEnterAnimation.transition}
+              key={currentTab}
+            >
               <div className="flex flex-col gap-4 h-full justify-start items-start w-[50%]">
                 <SettingsHeader
                   title="Modifier les informations de l'utilisateur"
@@ -87,10 +95,16 @@ export default function SettingsPage() {
                 />
                 <UserProfilePictureForm />
               </div>
-            </div>
+            </motion.div>
           </TabsContent>
           <TabsContent value="company">
-            <div className="flex gap-24 h-full justify-start items-stretch px-4 mb-4">
+            <motion.div
+              className="flex gap-24 h-full justify-start items-stretch px-4 mb-4"
+              initial={tabContentEnterAnimation.initial}
+              animate={tabContentEnterAnimation.animate}
+              transition={tabContentEnterAnimation.transition}
+              key={currentTab}
+            >
               <div className="flex flex-col gap-6 h-full justify-start items-start w-[50%]">
                 <SettingsHeader
                   title="Modifier les informations de l'entreprise"
@@ -106,17 +120,29 @@ export default function SettingsPage() {
                 <CompanyLogoForm />
                 <CompanyColorForm />
               </div>
-            </div>
+            </motion.div>
           </TabsContent>
           <TabsContent value="services">
-            <div className="flex flex-col gap-4 h-full justify-start items-stretch px-4 mb-4">
+            <motion.div
+              className="flex flex-col gap-4 h-full justify-start items-stretch px-4 mb-4"
+              initial={tabContentEnterAnimation.initial}
+              animate={tabContentEnterAnimation.animate}
+              transition={tabContentEnterAnimation.transition}
+              key={currentTab}
+            >
               <ServicesManagementForm />
-            </div>
+            </motion.div>
           </TabsContent>
           <TabsContent value="users">
-            <div className="flex flex-col gap-4 h-full">
+            <motion.div
+              className="flex flex-col gap-4 h-full px-4 mb-4"
+              initial={tabContentEnterAnimation.initial}
+              animate={tabContentEnterAnimation.animate}
+              transition={tabContentEnterAnimation.transition}
+              key={currentTab}
+            >
               <ManagersManagementForm />
-            </div>
+            </motion.div>
           </TabsContent>
         </Tabs>
       </div>
