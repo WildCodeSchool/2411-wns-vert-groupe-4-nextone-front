@@ -21,15 +21,34 @@ import { Controller, useForm } from "react-hook-form";
 import * as yup from "yup";
 import { Manager } from "../../services/forms/AddAndUpdateServiceForm";
 import { Invitation } from "../../services/forms/ManagersManagementForm";
+import { useMutation } from "@apollo/client";
+import { CREATE_INVITATION } from "@/requests/queries/settings.query";
+import { useToast } from "@/hooks/use-toast";
 
 export default function InvitUserDialog({
   managers,
   invitations,
+  refetchInvitations,
 }: {
   managers?: Manager[];
   invitations?: Invitation[];
+  refetchInvitations: () => void;
 }) {
   const [open, setOpen] = useState(false);
+
+  const { toastSuccess, toastError } = useToast();
+
+  const [createInvitation] = useMutation(CREATE_INVITATION, {
+    onCompleted: () => {
+      toastSuccess("L'invitation a bien été envoyée.");
+      setOpen(false);
+      refetchInvitations();
+    },
+    onError: (error) => {
+      console.error("Erreur lors de l'envoi de l'invitation", error);
+      toastError("Erreur lors de l'envoi de l'invitation");
+    },
+  });
 
   const invitUserFormSchema = yup.object({
     email: yup
@@ -58,10 +77,22 @@ export default function InvitUserDialog({
   const {
     control,
     formState: { isValid, isDirty },
+    handleSubmit,
   } = useForm<InvitUserFormData>({
     resolver: yupResolver(invitUserFormSchema),
     mode: "onChange",
   });
+
+  const onSubmit = async (data: InvitUserFormData) => {
+    await createInvitation({
+      variables: {
+        args: {
+          email: data.email,
+          role: data.role,
+        },
+      },
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -76,7 +107,7 @@ export default function InvitUserDialog({
           <DialogDescription>
             Renseignez une adresse e-mail pour inviter un nouvel utilisateur à
             rejoindre l'entreprise.
-            <form>
+            <form onSubmit={handleSubmit(onSubmit)}>
               <div className="mt-4 flex gap-4">
                 <Controller
                   name="email"
@@ -105,7 +136,11 @@ export default function InvitUserDialog({
                 />
               </div>
               <div className="flex justify-end"></div>
-              <Button className="mt-6" disabled={!isDirty || !isValid}>
+              <Button
+                className="mt-6"
+                disabled={!isDirty || !isValid}
+                type="submit"
+              >
                 Envoyer l'invitation
               </Button>
             </form>

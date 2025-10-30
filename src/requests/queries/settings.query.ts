@@ -46,3 +46,43 @@ export const GET_ALL_MANAGERS = gql`
     }
   }
 `;
+
+export const GET_ALL_INVITATIONS = gql`
+  query GetAllInvitations {
+    invitations {
+      id
+      email
+      updatedAt
+    }
+  }
+`;
+
+export const CREATE_INVITATION = gql`
+  mutation CreateInvitation($args: CreateInvitationInput!) {
+    createInvitation(args: $args) {
+      email
+      id
+      role
+      token
+      updatedAt
+      createdAt
+    }
+  }
+`;
+
+export const RENEW_INVITATION = gql`
+  mutation RenewInvitation($renewInvitationId: UUID!) {
+    renewInvitation(id: $renewInvitationId) {
+      tokenExpiration
+    }
+  }
+`;
+
+export const DELETE_INVITATION = gql`
+  mutation DeleteInvitation($deleteInvitationId: UUID!) {
+    deleteInvitation(id: $deleteInvitationId) {
+      message
+      success
+    }
+  }
+`;
