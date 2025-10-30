@@ -10,10 +10,13 @@ import CompanyColorForm from "@/components/dashboard/settings/company/forms/Comp
 import ServicesManagementForm from "@/components/dashboard/settings/services/forms/ServicesManagementForm";
 import SettingsHeader from "@/components/dashboard/settings/SettingsHeader";
 import ManagersManagementForm from "@/components/dashboard/settings/services/forms/ManagersManagementForm";
+import { useAuth } from "@/context/AuthContext";
 
 type TabEnum = "user" | "company";
 
 export default function SettingsPage() {
+  const { user } = useAuth();
+
   const [currentTab, setCurrentTab] = useState<TabEnum>("user");
 
   return (
@@ -34,24 +37,28 @@ export default function SettingsPage() {
             >
               Informations de l'utilisateur
             </TabsTrigger>
-            <TabsTrigger
-              value="company"
-              className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
-            >
-              Informations de l'entreprise
-            </TabsTrigger>
-            <TabsTrigger
-              value="services"
-              className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
-            >
-              Gestion des services
-            </TabsTrigger>
-            <TabsTrigger
-              value="users"
-              className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
-            >
-              Gestion des utilisateurs
-            </TabsTrigger>
+            {user?.role === "SUPER_ADMIN" && (
+              <>
+                <TabsTrigger
+                  value="company"
+                  className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+                >
+                  Informations de l'entreprise
+                </TabsTrigger>
+                <TabsTrigger
+                  value="services"
+                  className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+                >
+                  Gestion des services
+                </TabsTrigger>
+                <TabsTrigger
+                  value="users"
+                  className="data-[state=active]:!bg-primary data-[state=active]:!text-white px-4 py-2"
+                >
+                  Gestion des utilisateurs
+                </TabsTrigger>
+              </>
+            )}
           </TabsList>
           <TabsContent value="user">
             <div className="flex gap-24 h-full justify-start items-stretch px-4 mb-4">

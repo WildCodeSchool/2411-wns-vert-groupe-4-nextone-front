@@ -43,12 +43,14 @@ export const GET_ALL_MANAGERS = gql`
         firstName
         lastName
         email
+        isGloballyActive
       }
       disable {
         id
         firstName
         lastName
         email
+        isGloballyActive
       }
     }
   }

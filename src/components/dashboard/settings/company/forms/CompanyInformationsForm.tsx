@@ -1,6 +1,7 @@
 import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { UPDATE_COMPANY_INFORMATIONS } from "@/requests/mutations/settings.mutation";
 import { GET_COMPANY_INFORMATIONS } from "@/requests/queries/settings.query";
 import { useMutation, useQuery } from "@apollo/client";
@@ -19,6 +20,8 @@ export default function CompanyInformationsForm() {
     skip: !companyId,
     fetchPolicy: "no-cache",
   });
+
+  const { toastSuccess, toastError } = useToast();
 
   const companyInformationsFormSchema = yup.object({
     companyName: yup
@@ -65,7 +68,15 @@ export default function CompanyInformationsForm() {
   const [
     updateCompanyInformations,
     { loading: updateLoading, error: updateError },
-  ] = useMutation(UPDATE_COMPANY_INFORMATIONS);
+  ] = useMutation(UPDATE_COMPANY_INFORMATIONS, {
+    onCompleted: () => {
+      toastSuccess("Les informations ont bien été mises à jour.");
+    },
+    onError: (error) => {
+      console.error("Erreur lors de la mise à jour des informations", error);
+      toastError("Erreur lors de la mise à jour des informations");
+    },
+  });
 
   const {
     register,

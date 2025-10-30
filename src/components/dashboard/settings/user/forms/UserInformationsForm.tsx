@@ -1,6 +1,7 @@
 import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { UPDATE_USER_INFORMATIONS } from "@/requests/mutations/settings.mutation";
 import { useMutation } from "@apollo/client/react";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -9,6 +10,8 @@ import * as yup from "yup";
 
 export default function UserInformationsForm() {
   const { user, getInfos } = useAuth();
+
+  const { toastSuccess, toastError } = useToast();
 
   const userEmail = user?.email || "";
 
@@ -35,7 +38,15 @@ export default function UserInformationsForm() {
   const [
     updateUserInformations,
     { loading: updateLoading, error: updateError },
-  ] = useMutation(UPDATE_USER_INFORMATIONS);
+  ] = useMutation(UPDATE_USER_INFORMATIONS, {
+    onCompleted: () => {
+      toastSuccess("Les informations ont bien été mises à jour.");
+    },
+    onError: (error) => {
+      console.error("Erreur lors de la mise à jour des informations", error);
+      toastError("Erreur lors de la mise à jour des informations");
+    },
+  });
 
   const {
     register,

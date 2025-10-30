@@ -319,7 +319,7 @@ const ManagerListItem = ({
             </DropdownMenuItem>
             <DropdownMenuItem onClick={() => setShowDeleteDialog(true)}>
               <Trash2 className="w-4 h-4 mr-2 text-red-500" />
-              Supprimer
+              Supprimer l'utilisateur
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
