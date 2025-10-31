@@ -12,6 +12,7 @@ import TvPage from "../pages/TvPage.tsx";
 import SettingsPage from "@/pages/SettingsPage";
 import UserInvitationPage from "@/pages/UserInvitationPage";
 import UserProtectedRoute from "@/components/UserProtectedRoute.tsx";
+import PublicProtectedRoute from "@/components/PublicProtectedRoute.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -62,8 +63,13 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: "/login",
-    element: <LoginPageAdmin />,
+    element: <PublicProtectedRoute />,
+    children: [
+      {
+        path: "/login",
+        element: <LoginPageAdmin />,
+      },
+    ],
   },
   {
     path: "/join/:invitationToken",
