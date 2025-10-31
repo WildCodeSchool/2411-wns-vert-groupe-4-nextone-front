@@ -18,6 +18,7 @@ import ToasterProvider from "./components/ui/toaster";
 import { TicketProvider } from "./context/useContextTicket";
 import AuthProvider from "./context/AuthContext";
 import { onError } from "@apollo/client/link/error";
+import OperatorProvider from "./context/OperatorContext";
 
 const uri = import.meta.env.VITE_API_URL as string;
 
@@ -95,10 +96,12 @@ client
 createRoot(document.getElementById("root")!).render(
   <ApolloProvider client={client}>
     <AuthProvider>
-      <TicketProvider>
-        <ToasterProvider />
-        <RouterProvider router={router} />
-      </TicketProvider>
+      <OperatorProvider>
+        <TicketProvider>
+          <ToasterProvider />
+          <RouterProvider router={router} />
+        </TicketProvider>
+      </OperatorProvider>
     </AuthProvider>
   </ApolloProvider>
 );
