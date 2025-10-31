@@ -45,11 +45,15 @@ export default function DashboardMenuTooltip({
             side="right"
             align="end"
           >
-            <DropdownMenuLabel>
-              <p>
-                {user?.firstName} {user?.lastName}
-              </p>
-              <p>Administrateur</p>
+            <DropdownMenuLabel className="px-2 py-3 border-b mb-2">
+              <div className="flex flex-col space-y-1">
+                <p className="text-base font-semibold text-foreground leading-none">
+                  {user?.firstName} {user?.lastName}
+                </p>
+                <p className="text-sm text-muted-foreground font-medium">
+                  Administrateur
+                </p>
+              </div>
             </DropdownMenuLabel>
             <DropdownMenuGroup>
               <DropdownMenuItem onClick={() => navigate("/dashboard/settings")}>
