@@ -13,6 +13,7 @@ import ManagersManagementForm from "@/components/dashboard/settings/services/for
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "motion/react";
 import { tabContentEnterAnimation } from "@/lib/animations/settings.animation";
+import PublicDisplaySettings from "@/components/dashboard/settings/public-display/PublicDisplaySettings";
 
 type TabEnum = "user" | "company";
 
@@ -58,6 +59,12 @@ export default function SettingsPage() {
                   className="data-[state=active]:bg-primary! data-[state=active]:text-white! px-4 py-2"
                 >
                   Gestion des utilisateurs
+                </TabsTrigger>
+                <TabsTrigger
+                  value="public-display"
+                  className="data-[state=active]:bg-primary! data-[state=active]:text-white! px-4 py-2"
+                >
+                  Gestion du panneau d'affichage public
                 </TabsTrigger>
               </>
             )}
@@ -142,6 +149,17 @@ export default function SettingsPage() {
               key={currentTab}
             >
               <ManagersManagementForm />
+            </motion.div>
+          </TabsContent>
+          <TabsContent value="public-display">
+            <motion.div
+              className="flex flex-col gap-4 h-full px-4 mb-4"
+              initial={tabContentEnterAnimation.initial}
+              animate={tabContentEnterAnimation.animate}
+              transition={tabContentEnterAnimation.transition}
+              key={currentTab}
+            >
+              <PublicDisplaySettings />
             </motion.div>
           </TabsContent>
         </Tabs>

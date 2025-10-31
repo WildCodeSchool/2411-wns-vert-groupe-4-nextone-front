@@ -102,3 +102,30 @@ export const DELETE_INVITATION = gql`
     }
   }
 `;
+
+export const GET_ALL_IP_ADDRESSES = gql`
+  query WhitelistedIps {
+    whitelistedIps {
+      id
+      ipAddress
+    }
+  }
+`;
+
+export const ADD_IP_ADDRESS = gql`
+  mutation CreateWhitelistedIp($data: CreateWhitelistedIpInput!) {
+    createWhitelistedIp(data: $data) {
+      id
+      ipAddress
+    }
+  }
+`;
+
+export const DELETE_IP_ADDRESS = gql`
+  mutation DeleteWhitelistedIp($deleteWhitelistedIpId: UUID!) {
+    deleteWhitelistedIp(id: $deleteWhitelistedIpId) {
+      message
+      success
+    }
+  }
+`;
