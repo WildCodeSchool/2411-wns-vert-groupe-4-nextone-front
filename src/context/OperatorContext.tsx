@@ -1,3 +1,4 @@
+import { Ticket } from "@/components/dashboard/tickets/TicketPage";
 import { useToast } from "@/hooks/use-toast";
 import { UPDATE_TICKET_STATUS } from "@/requests/mutations/ticket.mutation";
 import { GET_TICKET_INFOS } from "@/requests/queries/ticket.query";
@@ -10,11 +11,6 @@ import {
   useState,
 } from "react";
 import { useLocalStorage } from "usehooks-ts";
-
-type Ticket = {
-  id: string;
-  status: "open" | "in_progress" | "closed";
-};
 
 type LocalStorageTicketInfos = {
   processingTicketId: string | null;

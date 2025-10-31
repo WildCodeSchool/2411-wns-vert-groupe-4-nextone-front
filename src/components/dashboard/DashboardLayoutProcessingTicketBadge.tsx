@@ -36,7 +36,7 @@ export default function DashboardLayoutProcessingTicketBadge() {
   return (
     <div className="fixed bottom-6 right-6 bg-white text-black pr-4 pl-2 py-2 rounded-full shadow-lg flex items-center z-50 text-xl gap-6">
       <div className="font-bold bg-primary px-4 py-2 rounded-full text-white">
-        DER-006
+        {processingTicket.code}
       </div>
       <div>{formatElapsedTime(elapsedTimeInSeconds)}</div>
       <DropdownMenu>
