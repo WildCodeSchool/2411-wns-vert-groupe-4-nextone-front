@@ -9,10 +9,13 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Check, Delete, Hourglass } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 dayjs.extend(duration);
 
 export default function DashboardLayoutProcessingTicketBadge() {
+  const navigate = useNavigate();
+
   const {
     processingTicket,
     elapsedTimeInSeconds,
@@ -35,7 +38,10 @@ export default function DashboardLayoutProcessingTicketBadge() {
 
   return (
     <div className="fixed bottom-6 right-6 bg-white text-black pr-4 pl-2 py-2 rounded-full shadow-lg flex items-center z-50 text-xl gap-6">
-      <div className="font-bold bg-primary px-4 py-2 rounded-full text-white">
+      <div
+        className="font-bold bg-primary px-4 py-2 rounded-full text-white cursor-pointer"
+        onClick={() => navigate(`/dashboard/tickets/${processingTicket.id}`)}
+      >
         {processingTicket.code}
       </div>
       <div>{formatElapsedTime(elapsedTimeInSeconds)}</div>
