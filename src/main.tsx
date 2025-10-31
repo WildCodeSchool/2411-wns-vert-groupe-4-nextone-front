@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { RouterProvider } from "react-router-dom";
+import { redirect, RouterProvider } from "react-router-dom";
 import {
   ApolloClient,
   ApolloProvider,
@@ -17,6 +17,7 @@ import { router } from "./routes/routes";
 import ToasterProvider from "./components/ui/toaster";
 import { TicketProvider } from "./context/useContextTicket";
 import AuthProvider from "./context/AuthContext";
+import { onError } from "@apollo/client/link/error";
 
 const uri = import.meta.env.VITE_API_URL as string;
 
@@ -28,10 +29,34 @@ const httpLink = new HttpLink({
 const wsLink = new GraphQLWsLink(
   createClient({
     url: uri.replace("http", "ws"),
-    connectionParams: {
-    },
+    connectionParams: {},
   })
 );
+
+const errorLink = onError(({ graphQLErrors, networkError }) => {
+  if (graphQLErrors) {
+    for (const err of graphQLErrors) {
+      if (
+        err.extensions?.code === "UNAUTHENTICATED" ||
+        err.message === "Non autorisé."
+      ) {
+        console.warn("Token expiré ou invalide — redirection vers login");
+        localStorage.removeItem("user");
+        redirect("/login");
+      }
+    }
+  }
+
+  if (
+    networkError &&
+    "statusCode" in networkError &&
+    networkError.statusCode === 401
+  ) {
+    redirect("/login");
+  }
+});
+
+const httpWithErrorLink = from([errorLink, httpLink]);
 
 const splitLink = split(
   ({ query }) => {
@@ -42,7 +67,7 @@ const splitLink = split(
     );
   },
   wsLink,
-  httpLink
+  httpWithErrorLink
 );
 
 export const client = new ApolloClient({

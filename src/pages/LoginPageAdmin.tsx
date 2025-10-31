@@ -1,5 +1,10 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../components/ui/card";
 import InputWithLabel from "../components/dashboard/InputWithLabel";
 import { Button } from "../components/ui/button";
 import { Checkbox } from "../components/ui/checkbox";
@@ -8,11 +13,14 @@ import { useLazyQuery } from "@apollo/client";
 import { LOGIN } from "../requests/queries/auth.query";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 
 export default function LoginAdmin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [stayConnected, setStayConnected] = useState(false);
+
+  const { toastSuccess } = useToast();
 
   const navigate = useNavigate();
 
@@ -23,6 +31,7 @@ export default function LoginAdmin() {
     async onCompleted() {
       await getInfos();
       navigate("/dashboard");
+      toastSuccess("Connexion réussie !");
     },
   });
 
