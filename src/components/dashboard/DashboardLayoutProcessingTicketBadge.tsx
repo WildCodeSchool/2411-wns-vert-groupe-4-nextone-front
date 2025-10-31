@@ -8,11 +8,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { Check, Delete, Hourglass } from "lucide-react";
 
 dayjs.extend(duration);
 
 export default function DashboardLayoutProcessingTicketBadge() {
-  const { processingTicket, elapsedTimeInSeconds } = useOperator();
+  const {
+    processingTicket,
+    elapsedTimeInSeconds,
+    setTicketAsProcessed,
+    setTicketAsCanceled,
+    setTicketAsPending,
+  } = useOperator();
 
   if (!processingTicket) {
     return null;
@@ -41,9 +48,30 @@ export default function DashboardLayoutProcessingTicketBadge() {
           side="top"
           align="end"
         >
-          <DropdownMenuItem>Marquer le ticket comme traité</DropdownMenuItem>
-          <DropdownMenuItem>Remettre le ticket en attente</DropdownMenuItem>
-          <DropdownMenuItem>Annuler le ticket</DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={async () => {
+              await setTicketAsProcessed();
+            }}
+          >
+            <Check className="w-4 h-4 mr-2" />
+            Marquer le ticket comme traité
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={async () => {
+              await setTicketAsPending();
+            }}
+          >
+            <Hourglass className="w-4 h-4 mr-2" />
+            Remettre le ticket en attente
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            onClick={async () => {
+              await setTicketAsCanceled();
+            }}
+          >
+            <Delete className="w-4 h-4 mr-2" />
+            Annuler le ticket
+          </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

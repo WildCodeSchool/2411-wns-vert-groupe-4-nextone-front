@@ -1,5 +1,7 @@
+import { useToast } from "@/hooks/use-toast";
+import { UPDATE_TICKET_STATUS } from "@/requests/mutations/ticket.mutation";
 import { GET_TICKET_INFOS } from "@/requests/queries/ticket.query";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import {
   createContext,
   PropsWithChildren,
@@ -26,6 +28,9 @@ type OperatorContextType = {
   processTicket: (ticket: Ticket | null) => void;
   updateProcessingTicket: (ticket: Partial<Ticket> | null) => void;
   elapsedTimeInSeconds: number;
+  setTicketAsProcessed: () => Promise<void>;
+  setTicketAsPending: () => Promise<void>;
+  setTicketAsCanceled: () => Promise<void>;
 };
 const OperatorContext = createContext({} as OperatorContextType);
 
@@ -36,6 +41,10 @@ export const useOperator = () => {
 
 function OperatorProvider({ children }: Readonly<PropsWithChildren>) {
   const [getTicketInfos] = useLazyQuery(GET_TICKET_INFOS, {
+    fetchPolicy: "no-cache",
+  });
+
+  const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS, {
     fetchPolicy: "no-cache",
   });
 
@@ -51,6 +60,8 @@ function OperatorProvider({ children }: Readonly<PropsWithChildren>) {
   const [processingTicket, setProcessingTicket] = useState<Ticket | null>(null);
 
   const canProcessTicket = processingTicket === null;
+
+  const { toastSuccess, toastError } = useToast();
 
   const processTicket = (ticket: Ticket | null) => {
     if (ticket === null) {
@@ -70,6 +81,69 @@ function OperatorProvider({ children }: Readonly<PropsWithChildren>) {
       if (!prev) return prev;
       return { ...prev, ...ticket } as Ticket;
     });
+  };
+
+  const setTicketAsProcessed = async () => {
+    if (!processingTicket) return;
+    await updateTicketStatus({
+      variables: {
+        updateTicketStatusData: {
+          id: processingTicket?.id,
+          status: "DONE",
+        },
+      },
+      onCompleted() {
+        toastSuccess("Le ticket a été marqué comme traité.");
+      },
+      onError() {
+        toastError("Une erreur est survenue lors de la mise à jour du ticket.");
+      },
+    });
+    setProcessingTicket(null);
+    removeLocalStorageTicketInfos();
+    setElapsedTimeInSeconds(0);
+  };
+
+  const setTicketAsPending = async () => {
+    if (!processingTicket) return;
+    await updateTicketStatus({
+      variables: {
+        updateTicketStatusData: {
+          id: processingTicket?.id,
+          status: "PENDING",
+        },
+      },
+      onCompleted() {
+        toastSuccess("Le ticket est passé en attente.");
+      },
+      onError() {
+        toastError("Une erreur est survenue lors de la mise à jour du ticket.");
+      },
+    });
+    setProcessingTicket(null);
+    removeLocalStorageTicketInfos();
+    setElapsedTimeInSeconds(0);
+  };
+
+  const setTicketAsCanceled = async () => {
+    if (!processingTicket) return;
+    await updateTicketStatus({
+      variables: {
+        updateTicketStatusData: {
+          id: processingTicket?.id,
+          status: "CANCELED",
+        },
+      },
+      onCompleted() {
+        toastSuccess("Le ticket a été annulé.");
+      },
+      onError() {
+        toastError("Une erreur est survenue lors de la mise à jour du ticket.");
+      },
+    });
+    setProcessingTicket(null);
+    removeLocalStorageTicketInfos();
+    setElapsedTimeInSeconds(0);
   };
 
   const [elapsedTimeInSeconds, setElapsedTimeInSeconds] = useState(0);
@@ -122,6 +196,9 @@ function OperatorProvider({ children }: Readonly<PropsWithChildren>) {
     processTicket,
     updateProcessingTicket,
     elapsedTimeInSeconds,
+    setTicketAsProcessed,
+    setTicketAsPending,
+    setTicketAsCanceled,
   };
 
   return (
