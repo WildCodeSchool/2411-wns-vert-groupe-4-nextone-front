@@ -11,6 +11,7 @@ import TicketPage from "../components/dashboard/tickets/TicketPage.tsx";
 import TvPage from "../pages/TvPage.tsx";
 import SettingsPage from "@/pages/SettingsPage";
 import UserInvitationPage from "@/pages/UserInvitationPage";
+import UserProtectedRoute from "@/components/UserProtectedRoute.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -30,28 +31,33 @@ export const router = createBrowserRouter([
     element: <TvPage />,
   },
   {
-    element: <DashboardLayout />,
-    path: "/dashboard",
+    element: <UserProtectedRoute />,
     children: [
       {
-        index: true,
-        element: <HomeDashboard />,
-      },
-      {
-        path: "services",
-        element: <DashboardServicesPage />,
-      },
-      {
-        path: "tickets",
-        element: <TicketsDashboard />,
-      },
-      {
-        path: "tickets/:id",
-        element: <TicketPage />,
-      },
-      {
-        path: "/dashboard/settings",
-        element: <SettingsPage />,
+        element: <DashboardLayout />,
+        path: "/dashboard",
+        children: [
+          {
+            index: true,
+            element: <HomeDashboard />,
+          },
+          {
+            path: "services",
+            element: <DashboardServicesPage />,
+          },
+          {
+            path: "tickets",
+            element: <TicketsDashboard />,
+          },
+          {
+            path: "tickets/:id",
+            element: <TicketPage />,
+          },
+          {
+            path: "/dashboard/settings",
+            element: <SettingsPage />,
+          },
+        ],
       },
     ],
   },
