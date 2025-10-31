@@ -48,6 +48,7 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { nextCreatedCursor, resetCursor } from "../../../utils/pagination";
 import { usePagination } from "../../../hooks/usePagination";
 import { GetTicketsPaginatedResult } from "../../../types/tickets.types";
+import { useOperator } from "@/context/OperatorContext";
 // MR end
 
 dayjs.extend(relativeTime);
@@ -102,6 +103,8 @@ export default function TicketsDashboard() {
       refetchQueries: [{ query: GET_TICKETS_PAGINATED }],
     });
   };
+
+  const { processTicket } = useOperator();
 
   const rawTickets = useMemo(
     () => (data?.ticketsByProperties?.items ?? []) as Ticket[],
@@ -252,6 +255,7 @@ export default function TicketsDashboard() {
                   onClick={(event) => {
                     event.stopPropagation();
                     handleUpdateTicketToInProgress(row.original.id);
+                    processTicket(row.original);
                   }}
                 >
                   Prendre le ticket

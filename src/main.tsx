@@ -17,6 +17,7 @@ import { router } from "./routes/routes";
 import ToasterProvider from "./components/ui/toaster";
 import { TicketProvider } from "./context/useContextTicket";
 import AuthProvider from "./context/AuthContext";
+import OperatorProvider from "./context/OperatorContext";
 
 const uri = import.meta.env.VITE_API_URL as string;
 
@@ -28,8 +29,7 @@ const httpLink = new HttpLink({
 const wsLink = new GraphQLWsLink(
   createClient({
     url: uri.replace("http", "ws"),
-    connectionParams: {
-    },
+    connectionParams: {},
   })
 );
 
@@ -70,10 +70,12 @@ client
 createRoot(document.getElementById("root")!).render(
   <ApolloProvider client={client}>
     <AuthProvider>
-      <TicketProvider>
-        <ToasterProvider />
-        <RouterProvider router={router} />
-      </TicketProvider>
+      <OperatorProvider>
+        <TicketProvider>
+          <ToasterProvider />
+          <RouterProvider router={router} />
+        </TicketProvider>
+      </OperatorProvider>
     </AuthProvider>
   </ApolloProvider>
 );
