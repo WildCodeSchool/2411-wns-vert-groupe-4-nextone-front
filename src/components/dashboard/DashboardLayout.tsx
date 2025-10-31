@@ -5,6 +5,7 @@ import { MdRoomService } from "react-icons/md";
 import { IoPerson } from "react-icons/io5";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { useAuth } from "@/context/AuthContext";
+import DashboardLayoutProcessingTicketBadge from "./DashboardLayoutProcessingTicketBadge";
 
 export type DashboardMenuItem = {
   name: string;
@@ -84,6 +85,7 @@ export default function DashboardLayout() {
       </div>
       <div className="flex-1 p-8 overflow-y-auto flex flex-col justify-start items-start font-archivo">
         <Outlet />
+        <DashboardLayoutProcessingTicketBadge />
       </div>
     </div>
   );
