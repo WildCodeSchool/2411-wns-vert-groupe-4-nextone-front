@@ -60,7 +60,7 @@ export const router = createBrowserRouter([
     element: <LoginPageAdmin />,
   },
   {
-    path: "/join",
+    path: "/join/:invitationToken",
     element: <UserInvitationPage />,
   },
 ]);

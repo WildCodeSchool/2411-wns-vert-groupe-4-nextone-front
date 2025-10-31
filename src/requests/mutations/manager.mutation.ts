@@ -15,3 +15,13 @@ export const DELETE_MANAGER = gql`
     }
   }
 `;
+
+export const CREATE_MANAGER_FROM_INVITATION = gql`
+  mutation CreateManagerFromInvitation($infos: InputRegister!) {
+    createManager(infos: $infos) {
+      id
+      firstName
+      lastName
+    }
+  }
+`;
