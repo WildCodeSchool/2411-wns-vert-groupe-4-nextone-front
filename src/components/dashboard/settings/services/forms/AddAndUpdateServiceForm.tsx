@@ -188,6 +188,7 @@ export default function AddAndUpdateServiceForm({
         toastSuccess("Service mis à jour avec succès");
 
         handleCloseFormAfterSubmit();
+        return;
       } catch (error) {
         console.error("Erreur lors de la mise à jour du service :", error);
         toastError("Erreur lors de la mise à jour du service");
