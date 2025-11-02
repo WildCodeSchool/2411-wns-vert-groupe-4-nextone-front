@@ -3,17 +3,35 @@ import { gql } from "@apollo/client";
 export const GET_TICKET_LOGS = gql`
   query TicketLogsByProperty($field: TicketLogPropertyInput!) {
     ticketLogsByProperty(field: $field) {
-      status
-      createdAt
-      id
-      manager {
+      items {
         id
-        lastName
-        firstName
+        status
+        createdAt
+        manager {
+          id
+          firstName
+          lastName
+        }
       }
+      totalCount
     }
   }
 `;
+
+// export const GET_TICKET_LOGS = gql`
+//   query TicketLogsByProperty($field: TicketLogPropertyInput!) {
+//     ticketLogsByProperty(field: $field) {
+//       status
+//       createdAt
+//       id
+//       manager {
+//         id
+//         lastName
+//         firstName
+//       }
+//     }
+//   }
+// `;
 
 //PAGINATION
 export const GET_TICKET_LOGS_PAGINATED = gql`
