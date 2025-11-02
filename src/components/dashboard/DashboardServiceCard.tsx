@@ -34,8 +34,11 @@ import {
 import { Checkbox } from "../../components/ui/checkbox";
 import { Input } from "../../components/ui/input";
 import { TicketActionMenu } from "./TicketActionMenu";
-import { useMutation, useQuery, useSubscription } from "@apollo/client"; 
-import { UPDATE_TICKET_STATUS, GET_TICKETS_PAGINATED } from "../../requests/queries/ticket.query"; 
+import { useMutation, useQuery, useSubscription } from "@apollo/client";
+import {
+  UPDATE_TICKET_STATUS,
+  GET_TICKETS_PAGINATED,
+} from "../../requests/queries/ticket.query";
 import { useToast } from "../../hooks/use-toast";
 import {
   TICKET_STATUS_OPTIONS,
@@ -46,7 +49,7 @@ import { RiArrowUpDownLine } from "react-icons/ri";
 import { PaginationControls } from "../../components/ui/PaginationControls";
 import { ItemsPerPageSelector } from "../../components/dashboard/ItemsPerPageSelector";
 import { nextCreatedCursor, resetCursor } from "../../utils/pagination";
-import { usePagination } from "../../hooks/usePagination"; 
+import { usePagination } from "../../hooks/usePagination";
 import { GetTicketsPaginatedResult } from "../../types/tickets.types";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { RiFilterLine } from "react-icons/ri";
@@ -131,27 +134,27 @@ export default function DashboardServiceCard({
       fetchPolicy: "cache-and-network",
     });
 
-    useSubscription(GET_TICKETS_PAGINATED_SUBSCRIPTION, {
-      onData: ({ data }) => {
-        const newTicket = data.data?.ticketAdded;
-        if (!newTicket) return;
+  useSubscription(GET_TICKETS_PAGINATED_SUBSCRIPTION, {
+    onData: ({ data }) => {
+      const newTicket = data.data?.ticketAdded;
+      if (!newTicket) return;
 
-        if (newTicket.service?.id !== service.id) return;
+      if (newTicket.service?.id !== service.id) return;
 
-        setLocalTickets((prev) => [
-          {
-            id: newTicket.id,
-            ticket: newTicket.code,
-            lastname: newTicket.lastName ?? undefined,
-            name: newTicket.firstName ?? undefined,
-            status: newTicket.status,
-            waitTime: dayjs(newTicket.createdAt).locale("fr").fromNow(),
-            waitTimeMinutes: 0,
-          },
-          ...prev,
-        ]);
-      },
-    });
+      setLocalTickets((prev) => [
+        {
+          id: newTicket.id,
+          ticket: newTicket.code,
+          lastname: newTicket.lastName ?? undefined,
+          name: newTicket.firstName ?? undefined,
+          status: newTicket.status,
+          waitTime: dayjs(newTicket.createdAt).locale("fr").fromNow(),
+          waitTimeMinutes: 0,
+        },
+        ...prev,
+      ]);
+    },
+  });
 
   const rawTickets: RawTicket[] = useMemo(
     () => (data?.ticketsByProperties?.items ?? []) as RawTicket[],
@@ -181,6 +184,7 @@ export default function DashboardServiceCard({
 
       .filter((t) => {
         if (!t.service || !t.service.id) return false;
+        if (t.status === "ARCHIVED") return false;
         return t.service.id === service.id;
       })
       .map((t) => {
