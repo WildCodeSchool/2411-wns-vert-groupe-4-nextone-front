@@ -38,7 +38,8 @@ import { Label } from "../../../components/ui/label";
 import { Button } from "../../../components/ui/button";
 import { RiFilterLine } from "react-icons/ri";
 import { Badge } from "../../../components/ui/badge";
-import { IoIosMore } from "react-icons/io";
+// import { IoIosMore } from "react-icons/io";
+import { TicketActionMenu } from "../TicketActionMenu";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { statusOptions } from "../../../utils/constants/ticket";
@@ -48,6 +49,7 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { nextCreatedCursor, resetCursor } from "../../../utils/pagination";
 import { usePagination } from "../../../hooks/usePagination";
 import { GetTicketsPaginatedResult } from "../../../types/tickets.types";
+import { useToast } from "../../../hooks/use-toast";
 // MR end
 
 dayjs.extend(relativeTime);
@@ -91,6 +93,8 @@ export default function TicketsDashboard() {
 
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
 
+  const { toastSuccess, toastError } = useToast();
+
   const handleUpdateTicketToInProgress = async (ticketId: string) => {
     await updateTicketStatus({
       variables: {
@@ -103,9 +107,44 @@ export default function TicketsDashboard() {
     });
   };
 
+  const handleArchive = async (ticketId: string) => {
+    try {
+      await updateTicketStatus({
+        variables: {
+          updateTicketStatusData: { id: ticketId, status: "ARCHIVED" },
+        },
+      });
+      toastSuccess("Ticket archivé avec succès");
+      await refetch();
+    } catch (error) {
+      toastError("Erreur lors de l'archivage du ticket");
+      console.error(error);
+    }
+  };
+
+  const handleResetStatus = async (ticketId: string) => {
+    try {
+      await updateTicketStatus({
+        variables: {
+          updateTicketStatusData: { id: ticketId, status: "PENDING" },
+        },
+      });
+      toastSuccess("Statut remis à 'En attente'");
+      await refetch();
+    } catch (error) {
+      toastError("Erreur lors du changement de statut");
+      console.error(error);
+    }
+  };
+
   const rawTickets = useMemo(
     () => (data?.ticketsByProperties?.items ?? []) as Ticket[],
     [data]
+  );
+
+  const filteredTickets = useMemo(
+    () => rawTickets.filter((ticket) => ticket.status !== "ARCHIVED"),
+    [rawTickets]
   );
 
   const totalCount = data?.ticketsByProperties?.totalCount ?? 0;
@@ -150,7 +189,7 @@ export default function TicketsDashboard() {
   });
 
   const table = useReactTable({
-    data: rawTickets,
+    data: filteredTickets,
     columns: useMemo<ColumnDef<Ticket>[]>(
       () => [
         {
@@ -257,7 +296,15 @@ export default function TicketsDashboard() {
                   Prendre le ticket
                 </Button>
               )}
-              <IoIosMore size={20} className="cursor-pointer" />
+
+              <div onClick={(e) => e.stopPropagation()}>
+                {/* <IoIosMore size={20} className="cursor-pointer" /> */}
+                <TicketActionMenu
+                  ticketId={row.original.id}
+                  onArchive={() => handleArchive(row.original.id)}
+                  onResetStatus={() => handleResetStatus(row.original.id)}
+                />
+              </div>
             </div>
           ),
         },
