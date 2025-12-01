@@ -5,6 +5,7 @@ type PaginationControlsProps = {
   paginationRange: (number | string)[];
   currentPage: number;
   totalPages: number;
+  visitedPages?: number[];
   onPageChange: (page: number) => void;
 };
 
@@ -12,6 +13,7 @@ export function PaginationControls({
   paginationRange,
   currentPage,
   totalPages,
+  visitedPages = [],
   onPageChange,
 }: PaginationControlsProps) {
   const handlePrevious = () => {
@@ -39,37 +41,43 @@ export function PaginationControls({
       </Button>
 
       {Array.isArray(paginationRange) &&
-         paginationRange.map((page, idx) => {
+        paginationRange.map((page, idx) => {
+          if (page === "...") {
+            return (
+              <MoreHorizontal
+                key={`dots-${idx}`}
+                className="w-4 h-4 text-gray-400 mx-2"
+              />
+            );
+          }
 
-        if (page === "...") {
+          const isVisited =
+            visitedPages.includes(page as number) ||
+            page === currentPage - 1 ||
+            page === currentPage + 1;
+
           return (
-            <MoreHorizontal
-              key={`dots-${idx}`}
-              className="w-4 h-4 text-gray-400 mx-2"
-            />
-          );
-        }
-
-        return (
-          <Button
-            key={page}
-            size="sm"
-            className={`w-8 h-8 p-0 text-sm ${
-              page === currentPage
-                ? "bg-[#B5E303] text-black hover:bg-[#a5d102]" 
-                : "bg-transparent text-gray-700 hover:bg-muted"
-            }`}
-  onClick={() => {
-                if (typeof page === "number" && !isNaN(page)) {
+            <Button
+              key={page}
+              size="sm"
+              className={`w-8 h-8 p-0 text-sm ${
+                page === currentPage
+                  ? "bg-[#B5E303] text-black hover:bg-[#a5d102]"
+                  : isVisited
+                  ? "bg-transparent text-gray-700 hover:bg-muted"
+                  : "bg-transparent text-gray-400 cursor-not-allowed opacity-50"
+              }`}
+              onClick={() => {
+                if (typeof page === "number" && !isNaN(page) && isVisited) {
                   onPageChange(page);
                 }
               }}
->
-  {page}
-</Button>
-
-        );
-      })}
+              disabled={!isVisited}
+            >
+              {page}
+            </Button>
+          );
+        })}
 
       <Button
         variant="outline"

@@ -23,7 +23,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Ticket } from "./TicketPage";
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import { RiArrowUpDownLine } from "react-icons/ri";
 import { Input } from "../../../components/ui/input";
 import dayjs from "dayjs";
@@ -95,47 +95,56 @@ export default function TicketsDashboard() {
 
   const { toastSuccess, toastError } = useToast();
 
-  const handleUpdateTicketToInProgress = async (ticketId: string) => {
-    await updateTicketStatus({
-      variables: {
-        updateTicketStatusData: {
-          id: ticketId,
-          status: "INPROGRESS",
-        },
-      },
-      refetchQueries: [{ query: GET_TICKETS_PAGINATED }],
-    });
-  };
-
-  const handleArchive = async (ticketId: string) => {
-    try {
+  const handleUpdateTicketToInProgress = useCallback(
+    async (ticketId: string) => {
       await updateTicketStatus({
         variables: {
-          updateTicketStatusData: { id: ticketId, status: "ARCHIVED" },
+          updateTicketStatusData: {
+            id: ticketId,
+            status: "INPROGRESS",
+          },
         },
+        refetchQueries: [{ query: GET_TICKETS_PAGINATED }],
       });
-      toastSuccess("Ticket archivé avec succès");
-      await refetch();
-    } catch (error) {
-      toastError("Erreur lors de l'archivage du ticket");
-      console.error(error);
-    }
-  };
+    },
+    [updateTicketStatus]
+  );
 
-  const handleResetStatus = async (ticketId: string) => {
-    try {
-      await updateTicketStatus({
-        variables: {
-          updateTicketStatusData: { id: ticketId, status: "PENDING" },
-        },
-      });
-      toastSuccess("Statut remis à 'En attente'");
-      await refetch();
-    } catch (error) {
-      toastError("Erreur lors du changement de statut");
-      console.error(error);
-    }
-  };
+  const handleArchive = useCallback(
+    async (ticketId: string) => {
+      try {
+        await updateTicketStatus({
+          variables: {
+            updateTicketStatusData: { id: ticketId, status: "ARCHIVED" },
+          },
+        });
+        toastSuccess("Ticket archivé avec succès");
+        await refetch();
+      } catch (error) {
+        toastError("Erreur lors de l'archivage du ticket");
+        console.error(error);
+      }
+    },
+    [updateTicketStatus, refetch, toastSuccess, toastError]
+  );
+
+  const handleResetStatus = useCallback(
+    async (ticketId: string) => {
+      try {
+        await updateTicketStatus({
+          variables: {
+            updateTicketStatusData: { id: ticketId, status: "PENDING" },
+          },
+        });
+        toastSuccess("Statut remis à 'En attente'");
+        await refetch();
+      } catch (error) {
+        toastError("Erreur lors du changement de statut");
+        console.error(error);
+      }
+    },
+    [updateTicketStatus, refetch, toastSuccess, toastError]
+  );
 
   const rawTickets = useMemo(
     () => (data?.ticketsByProperties?.items ?? []) as Ticket[],
@@ -309,7 +318,7 @@ export default function TicketsDashboard() {
           ),
         },
       ],
-      []
+      [handleArchive, handleResetStatus, handleUpdateTicketToInProgress]
     ),
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -342,14 +351,6 @@ export default function TicketsDashboard() {
       .getColumn(columnName)
       ?.setFilterValue(newFilterValues.length ? newFilterValues : undefined);
   };
-
-  console.log("🧭 PAGINATION DEBUG", {
-    totalCount,
-    totalPages,
-    currentPage,
-    itemsPerPage,
-    paginationRange,
-  });
 
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error.message}</p>;
