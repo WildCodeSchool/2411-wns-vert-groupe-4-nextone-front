@@ -23,7 +23,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Ticket } from "./TicketPage";
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import { RiArrowUpDownLine } from "react-icons/ri";
 import { Input } from "../../../components/ui/input";
 import dayjs from "dayjs";
@@ -38,7 +38,8 @@ import { Label } from "../../../components/ui/label";
 import { Button } from "../../../components/ui/button";
 import { RiFilterLine } from "react-icons/ri";
 import { Badge } from "../../../components/ui/badge";
-import { IoIosMore } from "react-icons/io";
+// import { IoIosMore } from "react-icons/io";
+import { TicketActionMenu } from "../TicketActionMenu";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { statusOptions } from "../../../utils/constants/ticket";
@@ -48,6 +49,7 @@ import { PaginationControls } from "../../../components/ui/PaginationControls";
 import { nextCreatedCursor, resetCursor } from "../../../utils/pagination";
 import { usePagination } from "../../../hooks/usePagination";
 import { GetTicketsPaginatedResult } from "../../../types/tickets.types";
+import { useToast } from "../../../hooks/use-toast";
 // MR end
 
 dayjs.extend(relativeTime);
@@ -91,21 +93,67 @@ export default function TicketsDashboard() {
 
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
 
-  const handleUpdateTicketToInProgress = async (ticketId: string) => {
-    await updateTicketStatus({
-      variables: {
-        updateTicketStatusData: {
-          id: ticketId,
-          status: "INPROGRESS",
+  const { toastSuccess, toastError } = useToast();
+
+  const handleUpdateTicketToInProgress = useCallback(
+    async (ticketId: string) => {
+      await updateTicketStatus({
+        variables: {
+          updateTicketStatusData: {
+            id: ticketId,
+            status: "INPROGRESS",
+          },
         },
-      },
-      refetchQueries: [{ query: GET_TICKETS_PAGINATED }],
-    });
-  };
+        refetchQueries: [{ query: GET_TICKETS_PAGINATED }],
+      });
+    },
+    [updateTicketStatus]
+  );
+
+  const handleArchive = useCallback(
+    async (ticketId: string) => {
+      try {
+        await updateTicketStatus({
+          variables: {
+            updateTicketStatusData: { id: ticketId, status: "ARCHIVED" },
+          },
+        });
+        toastSuccess("Ticket archivé avec succès");
+        await refetch();
+      } catch (error) {
+        toastError("Erreur lors de l'archivage du ticket");
+        console.error(error);
+      }
+    },
+    [updateTicketStatus, refetch, toastSuccess, toastError]
+  );
+
+  const handleResetStatus = useCallback(
+    async (ticketId: string) => {
+      try {
+        await updateTicketStatus({
+          variables: {
+            updateTicketStatusData: { id: ticketId, status: "PENDING" },
+          },
+        });
+        toastSuccess("Statut remis à 'En attente'");
+        await refetch();
+      } catch (error) {
+        toastError("Erreur lors du changement de statut");
+        console.error(error);
+      }
+    },
+    [updateTicketStatus, refetch, toastSuccess, toastError]
+  );
 
   const rawTickets = useMemo(
     () => (data?.ticketsByProperties?.items ?? []) as Ticket[],
     [data]
+  );
+
+  const filteredTickets = useMemo(
+    () => rawTickets.filter((ticket) => ticket.status !== "ARCHIVED"),
+    [rawTickets]
   );
 
   const totalCount = data?.ticketsByProperties?.totalCount ?? 0;
@@ -150,7 +198,7 @@ export default function TicketsDashboard() {
   });
 
   const table = useReactTable({
-    data: rawTickets,
+    data: filteredTickets,
     columns: useMemo<ColumnDef<Ticket>[]>(
       () => [
         {
@@ -257,12 +305,20 @@ export default function TicketsDashboard() {
                   Prendre le ticket
                 </Button>
               )}
-              <IoIosMore size={20} className="cursor-pointer" />
+
+              <div onClick={(e) => e.stopPropagation()}>
+                {/* <IoIosMore size={20} className="cursor-pointer" /> */}
+                <TicketActionMenu
+                  ticketId={row.original.id}
+                  onArchive={() => handleArchive(row.original.id)}
+                  onResetStatus={() => handleResetStatus(row.original.id)}
+                />
+              </div>
             </div>
           ),
         },
       ],
-      []
+      [handleArchive, handleResetStatus, handleUpdateTicketToInProgress]
     ),
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,
@@ -295,14 +351,6 @@ export default function TicketsDashboard() {
       .getColumn(columnName)
       ?.setFilterValue(newFilterValues.length ? newFilterValues : undefined);
   };
-
-  console.log("🧭 PAGINATION DEBUG", {
-    totalCount,
-    totalPages,
-    currentPage,
-    itemsPerPage,
-    paginationRange,
-  });
 
   if (loading) return <p>Chargement...</p>;
   if (error) return <p>Erreur : {error.message}</p>;

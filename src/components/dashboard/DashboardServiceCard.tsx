@@ -25,7 +25,7 @@ import {
 import { ChevronDown } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import StatusBadge from "./StatusBadge";
-import { useMemo, useRef, useState, useEffect } from "react";
+import { useMemo, useRef, useState, useEffect, useCallback } from "react";
 import {
   Popover,
   PopoverTrigger,
@@ -34,8 +34,11 @@ import {
 import { Checkbox } from "../../components/ui/checkbox";
 import { Input } from "../../components/ui/input";
 import { TicketActionMenu } from "./TicketActionMenu";
-import { useMutation, useQuery, useSubscription } from "@apollo/client"; 
-import { UPDATE_TICKET_STATUS, GET_TICKETS_PAGINATED } from "../../requests/queries/ticket.query"; 
+import { useMutation, useQuery, useSubscription } from "@apollo/client";
+import {
+  UPDATE_TICKET_STATUS,
+  GET_TICKETS_PAGINATED,
+} from "../../requests/queries/ticket.query";
 import { useToast } from "../../hooks/use-toast";
 import {
   TICKET_STATUS_OPTIONS,
@@ -46,7 +49,7 @@ import { RiArrowUpDownLine } from "react-icons/ri";
 import { PaginationControls } from "../../components/ui/PaginationControls";
 import { ItemsPerPageSelector } from "../../components/dashboard/ItemsPerPageSelector";
 import { nextCreatedCursor, resetCursor } from "../../utils/pagination";
-import { usePagination } from "../../hooks/usePagination"; 
+import { usePagination } from "../../hooks/usePagination";
 import { GetTicketsPaginatedResult } from "../../types/tickets.types";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { RiFilterLine } from "react-icons/ri";
@@ -88,8 +91,7 @@ export default function DashboardServiceCard({
 
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [createdCursor, setCreatedCursor] = useState<Date>(resetCursor());
-  const cursorStack = useRef<Date[]>([]);
-
+  const cursorMap = useRef<Map<number, Date>>(new Map([[1, resetCursor()]]));
   const { toastSuccess, toastError } = useToast();
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
 
@@ -112,14 +114,9 @@ export default function DashboardServiceCard({
     return { formatted, diffMinutes };
   }
 
-  console.log("📦 Variables pagination envoyées :", {
-    limit: itemsPerPage,
-    order: "ASC",
-    created: createdCursor.toISOString(),
-  });
-
-  const { data, loading, fetchMore, refetch } =
-    useQuery<GetTicketsPaginatedResult>(GET_TICKETS_PAGINATED, {
+  const { data, loading, refetch } = useQuery<GetTicketsPaginatedResult>(
+    GET_TICKETS_PAGINATED,
+    {
       variables: {
         fields: { serviceId: service.id },
         pagination: {
@@ -129,29 +126,30 @@ export default function DashboardServiceCard({
         },
       },
       fetchPolicy: "cache-and-network",
-    });
+    }
+  );
 
-    useSubscription(GET_TICKETS_PAGINATED_SUBSCRIPTION, {
-      onData: ({ data }) => {
-        const newTicket = data.data?.ticketAdded;
-        if (!newTicket) return;
+  useSubscription(GET_TICKETS_PAGINATED_SUBSCRIPTION, {
+    onData: ({ data }) => {
+      const newTicket = data.data?.ticketAdded;
+      if (!newTicket) return;
 
-        if (newTicket.service?.id !== service.id) return;
+      if (newTicket.service?.id !== service.id) return;
 
-        setLocalTickets((prev) => [
-          {
-            id: newTicket.id,
-            ticket: newTicket.code,
-            lastname: newTicket.lastName ?? undefined,
-            name: newTicket.firstName ?? undefined,
-            status: newTicket.status,
-            waitTime: dayjs(newTicket.createdAt).locale("fr").fromNow(),
-            waitTimeMinutes: 0,
-          },
-          ...prev,
-        ]);
-      },
-    });
+      setLocalTickets((prev) => [
+        {
+          id: newTicket.id,
+          ticket: newTicket.code,
+          lastname: newTicket.lastName ?? undefined,
+          name: newTicket.firstName ?? undefined,
+          status: newTicket.status,
+          waitTime: dayjs(newTicket.createdAt).locale("fr").fromNow(),
+          waitTimeMinutes: 0,
+        },
+        ...prev,
+      ]);
+    },
+  });
 
   const rawTickets: RawTicket[] = useMemo(
     () => (data?.ticketsByProperties?.items ?? []) as RawTicket[],
@@ -175,12 +173,10 @@ export default function DashboardServiceCard({
   const [localTickets, setLocalTickets] = useState<ServiceTicket[]>([]);
 
   useEffect(() => {
-    console.log("Service ID:", service.id);
-    console.log("Tickets reçus (bruts):", rawTickets);
     const updated = (rawTickets as RawTicket[])
-
       .filter((t) => {
         if (!t.service || !t.service.id) return false;
+        if (t.status === "ARCHIVED") return false;
         return t.service.id === service.id;
       })
       .map((t) => {
@@ -195,8 +191,6 @@ export default function DashboardServiceCard({
           waitTimeMinutes: diffMinutes,
         };
       });
-
-    console.log("Tickets filtrés :", updated);
     setLocalTickets(updated);
   }, [rawTickets, service.id]);
 
@@ -204,46 +198,56 @@ export default function DashboardServiceCard({
 
   const loadNext = async () => {
     if (!rawTickets.length) return;
-
     const last = rawTickets[rawTickets.length - 1];
     if (!last) return;
+
     const nextCursor = nextCreatedCursor(last.createdAt);
+    const nextPage = currentPage + 1;
 
-    console.log("Passage à la page suivante :", {
-      currentPage,
-      totalPages,
-      nextCursor,
-      lastTicketId: last.id,
-      lastCreatedAt: last.createdAt,
+    cursorMap.current.set(nextPage, nextCursor);
+
+    await refetch({
+      fields: { serviceId: service.id },
+      pagination: { limit: itemsPerPage, order: "ASC", cursor: nextCursor },
     });
 
-    const result = await fetchMore({
-      variables: {
-        fields: { serviceId: service.id },
-        pagination: { limit: itemsPerPage, order: "ASC", cursor: nextCursor },
-      },
-    });
-
-    const nextItems = result?.data?.ticketsByProperties
-      ?.items as unknown as RawTicket[];
-
-    if (nextItems.length > 0) {
-      cursorStack.current.push(createdCursor);
-      setCreatedCursor(nextCursor);
-      setCurrentPage((p) => p + 1);
-    }
+    setCreatedCursor(nextCursor);
+    setCurrentPage(nextPage);
   };
 
   const loadPrev = async () => {
-    if (cursorStack.current.length === 0) return;
-    const prevCursor = cursorStack.current.pop()!;
+    const prevPage = currentPage - 1;
+    if (prevPage < 1) return;
 
-    setCreatedCursor(prevCursor);
+    const prevCursor = cursorMap.current.get(prevPage);
+    if (!prevCursor) return;
+
     await refetch({
       fields: { serviceId: service.id },
       pagination: { limit: itemsPerPage, order: "ASC", cursor: prevCursor },
     });
-    setCurrentPage((p) => Math.max(1, p - 1));
+
+    setCreatedCursor(prevCursor);
+    setCurrentPage(prevPage);
+  };
+
+  const goToPage = async (targetPage: number) => {
+    if (targetPage === currentPage) return;
+    if (targetPage < 1 || targetPage > totalPages) return;
+
+    const targetCursor = cursorMap.current.get(targetPage);
+    if (!targetCursor) {
+      console.warn("Page non visitée, utilisez les boutons précédent/suivant");
+      return;
+    }
+
+    await refetch({
+      fields: { serviceId: service.id },
+      pagination: { limit: itemsPerPage, order: "ASC", cursor: targetCursor },
+    });
+
+    setCreatedCursor(targetCursor);
+    setCurrentPage(targetPage);
   };
 
   const { paginationRange, totalPages } = usePagination({
@@ -252,59 +256,61 @@ export default function DashboardServiceCard({
     currentPage,
   });
 
-  console.log({
-    totalCount: data?.ticketsByProperties?.totalCount,
-    pageSize: itemsPerPage,
-    totalPages,
-    currentPage,
-  });
+  const handleArchive = useCallback(
+    async (ticketId: string) => {
+      try {
+        const archivedStatus = STATUS_LABEL_TO_ENUM["Archivé"];
+        await updateTicketStatus({
+          variables: {
+            updateTicketStatusData: { id: ticketId, status: archivedStatus },
+          },
+        });
+        toastSuccess("Ticket archivé avec succès");
+        await refetch();
+      } catch (error) {
+        toastError("Erreur lors de l'archivage du ticket");
+        console.error(error);
+      }
+    },
+    [updateTicketStatus, refetch, toastSuccess, toastError]
+  );
 
-  const handleArchive = async (ticketId: string) => {
-    try {
-      const archivedStatus = STATUS_LABEL_TO_ENUM["Archivé"];
-      await updateTicketStatus({
-        variables: {
-          updateTicketStatusData: { id: ticketId, status: archivedStatus },
-        },
-      });
-      toastSuccess("Ticket archivé avec succès");
-      await refetch();
-    } catch (error) {
-      toastError("Erreur lors de l’archivage du ticket");
-      console.error(error);
-    }
-  };
+  const handleResetStatus = useCallback(
+    async (ticketId: string) => {
+      try {
+        const newStatus = STATUS_LABEL_TO_ENUM["En attente"];
+        await updateTicketStatus({
+          variables: {
+            updateTicketStatusData: { id: ticketId, status: newStatus },
+          },
+        });
+        await refetch();
+        toastSuccess("Statut remis à 'En attente'");
+      } catch (error) {
+        toastError("Erreur lors du changement de statut");
+        console.error(error);
+      }
+    },
+    [updateTicketStatus, refetch, toastSuccess, toastError]
+  );
 
-  const handleResetStatus = async (ticketId: string) => {
-    try {
-      const newStatus = STATUS_LABEL_TO_ENUM["En attente"];
-      await updateTicketStatus({
-        variables: {
-          updateTicketStatusData: { id: ticketId, status: newStatus },
-        },
-      });
-      await refetch();
-      toastSuccess("Statut remis à 'En attente'");
-    } catch (error) {
-      toastError("Erreur lors du changement de statut");
-      console.error(error);
-    }
-  };
-
-  const handleTakeTicket = async (ticketId: string) => {
-    try {
-      await updateTicketStatus({
-        variables: {
-          updateTicketStatusData: { id: ticketId, status: "INPROGRESS" },
-        },
-      });
-      toastSuccess("Le ticket est maintenant en cours de traitement");
-      await refetch();
-    } catch (error) {
-      toastError("Erreur lors de la prise du ticket");
-      console.error(error);
-    }
-  };
+  const handleTakeTicket = useCallback(
+    async (ticketId: string) => {
+      try {
+        await updateTicketStatus({
+          variables: {
+            updateTicketStatusData: { id: ticketId, status: "INPROGRESS" },
+          },
+        });
+        toastSuccess("Le ticket est maintenant en cours de traitement");
+        await refetch();
+      } catch (error) {
+        toastError("Erreur lors de la prise du ticket");
+        console.error(error);
+      }
+    },
+    [updateTicketStatus, refetch, toastSuccess, toastError]
+  );
 
   const columns = useMemo<ColumnDef<ServiceTicket>[]>(
     () => [
@@ -358,7 +364,7 @@ export default function DashboardServiceCard({
             className="flex items-center gap-2 cursor-pointer select-none"
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
-            TEMPS D’ATTENTE
+            TEMPS D'ATTENTE
             <RiArrowUpDownLine />
           </div>
         ),
@@ -392,7 +398,7 @@ export default function DashboardServiceCard({
         },
       },
     ],
-    []
+    [handleArchive, handleResetStatus, handleTakeTicket]
   );
 
   const table = useReactTable({
@@ -417,6 +423,11 @@ export default function DashboardServiceCard({
       : [...(current || []), statusValue];
     table.getColumn("status")?.setFilterValue(next);
   };
+
+  const visitedPages = useMemo(
+    () => Array.from(cursorMap.current.keys()),
+    [] // Recalcule quand la page change
+  );
 
   if (loading) {
     return (
@@ -581,16 +592,18 @@ export default function DashboardServiceCard({
                 setItemsPerPage(val);
                 setCreatedCursor(resetCursor());
                 setCurrentPage(1);
-                cursorStack.current = [];
+                cursorMap.current = new Map([[1, resetCursor()]]);
               }}
             />
             <PaginationControls
               paginationRange={paginationRange}
               currentPage={currentPage}
               totalPages={totalPages}
+              visitedPages={visitedPages}
               onPageChange={(page: number) => {
-                if (page > currentPage) loadNext();
-                else if (page < currentPage) loadPrev();
+                if (page === currentPage + 1) loadNext();
+                else if (page === currentPage - 1) loadPrev();
+                else goToPage(page);
               }}
             />
           </div>

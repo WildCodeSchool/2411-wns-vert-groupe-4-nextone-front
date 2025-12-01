@@ -158,7 +158,7 @@ export default function TicketPage() {
               Historique du ticket
             </h2>
             <div className="flex flex-col items-start justify-start w-full h-full overflow-y-auto">
-              {ticketLogs &&
+              {/* {ticketLogs &&
                 ticketLogs.ticketLogsByProperty.map(
                   (
                     log: {
@@ -170,7 +170,22 @@ export default function TicketPage() {
                     idx: number
                   ) => {
                     const isLast =
-                      idx === ticketLogs.ticketLogsByProperty.length - 1;
+                      idx === ticketLogs.ticketLogsByProperty.length - 1; */}
+
+              {ticketLogs?.ticketLogsByProperty?.items &&
+                ticketLogs.ticketLogsByProperty.items.map(
+                  (
+                    log: {
+                      id: string;
+                      status: string;
+                      manager: { firstName: string; lastName: string };
+                      createdAt: string;
+                    },
+                    idx: number
+                  ) => {
+                    const isLast =
+                      idx === ticketLogs.ticketLogsByProperty.items.length - 1;
+
                     return (
                       <div
                         key={log.id}
