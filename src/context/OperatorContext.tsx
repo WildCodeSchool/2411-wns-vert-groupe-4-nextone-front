@@ -14,6 +14,7 @@ import { useLocalStorage } from "usehooks-ts";
 type Ticket = {
   id: string;
   status: string;
+  code: string;
 };
 
 type LocalStorageTicketInfos = {
