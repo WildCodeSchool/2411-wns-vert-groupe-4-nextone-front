@@ -129,3 +129,24 @@ export const TICKET_UPDATED_SUBSCRIPTION = gql`
     }
   }
 `;
+
+export const TICKETS_FOR_TV_DISPLAY = gql`
+  query TicketsForTVDisplay($serviceId: ID) {
+    ticketsForTVDisplay(serviceId: $serviceId) {
+      id
+      code
+      firstName
+      lastName
+      email
+      phone
+      status
+      service {
+        id
+        name
+      }
+        status
+      createdAt
+      updatedAt
+    }
+  }
+`;

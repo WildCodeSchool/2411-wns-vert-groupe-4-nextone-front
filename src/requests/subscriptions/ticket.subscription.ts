@@ -17,3 +17,19 @@ export const GET_TICKETS_PAGINATED_SUBSCRIPTION = gql`
         }
     }
 `;
+
+export const TICKETS_CHANGED = gql`
+    subscription TicketsChanged {
+        ticketsChanged {
+            id
+            code
+            status
+            service {
+                id
+                name
+            }
+            createdAt
+            updatedAt
+        }
+    }
+`;

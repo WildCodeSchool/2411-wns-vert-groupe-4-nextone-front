@@ -13,6 +13,7 @@ import SettingsPage from "@/pages/SettingsPage";
 import UserInvitationPage from "@/pages/UserInvitationPage";
 import UserProtectedRoute from "@/components/UserProtectedRoute.tsx";
 import PublicProtectedRoute from "@/components/PublicProtectedRoute.tsx";
+import TvSelector from "../pages/TvSelector.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -28,8 +29,14 @@ export const router = createBrowserRouter([
     element: <PhonePage />,
   },
   {
+    element: <TvSelector/>,
     path: "/tv",
-    element: <TvPage />,
+    children: [
+      {
+        path: ":serviceId",
+        element: <TvPage/>
+      }
+    ]
   },
   {
     element: <UserProtectedRoute />,
@@ -55,7 +62,7 @@ export const router = createBrowserRouter([
             element: <TicketPage />,
           },
           {
-            path: "/dashboard/settings",
+            path: "settings",
             element: <SettingsPage />,
           },
         ],
