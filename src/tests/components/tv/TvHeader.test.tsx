@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import TvHeader from "@/components/tv/tvHeader";
 import { formattedDate } from "@/utils/formattedDate";
 import { formattedTime } from "@/utils/formattedTime";
+import TvHeader from "@/components/tv/HeaderTv";
 
 const mockLocation = { href: "" };
 

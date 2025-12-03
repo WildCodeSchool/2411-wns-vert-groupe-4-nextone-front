@@ -3,7 +3,7 @@ import { useQuery, useSubscription } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { TICKETS_FOR_TV_DISPLAY } from "../requests/queries/ticket.query";
 import { TICKETS_CHANGED } from "../requests/subscriptions/ticket.subscription";
-import TvHeader from "@/components/tv/tvHeader";
+import TvHeader from "@/components/tv/HeaderTv";
 import TvFooter from "@/components/tv/TvFooter";
 import CurrentTicket from "@/components/tv/CurrentTicket";
 import TicketInProgressList from "@/components/tv/TicketInProgressList";
