@@ -12,6 +12,9 @@ import PhonePage from "../../pages/PhonePage";
 import type { RouteObject } from "react-router-dom";
 import { isValidElement } from "react";
 import TvPage from "../../pages/TvPage";
+import TvSelector from "@/pages/TvSelector";
+import UserInvitationPage from "@/pages/UserInvitationPage";
+import SettingsPage from "@/pages/SettingsPage";
 
 describe("Router", () => {
   const routes = router.routes as RouteObject[];
@@ -28,17 +31,18 @@ describe("Router", () => {
     expect(paths).toContain("/login");
     expect(paths).toContain("/dashboard");
     expect(paths).toContain("/tv");
+    expect(paths).toContain("/join");
   });
 
   it("must have the correct components for the main routes", () => {
     const findRoute = (path: string) => routes.find((r) => r.path === path);
-
     expect(getElementType(findRoute("/")?.element)).toBe(App);
     expect(getElementType(findRoute("/terminal")?.element)).toBe(Terminal);
     expect(getElementType(findRoute("/phone")?.element)).toBe(PhonePage);
     expect(getElementType(findRoute("/login")?.element)).toBe(LoginPageAdmin);
     expect(getElementType(findRoute("/dashboard")?.element)).toBe(DashboardLayout);
-    expect(getElementType(findRoute("/tv")?.element)).toBe(TvPage);
+    expect(getElementType(findRoute("/tv")?.element)).toBe(TvSelector);
+    expect(getElementType(findRoute("/join")?.element)).toBe(UserInvitationPage);
   });
 
   it("must have the correct sub-routes for the main road dashboard", () => {
@@ -51,6 +55,7 @@ describe("Router", () => {
     expect(childPaths).toContain("services");
     expect(childPaths).toContain("tickets");
     expect(childPaths).toContain("tickets/:id");
+       expect(childPaths).toContain("settings");
 
     const findChild = (path: string) =>
       children.find((c) => (c.path ?? "index") === path);
@@ -59,9 +64,19 @@ describe("Router", () => {
     expect(getElementType(findChild("services")?.element)).toBe(
       DashboardServicesPage
     );
-    expect(getElementType(findChild("tickets")?.element)).toBe(
-      TicketsDashboard
-    );
+    expect(getElementType(findChild("tickets")?.element)).toBe(TicketsDashboard);
     expect(getElementType(findChild("tickets/:id")?.element)).toBe(TicketPage);
+    expect(getElementType(findChild("settings")?.element)).toBe(SettingsPage);
+  });
+
+  it("must have the correct sub-routes for the main road tv", () => {
+    const dashboardRoute = routes.find((r) => r.path === "/tv");
+    expect(dashboardRoute?.children).toBeDefined();
+    const children = dashboardRoute?.children as RouteObject[];
+    const childPaths = children.map((c) => c.path ?? "index");
+    expect(childPaths).toContain(":serviceId");
+    const findChild = (path: string) =>
+      children.find((c) => (c.path ?? "index") === path);
+    expect(getElementType(findChild(":serviceId")?.element)).toBe(TvPage);
   });
 });

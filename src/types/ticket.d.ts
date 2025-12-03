@@ -1,13 +1,13 @@
 export type TicketInfo = {
-    id?: string,
-    serviceId: string;  
-    serviceName?: string;    
-    name: string;
-    firstName: string;
-    email: string;
-    phone: string;
-    code?: string,
-    rgpdAccepted: boolean;
+  id?: string,
+  serviceId: string;  
+  serviceName?: string;    
+  name: string;
+  firstName: string;
+  email: string;
+  phone: string;
+  code?: string,
+  rgpdAccepted: boolean;
 };
 
 export type TicketContextType = {
