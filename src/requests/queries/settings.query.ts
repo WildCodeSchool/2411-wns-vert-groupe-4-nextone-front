@@ -21,6 +21,7 @@ export const GET_SERVICES_THAT_CAN_BE_MANAGED = gql`
       service {
         id
         name
+        isGloballyActive
         authorizations {
           manager {
             id
