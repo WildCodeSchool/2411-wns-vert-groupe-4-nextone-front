@@ -32,10 +32,15 @@ import { useMemo } from "react";
 import UpdateServiceDialog from "../../company/dialogs/UpdateServiceDialog";
 import { DELETE_SERVICE } from "@/requests/mutations/settings.mutation";
 import { useToast } from "@/hooks/use-toast";
+import { Toggle } from "@/components/ui/toggle";
+import { TOGGLE_GLOBAL_ACCESS_SERVICE } from "@/requests/mutations/service.mutation";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Label } from "@/components/ui/label";
 
 type FormattedService = {
   id: string;
   name: string;
+  isGloballyActive: boolean;
   authorizations: {
     manager: {
       id: string;
@@ -58,6 +63,7 @@ type GET_SERVICES_THAT_CAN_BE_MANAGED = {
 export type FormattedServiceRow = {
   id: string;
   name: string;
+  isGloballyActive: boolean;
   administrators: {
     id: string;
     firstName: string;
@@ -90,6 +96,13 @@ export default function ServicesManagementForm() {
     },
   });
 
+  const [updateServiceStatus] = useMutation(TOGGLE_GLOBAL_ACCESS_SERVICE, {
+    onCompleted: () => {
+      toastSuccess("Statut du service mis à jour avec succès");
+      refetch();
+    },
+  });
+
   const { toastSuccess } = useToast();
 
   const formattedServices: FormattedServiceRow[] = useMemo(() => {
@@ -98,6 +111,7 @@ export default function ServicesManagementForm() {
         return {
           id: authorization.service.id,
           name: authorization.service.name,
+          isGloballyActive: authorization.service.isGloballyActive,
           administrators: authorization.service.authorizations
             .filter((a) => a.isAdministrator)
             .map((a) => ({
@@ -152,7 +166,28 @@ export default function ServicesManagementForm() {
         header: "",
         cell: ({ row }) => {
           return (
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-5">
+              <Toggle
+                size="sm"
+                variant="outline"
+                className="data-[state=on]:bg-transparent cursor-pointer"
+              >
+                <Checkbox
+                  id="enable-service"
+                  checked={row.original.isGloballyActive}
+                  onClick={async (e) => {
+                    e.stopPropagation();
+                    await updateServiceStatus({
+                      variables: {
+                        toggleGlobalAccessServiceId: row.original.id,
+                      },
+                    });
+                  }}
+                />
+                <Label htmlFor="enable-service">
+                  {row.original.isGloballyActive ? "Activé" : "Désactivé"}
+                </Label>
+              </Toggle>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild className="flex justify-end">
                   <Button variant="ghost" size="sm" className="cursor-pointer">
@@ -230,7 +265,9 @@ export default function ServicesManagementForm() {
                 <TableRow
                   key={row.id}
                   data-state={row.getIsSelected() && "selected"}
-                  className="cursor-pointer text-base text-left"
+                  className={`cursor-pointer text-base text-left ${
+                    row.original.isGloballyActive === false ? "opacity-50" : ""
+                  }`}
                 >
                   {row.getVisibleCells().map((cell) => (
                     <TableCell key={cell.id} className="text-left py-4">
