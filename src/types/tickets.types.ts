@@ -14,8 +14,7 @@ export type GetTicketsPaginatedResult = {
         id: string;
         name: string;
       };
-    }
+    };
     totalCount: number;
-  } 
   };
-
+};
