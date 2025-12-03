@@ -1,8 +1,14 @@
 import {
   UPDATE_TICKET_STATUS,
   GET_TICKETS_PAGINATED,
+  TICKET_ADDED_SUBSCRIPTION,
+  TICKET_UPDATED_SUBSCRIPTION,
 } from "../../../requests/queries/ticket.query";
-import { useMutation, useQuery } from "@apollo/client/react";
+import {
+  useLazyQuery,
+  useMutation,
+  useSubscription,
+} from "@apollo/client/react";
 import { useNavigate } from "react-router-dom";
 import {
   Table,
@@ -23,7 +29,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Ticket } from "./TicketPage";
-import { useRef, useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useEffect, useCallback, useRef } from "react";
 import { RiArrowUpDownLine } from "react-icons/ri";
 import { Input } from "../../../components/ui/input";
 import dayjs from "dayjs";
@@ -38,59 +44,184 @@ import { Label } from "../../../components/ui/label";
 import { Button } from "../../../components/ui/button";
 import { RiFilterLine } from "react-icons/ri";
 import { Badge } from "../../../components/ui/badge";
-// import { IoIosMore } from "react-icons/io";
 import { TicketActionMenu } from "../TicketActionMenu";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { statusOptions } from "../../../utils/constants/ticket";
-// MR
-import { ItemsPerPageSelector } from "../../../components/dashboard/ItemsPerPageSelector";
-import { PaginationControls } from "../../../components/ui/PaginationControls";
-import { nextCreatedCursor, resetCursor } from "../../../utils/pagination";
-import { usePagination } from "../../../hooks/usePagination";
 import { GetTicketsPaginatedResult } from "../../../types/tickets.types";
 import { useToast } from "../../../hooks/use-toast";
 import { useOperator } from "@/context/OperatorContext";
-// MR end
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ApolloError } from "@apollo/client";
+import { Spinner } from "@/components/ui/spinner";
+import { useDebounceValue } from "usehooks-ts";
 
 dayjs.extend(relativeTime);
 
 export default function TicketsDashboard() {
   const navigate = useNavigate();
 
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [createdCursor, setCreatedCursor] = useState<Date>(resetCursor());
-  const cursorStack = useRef<Date[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const scrollRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = 0;
-    }
-  }, [currentPage]);
+  const itemsToFetch: number = 50;
+  const [ticketCursor, setTicketCursor] = useState<Ticket | null>(null);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+  const [isFetchingMoreLoading, setIsFetchingMoreLoading] =
+    useState<boolean>(false);
 
   const [sorting, setSorting] = useState<SortingState>([]);
+
+  const [searchValue, setSearchValue] = useState<string>("");
+  const [debouncedSearchValue] = useDebounceValue(searchValue, 300);
+
+  const updatedAtDescSorting = useMemo(
+    () => sorting.find((s) => s.id === "updatedAt")?.desc,
+    [sorting]
+  );
+
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setSorting([{ id: "updatedAt", desc: false }]);
+  }, []);
+
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([
     {
       id: "status",
-      value: ["CREATED", "PENDING", "INPROGRESS"],
+      value: ["PENDING", "INPROGRESS", "CREATED"],
     },
   ]);
 
-  const { data, loading, error, fetchMore, refetch } =
-    useQuery<GetTicketsPaginatedResult>(GET_TICKETS_PAGINATED, {
+  const [getTickets, { data, loading, error, refetch, fetchMore }] =
+    useLazyQuery<GetTicketsPaginatedResult>(GET_TICKETS_PAGINATED, {
       variables: {
-        fields: {},
+        fields: {
+          status: columnFilters.find((f) => f.id === "status")?.value as
+            | string[]
+            | undefined,
+          lastName: debouncedSearchValue || undefined,
+        },
         pagination: {
-          limit: itemsPerPage,
-          order: "ASC",
-          cursor: createdCursor,
+          limit: itemsToFetch,
+          order: updatedAtDescSorting ? "DESC" : "ASC",
+          cursor: null,
         },
       },
-      fetchPolicy: "cache-and-network",
+      fetchPolicy: "network-only",
     });
+
+  const hasMoreTickets = useMemo(() => {
+    if (!data) return false;
+
+    return (
+      data.ticketsByProperties.totalCount >
+      (tickets.length as unknown as number)
+    );
+  }, [data, tickets]);
+
+  const fetchMoreTickets = async () => {
+    if (!ticketCursor || !hasMoreTickets) return;
+    setIsFetchingMoreLoading(true);
+    const { data } = await fetchMore({
+      variables: {
+        pagination: {
+          cursor: ticketCursor?.id || null,
+          order: updatedAtDescSorting ? "DESC" : "ASC",
+        },
+      },
+    });
+    const newTickets = data.ticketsByProperties.items as unknown as Ticket[];
+    setTickets((prevTickets) => [...prevTickets, ...newTickets]);
+    setIsFetchingMoreLoading(false);
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!scrollAreaRef.current) return;
+      const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current;
+      console.log("scrollTop:", scrollTop);
+      console.log("scrollHeight:", scrollHeight);
+      console.log("clientHeight:", clientHeight);
+      if (scrollTop + clientHeight >= scrollHeight - 10) {
+        fetchMoreTickets();
+      }
+    };
+    const scrollArea = scrollAreaRef.current;
+    console.log("scrollArea:", scrollArea);
+    if (scrollArea) {
+      scrollArea.addEventListener("scroll", handleScroll);
+    }
+    return () => {
+      if (scrollArea) {
+        scrollArea.removeEventListener("scroll", handleScroll);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    getTickets();
+  }, []);
+
+  useEffect(() => {
+    setTickets((data?.ticketsByProperties.items as unknown as Ticket[]) || []);
+  }, [data]);
+
+  useEffect(() => {
+    setTicketCursor(
+      tickets.length ? (tickets[tickets.length - 1] as unknown as Ticket) : null
+    );
+  }, [tickets]);
+
+  // useEffect(() => {
+  //   refetch({
+  //     fields: {
+  //       status: columnFilters.find((f) => f.id === "status")?.value as
+  //         | string[]
+  //         | undefined,
+  //     },
+  //     pagination: {
+  //       limit: itemsToFetch,
+  //       order: updatedAtDescSorting ? "DESC" : "ASC",
+  //       cursor: null,
+  //     },
+  //   });
+  // }, [updatedAtDescSorting]);
+
+  useSubscription(TICKET_ADDED_SUBSCRIPTION, {
+    onData: ({ data }) => {
+      const newTicket = data.data.ticketAdded;
+
+      if (updatedAtDescSorting) {
+        if (tickets.length < itemsToFetch) {
+          setTickets((prevTickets) => [newTicket, ...prevTickets]);
+          return;
+        }
+        setTickets((prevTickets) => [newTicket, ...prevTickets.slice(0, -1)]);
+        return;
+      }
+
+      if (tickets.length < itemsToFetch) {
+        setTickets((prevTickets) => [...prevTickets, newTicket]);
+        return;
+      }
+
+      return;
+    },
+  });
+
+  useSubscription(TICKET_UPDATED_SUBSCRIPTION, {
+    onData: ({ data }) => {
+      const updated = data.data.ticketUpdated;
+
+      setTickets((prevTickets) => {
+        const ticketIndex = prevTickets.findIndex((t) => t.id === updated.id);
+        if (ticketIndex === -1) return prevTickets;
+
+        const updatedTicket = { ...prevTickets[ticketIndex], ...updated };
+        const newTickets = [...prevTickets];
+        newTickets[ticketIndex] = updatedTicket;
+        return newTickets;
+      });
+    },
+  });
 
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
 
@@ -147,58 +278,18 @@ export default function TicketsDashboard() {
     [updateTicketStatus, refetch, toastSuccess, toastError]
   );
 
-  const { processTicket } = useOperator();
+  const { processingTicket, processTicket } = useOperator();
 
-  const rawTickets = useMemo(
-    () => (data?.ticketsByProperties?.items ?? []) as Ticket[],
-    [data]
-  );
+  const totalCount = data?.ticketsByProperties?.totalCount
+    ? data.ticketsByProperties.totalCount
+    : tickets.length;
+
+  const rawTickets = useMemo(() => (tickets ?? []) as Ticket[], [tickets]);
 
   const filteredTickets = useMemo(
     () => rawTickets.filter((ticket) => ticket.status !== "ARCHIVED"),
     [rawTickets]
   );
-
-  const totalCount = data?.ticketsByProperties?.totalCount ?? 0;
-
-  const loadNext = async () => {
-    if (!rawTickets.length) return;
-    const last = rawTickets[rawTickets.length - 1];
-    if (!last) return;
-
-    const nextCursor = nextCreatedCursor(last.createdAt);
-    const result = await fetchMore({
-      variables: {
-        fields: {},
-        pagination: { limit: itemsPerPage, order: "ASC", cursor: nextCursor },
-      },
-    });
-
-    const nextItems = result?.data?.ticketsByProperties
-      ?.items as unknown as Ticket[];
-    if (nextItems.length > 0) {
-      cursorStack.current.push(createdCursor);
-      setCreatedCursor(nextCursor);
-      setCurrentPage((p) => p + 1);
-    }
-  };
-
-  const loadPrev = async () => {
-    if (cursorStack.current.length === 0) return;
-    const prevCursor = cursorStack.current.pop()!;
-    setCreatedCursor(prevCursor);
-    await refetch({
-      fields: {},
-      pagination: { limit: itemsPerPage, order: "ASC", cursor: prevCursor },
-    });
-    setCurrentPage((p) => Math.max(1, p - 1));
-  };
-
-  const { paginationRange, totalPages } = usePagination({
-    totalCount,
-    pageSize: itemsPerPage,
-    currentPage,
-  });
 
   const table = useReactTable({
     data: filteredTickets,
@@ -260,16 +351,16 @@ export default function TicketsDashboard() {
           },
         },
         {
-          id: "service.name",
-          accessorFn: (row) => row.service?.name ?? "",
+          id: "service.id",
+          accessorFn: (row) => row.service?.id ?? "",
           header: "Service",
           filterFn: (row, columnId, filterValue) => {
             if (!filterValue || filterValue.length === 0) return true;
             return filterValue.includes(row.getValue(columnId));
           },
-          cell: ({ getValue }) => (
+          cell: ({ row }) => (
             <Badge className="px-3 py-1 rounded-4xl border-1 border-primary/10 bg-primary/5 text-primary font-light">
-              {getValue<string>()}
+              {row.original.service?.name || ""}
             </Badge>
           ),
         },
@@ -296,8 +387,10 @@ export default function TicketsDashboard() {
           header: "",
           cell: ({ row }) => (
             <div className="flex flex-row items-center justify-end gap-6">
-              {(row.getValue("status") === "PENDING" ||
-                row.getValue("status") === "CREATED") && (
+              {((row.getValue("status") === "PENDING" &&
+                processingTicket === null) ||
+                (row.getValue("status") === "CREATED" &&
+                  processingTicket === null)) && (
                 <Button
                   className="cursor-pointer"
                   onClick={(event) => {
@@ -335,11 +428,18 @@ export default function TicketsDashboard() {
     },
   });
 
-  const servicesNames: string[] = Array.from(
-    new Set(
-      rawTickets.map((ticket: Ticket) => ticket.service?.name).filter(Boolean)
-    )
-  );
+  const services = useMemo(() => {
+    return Array.from(
+      new Map(
+        tickets
+          .filter((t) => t.service)
+          .map((t) => [
+            t.service.id,
+            { id: t.service.id, name: t.service.name },
+          ])
+      ).values()
+    );
+  }, [tickets]);
 
   const handleFilterChange = (columnName: string, value: string) => {
     const filterValues = table
@@ -356,9 +456,11 @@ export default function TicketsDashboard() {
       ?.setFilterValue(newFilterValues.length ? newFilterValues : undefined);
   };
 
-  if (loading) return <p>Chargement...</p>;
-  if (error) return <p>Erreur : {error.message}</p>;
-  if (!data) return <p>Aucun ticket trouvé</p>;
+  useEffect(() => {
+    table
+      .getColumn("lastName")
+      ?.setFilterValue(debouncedSearchValue || undefined);
+  }, [debouncedSearchValue, table]);
 
   return (
     <>
@@ -367,18 +469,14 @@ export default function TicketsDashboard() {
           Tickets ({totalCount})
         </h1>
       </div>
-      <div className="mt-8 bg-card p-8 rounded-lg w-full overflow-visible shadow-sm">
+      <div className="mt-8 bg-card p-8 rounded-lg w-full h-full overflow-hidden">
         <div className="w-full flex flex-row items-center justify-between">
           <div className="w-full flex flex-row items-center justify-start gap-4">
             <Input
               className="max-w-sm [&&]:bg-popover"
               placeholder="Rechercher un ticket par nom..."
-              value={
-                (table.getColumn("lastName")?.getFilterValue() as string) ?? ""
-              }
-              onChange={(event) =>
-                table.getColumn("lastName")?.setFilterValue(event.target.value)
-              }
+              value={searchValue}
+              onChange={(event) => setSearchValue(event.target.value)}
             />
             <Popover>
               <PopoverTrigger asChild>
@@ -420,23 +518,26 @@ export default function TicketsDashboard() {
                   <h4 className="uppercase text-base font-light text-left mb-2">
                     Filtrer par service
                   </h4>
-                  {servicesNames.map((option: string) => (
-                    <div key={option} className="flex items-center py-1 gap-2">
+                  {services.map((option: { id: string; name: string }) => (
+                    <div
+                      key={option.id}
+                      className="flex items-center py-1 gap-2"
+                    >
                       <Checkbox
-                        id={option}
+                        id={option.id}
                         checked={
                           (
-                            table
-                              .getColumn("service.name")
-                              ?.getFilterValue() as string[] | undefined
-                          )?.includes(option) ?? false
+                            table.getColumn("service.id")?.getFilterValue() as
+                              | string[]
+                              | undefined
+                          )?.includes(option.id) ?? false
                         }
                         onCheckedChange={() =>
-                          handleFilterChange("service.name", option)
+                          handleFilterChange("service.id", option.id)
                         }
                       />
-                      <Label htmlFor={option} className="cursor-pointer">
-                        {option}
+                      <Label htmlFor={option.id} className="cursor-pointer">
+                        {option.name}
                       </Label>
                     </div>
                   ))}
@@ -457,95 +558,115 @@ export default function TicketsDashboard() {
             </Button>
           )}
         </div>
-
-        {/* Table Header - Fixed */}
-        <div className="mt-6 bg-popover px-[24px] rounded-t-lg">
-          <Table className="table-fixed">
-            <TableHeader className="bg-popover">
+        <ScrollArea className="mt-6 bg-popover px-6 py-2 rounded-lg h-[90%] overflow-y-auto">
+          <Table className="w-full" noWrapper>
+            <TableHeader className="sticky top-0 z-10 w-full bg-popover">
               {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead
-                      key={header.id}
-                      className="uppercase text-base font-light text-left py-4"
-                    >
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  ))}
+                <TableRow key={headerGroup.id} className="w-full">
+                  {headerGroup.headers.map((header) => {
+                    return (
+                      <TableHead
+                        key={header.id}
+                        className="uppercase text-base font-light text-left py-4"
+                      >
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    );
+                  })}
                 </TableRow>
               ))}
             </TableHeader>
-          </Table>
-        </div>
-
-        {/* Table Body - Scrollable */}
-        <div
-          ref={scrollRef}
-          className="bg-popover px-[24px] rounded-b-lg max-h-[300px] min-h-[300px] overflow-y-scroll"
-        >
-          <Table className="table-fixed">
             <TableBody>
               {table.getRowModel().rows?.length ? (
-                table.getRowModel().rows.map((row) => (
-                  <TableRow
-                    key={row.id}
-                    data-state={row.getIsSelected() && "selected"}
-                    className="cursor-pointer text-base text-left bg-popover hover:bg-muted/30 transition-colors"
-                    onClick={() =>
-                      navigate(`/dashboard/tickets/${row.original.id}`)
-                    }
-                  >
-                    {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className="text-left py-4">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </TableCell>
-                    ))}
+                <>
+                  {table.getRowModel().rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                      className="cursor-pointer text-base text-left bg-popover hover:bg-muted/30 transition-colors"
+                      onClick={() =>
+                        navigate(`/dashboard/tickets/${row.original.id}`)
+                      }
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id} className="text-left py-4">
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                  <TableRow>
+                    <TableCell colSpan={table.getAllColumns().length}>
+                      {hasMoreTickets && (
+                        <Button
+                          variant="outline"
+                          className="w-full my-4 [&&]:bg-popover"
+                          disabled={isFetchingMoreLoading}
+                          onClick={async () => {
+                            await fetchMoreTickets();
+                          }}
+                        >
+                          {isFetchingMoreLoading && (
+                            <Spinner className="mr-2" />
+                          )}
+                          Charger plus de tickets
+                        </Button>
+                      )}
+                    </TableCell>
                   </TableRow>
-                ))
+                </>
               ) : (
-                <TableRow>
-                  <TableCell
-                    colSpan={table.getAllColumns().length}
-                    className="h-24 text-center"
-                  >
-                    Aucun résultat.
-                  </TableCell>
-                </TableRow>
+                <StateTableComponent
+                  loading={loading}
+                  error={error}
+                  tickets={tickets}
+                  table={table}
+                />
               )}
             </TableBody>
           </Table>
-        </div>
-
-        {/* Pagination */}
-        <div className="flex flex-col sm:flex-row items-center justify-between px-[24px] pt-4 gap-4">
-          <ItemsPerPageSelector
-            value={itemsPerPage}
-            onChange={(val) => {
-              setItemsPerPage(val);
-              setCreatedCursor(resetCursor());
-              setCurrentPage(1);
-              cursorStack.current = [];
-            }}
-          />
-          <PaginationControls
-            paginationRange={paginationRange}
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={(page: number) => {
-              if (page > currentPage) loadNext();
-              else if (page < currentPage) loadPrev();
-            }}
-          />
-        </div>
+        </ScrollArea>
       </div>
     </>
   );
 }
+
+const StateTableComponent = ({
+  loading,
+  error,
+  tickets,
+  table,
+}: {
+  loading: boolean;
+  error: ApolloError | undefined;
+  tickets: Ticket[] | null;
+  table: ReturnType<typeof useReactTable<Ticket>>;
+}) => {
+  const getMessageToShow = () => {
+    if (loading) return "Chargement...";
+    if (error) return `Erreur : ${error.message}`;
+    if (!tickets) return "Aucun résultat.";
+  };
+
+  const message = getMessageToShow();
+
+  return (
+    <TableRow>
+      <TableCell
+        colSpan={table.getAllColumns().length}
+        className="h-24 text-center"
+      >
+        {loading && <Spinner className="mr-2" />}
+        {message}
+      </TableCell>
+    </TableRow>
+  );
+};

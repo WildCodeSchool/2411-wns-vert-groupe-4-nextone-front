@@ -89,3 +89,43 @@ export const GET_TICKETS_PAGINATED = gql`
     }
   }
 `;
+
+export const TICKET_ADDED_SUBSCRIPTION = gql`
+  subscription TicketAdded {
+    ticketAdded {
+      id
+      firstName
+      code
+      createdAt
+      email
+      lastName
+      phone
+      status
+      updatedAt
+      service {
+        id
+        name
+      }
+    }
+  }
+`;
+
+export const TICKET_UPDATED_SUBSCRIPTION = gql`
+  subscription TicketUpdated {
+    ticketUpdated {
+      id
+      firstName
+      code
+      createdAt
+      email
+      lastName
+      phone
+      status
+      updatedAt
+      service {
+        id
+        name
+      }
+    }
+  }
+`;
