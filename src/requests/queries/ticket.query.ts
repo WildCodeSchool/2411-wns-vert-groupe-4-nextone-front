@@ -89,3 +89,24 @@ export const GET_TICKETS_PAGINATED = gql`
     }
   }
 `;
+
+export const TICKETS_FOR_TV_DISPLAY = gql`
+  query TicketsForTVDisplay($serviceId: ID) {
+    ticketsForTVDisplay(serviceId: $serviceId) {
+      id
+      code
+      firstName
+      lastName
+      email
+      phone
+      status
+      service {
+        id
+        name
+      }
+        status
+      createdAt
+      updatedAt
+    }
+  }
+`;

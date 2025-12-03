@@ -9,8 +9,9 @@ import DashboardServicesPage from "../pages/DashboardServicesPage.tsx";
 import TicketsDashboard from "../components/dashboard/tickets/TicketsDashboard.tsx";
 import TicketPage from "../components/dashboard/tickets/TicketPage.tsx";
 import TvPage from "../pages/TvPage.tsx";
-import SettingsPage from "@/pages/SettingsPage";
-import UserInvitationPage from "@/pages/UserInvitationPage";
+import SettingsPage from "../pages/SettingsPage";
+import UserInvitationPage from "../pages/UserInvitationPage";
+import TvSelector from "../pages/TvSelector.tsx";
 
 export const router = createBrowserRouter([
   {
@@ -26,8 +27,14 @@ export const router = createBrowserRouter([
     element: <PhonePage />,
   },
   {
+    element: <TvSelector/>,
     path: "/tv",
-    element: <TvPage />,
+    children: [
+      {
+        path: ":serviceId",
+        element: <TvPage/>
+      }
+    ]
   },
   {
     element: <DashboardLayout />,
@@ -50,7 +57,7 @@ export const router = createBrowserRouter([
         element: <TicketPage />,
       },
       {
-        path: "/dashboard/settings",
+        path: "settings",
         element: <SettingsPage />,
       },
     ],
