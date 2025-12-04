@@ -1,54 +1,62 @@
-# React + TypeScript + Vite
+# NextOne - Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+NextOne est une application de gestion de file d’attente développée dans le cadre de la formation de la Wild Code School. 
+Ce projet a été réalisé en collaboration avec quatre développeurs en alternance afin de mettre en pratique 
+l’ensemble des compétences acquises tout au long de l’année.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🌟 Points forts de NextOne
 
-## Expanding the ESLint configuration
+- **🕒 Gain de temps** : plus de longues attentes, chaque visiteur sait exactement quand c’est son tour.  
+- **⚙️ Organisation optimisée** : les opérateurs gèrent les files facilement grâce à une vision claire et actualisée.  
+- **📡 Communication en temps réel** : les subscriptions assurent une synchronisation instantanée entre toutes les interfaces.  
+- **💡 Expérience moderne et accessible** : solution adaptable à différents types de structures (mairies, banques, hôpitaux, etc.).  
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## 🖥️ Composants principaux
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+- **Borne d’accueil** : utilisée par les visiteurs, elle permet de prendre un ticket après avoir rempli un formulaire.  
+- **Écran d’affichage des tickets** : permet aux visiteurs de visualiser les tickets en cours d’appel.  
+- **Dashboard administrateur** :  
+  - Pour l’opérateur : gestion des tickets et création de nouveaux tickets.  
+  - Pour l’administrateur : vue complète du système, gestion des opérateurs et services, consultation des statistiques, en plus des fonctionnalités opérateurs.  
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## ⚛️ Technologies utilisées
+
+- **React + TypeScript + Vite** : pour construire des interfaces utilisateur dynamiques, modernes et réactives.  
+- **Vitest** : pour un testing et un maintient durable de l'application.  
+- **Shadcn/UI & Tailwind CSS** : composants réutilisables et style cohérent pour un développement rapide.  
+- **Context API** : gestion efficace de l’état de l’application.  
+
+---
+
+## 🎨 Conception de l’interface
+
+L’objectif de l’interface est d’offrir une expérience claire, cohérente et agréable.  
+
+### Charte graphique
+- **Couleurs principales** :  
+  - Vert profond (#1F2511) : modernité  
+  - Vert citron (#B5E303) : énergie et dynamisme  
+- **Typographie** : Archivo, lisible et contemporaine, pour renforcer la clarté visuelle.  
+- **Logo** : une flèche stylisée orientée vers la droite, représentant le mouvement, la fluidité et la progression, valeurs clés de la gestion de file d’attente.  
+
+---
+
+## ⚡ Setup du projet
+
+1. **Installation des dépendances**  
+
+npm install
+
+2. **Fichier d'environnement**
+
+VITE_API_URL= l'url de l'API
+
+3. **Démarrer le projet**
+
+npm run dev
