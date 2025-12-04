@@ -15,6 +15,19 @@ export const GET_SERVICES = gql`
   }
 `;
 
+export const GET_SERVICES_WITH_MANAGERS = gql`
+  query ServicesWithManagers {
+    services {
+      id
+      name
+      isGloballyActive
+      authorizations {
+        createdAt
+      }
+    }
+  }
+`;
+
 export const GET_SERVICE = gql`
   query Service($id: UUID!) {
     service(id: $id) {

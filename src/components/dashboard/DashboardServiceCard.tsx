@@ -58,13 +58,14 @@ import { useDebounceValue } from "usehooks-ts";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ChevronDown } from "lucide-react";
 import StatusBadge from "./StatusBadge";
+import defineServiceStatus from "@/utils/services/defineServiceStatus";
 
 dayjs.extend(relativeTime);
 
 type DashboardService = {
   id: string;
   name: string;
-  status: "Fluide" | "En attente" | "En cours";
+  authorizations: { createdAt: string }[];
 };
 
 export default function DashboardServiceCard({
@@ -163,6 +164,18 @@ export default function DashboardServiceCard({
       tickets.length ? (tickets[tickets.length - 1] as unknown as Ticket) : null
     );
   }, [tickets]);
+
+  const totalCount = data?.ticketsByProperties?.totalCount
+    ? data.ticketsByProperties.totalCount
+    : tickets.length;
+
+  const serviceStatus = useMemo(() => {
+    const status = defineServiceStatus(
+      totalCount,
+      service.authorizations.length
+    );
+    return status;
+  }, [totalCount, service.authorizations.length]);
 
   // useEffect(() => {
   //   refetch({
@@ -345,20 +358,6 @@ export default function DashboardServiceCard({
           },
         },
         {
-          id: "service.id",
-          accessorFn: (row) => row.service?.id ?? "",
-          header: "Service",
-          filterFn: (row, columnId, filterValue) => {
-            if (!filterValue || filterValue.length === 0) return true;
-            return filterValue.includes(row.getValue(columnId));
-          },
-          cell: ({ row }) => (
-            <Badge className="px-3 py-1 rounded-4xl border-1 border-primary/10 bg-primary/5 text-primary font-light">
-              {row.original.service?.name || ""}
-            </Badge>
-          ),
-        },
-        {
           accessorKey: "updatedAt",
           header: ({ column }) => (
             <div
@@ -461,7 +460,7 @@ export default function DashboardServiceCard({
             />
           </button>
         </div>
-        <StatusBadge label={service.status} />
+        <StatusBadge label={serviceStatus} />
       </CardHeader>
       {isOpen && (
         <CardContent>
