@@ -48,7 +48,7 @@ import { TicketActionMenu } from "../TicketActionMenu";
 import { Checkbox } from "../../../components/ui/checkbox";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { statusOptions } from "../../../utils/constants/ticket";
-import { GetTicketsPaginatedResult } from "../../../types/tickets.types";
+import { GetTicketsPaginatedResult } from "../../../types/ticket.d";
 import { useToast } from "../../../hooks/use-toast";
 import { useOperator } from "@/context/OperatorContext";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -278,7 +278,7 @@ export default function TicketsDashboard() {
     [updateTicketStatus, refetch, toastSuccess, toastError]
   );
 
-  const { processingTicket, processTicket } = useOperator();
+  const { processingTicket, processTicket, canProcessTicket } = useOperator();
 
   const totalCount = data?.ticketsByProperties?.totalCount
     ? data.ticketsByProperties.totalCount
@@ -398,6 +398,7 @@ export default function TicketsDashboard() {
                     handleUpdateTicketToInProgress(row.original.id);
                     processTicket(row.original);
                   }}
+                  disabled={!canProcessTicket}
                 >
                   Prendre le ticket
                 </Button>
@@ -415,7 +416,13 @@ export default function TicketsDashboard() {
           ),
         },
       ],
-      [handleArchive, handleResetStatus, handleUpdateTicketToInProgress]
+      [
+        handleArchive,
+        handleResetStatus,
+        handleUpdateTicketToInProgress,
+        processTicket,
+        canProcessTicket,
+      ]
     ),
     getCoreRowModel: getCoreRowModel(),
     onSortingChange: setSorting,

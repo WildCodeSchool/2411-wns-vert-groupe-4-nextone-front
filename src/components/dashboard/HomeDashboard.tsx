@@ -1,5 +1,9 @@
 import DashboardServiceStateCard from "./DashboardServiceStateCard";
 import DashboardStatCard from "./DashboardStatCard";
+import { useDashboardStats } from "@/hooks/useDashboardStats";
+import { useDashboardServices } from "@/hooks/useDashboardServices";
+import { useOperator } from "@/context/OperatorContext";
+import { useEffect } from "react";
 
 export type Ticket = {
   id: number;
@@ -15,35 +19,17 @@ export type Service = {
 };
 
 export default function HomeDashboard() {
-  const services: Service[] = [
-    {
-      id: 1,
-      name: "Cardiologie",
-      state: "Fluide",
-      tickets: [
-        { id: 1, code: "CA345", status: "Open" },
-        { id: 2, code: "CA346", status: "Open" },
-      ],
-    },
-    {
-      id: 2,
-      name: "Pédiatrie",
-      state: "En attente",
-      tickets: [
-        { id: 3, code: "PE123", status: "Open" },
-        { id: 4, code: "PE124", status: "Open" },
-      ],
-    },
-    {
-      id: 3,
-      name: "Dermatologie",
-      state: "En cours",
-      tickets: [
-        { id: 5, code: "DE789", status: "Open" },
-        { id: 6, code: "DE790", status: "Open" },
-      ],
-    },
-  ];
+  const {
+    processedTicketsCount,
+    pendingTicketsCount,
+    inProgressTicketsCount,
+    averageProcessingTime,
+  } = useDashboardStats();
+
+  useEffect(() => {}, [inProgressTicketsCount]);
+
+  const { services } = useDashboardServices();
+  const { canProcessTicket } = useOperator();
 
   return (
     <>
@@ -55,22 +41,23 @@ export default function HomeDashboard() {
           Statistiques globales
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mt-6 w-full mb-6">
-          <DashboardStatCard title="Tickets traités aujourd'hui" value="150" />
+          <DashboardStatCard
+            title="Tickets traités aujourd'hui"
+            value={processedTicketsCount.toString()}
+          />
           <DashboardStatCard
             title="Temps de traitement moyen"
-            value="9min 23sec"
+            value={averageProcessingTime?.formatted || "N/A"}
           />
-          <DashboardStatCard title="Tickets en attente" value="7" />
+          <DashboardStatCard
+            title="Tickets en attente"
+            value={pendingTicketsCount.toString()}
+          />
           <DashboardStatCard
             title="Tickets en cours de traitement"
-            value="26"
+            value={inProgressTicketsCount.toString()}
           />
         </div>
-        <DashboardStatCard
-          title="Courbe habituelle d'affluence"
-          value="50"
-          fullWidth
-        />
       </div>
       <div className="flex flex-col items-start justify-start w-full mt-10">
         <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
@@ -78,7 +65,11 @@ export default function HomeDashboard() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6 w-full mb-6">
           {services.map((service) => (
-            <DashboardServiceStateCard key={service.id} service={service} />
+            <DashboardServiceStateCard
+              key={service.id}
+              service={service}
+              canProcessTicket={canProcessTicket}
+            />
           ))}
         </div>
       </div>

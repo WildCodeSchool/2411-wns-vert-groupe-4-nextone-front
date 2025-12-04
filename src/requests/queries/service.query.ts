@@ -6,6 +6,11 @@ export const GET_SERVICES = gql`
       id
       name
       isGloballyActive
+      tickets {
+        id
+        code
+        status
+      }
     }
   }
 `;
@@ -16,16 +21,15 @@ export const GET_SERVICE = gql`
       id
       name
       isGloballyActive
-      # 🔜 Quand le schéma exposera les tickets côté Service :
-      # tickets {
-      #   id
-      #   code
-      #   status
-      #   createdAt
-      #   updatedAt
-      #   firstName
-      #   lastName
-      # }
+      tickets {
+        id
+        code
+        status
+        createdAt
+        updatedAt
+        firstName
+        lastName
+      }
     }
   }
 `;

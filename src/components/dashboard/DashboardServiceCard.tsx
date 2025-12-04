@@ -50,13 +50,14 @@ import { PaginationControls } from "../../components/ui/PaginationControls";
 import { ItemsPerPageSelector } from "../../components/dashboard/ItemsPerPageSelector";
 import { nextCreatedCursor, resetCursor } from "../../utils/pagination";
 import { usePagination } from "../../hooks/usePagination";
-import { GetTicketsPaginatedResult } from "../../types/tickets.types";
+import { GetTicketsPaginatedResult } from "../../types/ticket.d";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { RiFilterLine } from "react-icons/ri";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import "dayjs/locale/fr";
 import { GET_TICKETS_PAGINATED_SUBSCRIPTION } from "../../requests/subscriptions/ticket.subscription";
+import { useOperator } from "../../context/OperatorContext";
 
 dayjs.extend(relativeTime);
 
@@ -94,6 +95,8 @@ export default function DashboardServiceCard({
   const cursorMap = useRef<Map<number, Date>>(new Map([[1, resetCursor()]]));
   const { toastSuccess, toastError } = useToast();
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
+
+  const { canProcessTicket, processTicket } = useOperator();
 
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -383,7 +386,15 @@ export default function DashboardServiceCard({
               {ticket.status === "PENDING" && (
                 <Button
                   className="bg-[#1f2511] hover:bg-[#2a3217] text-white"
-                  onClick={() => handleTakeTicket(ticket.id)}
+                  onClick={() => {
+                    processTicket({
+                      id: ticket.id,
+                      code: ticket.ticket,
+                      status: "INPROGRESS",
+                    });
+                    handleTakeTicket(ticket.id);
+                  }}
+                  disabled={!canProcessTicket}
                 >
                   Prendre le ticket
                 </Button>
