@@ -57,3 +57,16 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/nextone-front-staging:latest
           platforms: linux/amd64,linux/arm64,linux/x86_64
+  zap-scan:
+    needs: docker
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/staging'
+    steps:
+      - name: Wait for webhook deployment
+        run: sleep 120
+      - name: Run OWASP ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.14.0
+        with:
+          target: ${{ secrets.FRONTEND_STAGING_URL }}
+          fail_action: true
+          cmd_options: "-I"
