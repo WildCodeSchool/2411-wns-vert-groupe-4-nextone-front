@@ -16,6 +16,7 @@ export const CHECK_TOKEN = gql`
       id
       lastName
       role
+      profileImage
       companyId
     }
   }
