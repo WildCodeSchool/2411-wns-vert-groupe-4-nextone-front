@@ -10,6 +10,7 @@ type CheckToken = {
     lastName: string;
     companyId: string;
     role: string;
+    profileImage: string;
   };
 };
 
@@ -62,6 +63,7 @@ function AuthProvider({ children }: Readonly<PropsWithChildren>) {
             lastName: data.checkToken.lastName ?? "",
             companyId: data.checkToken.companyId ?? "",
             role: data.checkToken.role ?? "",
+            profileImage: data.checkToken.profileImage ?? "",
           };
           setUser(user);
           localStorage.setItem("user", JSON.stringify(user));
