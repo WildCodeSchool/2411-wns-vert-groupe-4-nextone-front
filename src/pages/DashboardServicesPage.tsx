@@ -1,16 +1,21 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
-import { GET_SERVICES } from "../requests/queries/service.query";
+import { GET_SERVICES_WITH_MANAGERS } from "../requests/queries/service.query";
 
 type DashboardService = {
   id: string;
   name: string;
-  status: "Fluide" | "En attente" | "En cours";
+  authorizations: { createdAt: string }[];
 };
 
 type GetServicesResult = {
-  services: { id: string; name: string; isGloballyActive: boolean }[];
+  services: {
+    id: string;
+    name: string;
+    isGloballyActive: boolean;
+    authorizations: { createdAt: string }[];
+  }[];
 };
 
 export default function DashboardServicesPage() {
@@ -21,7 +26,7 @@ export default function DashboardServicesPage() {
     loading: loadingServices,
     error: errorServices,
     refetch: refetchServices,
-  } = useQuery<GetServicesResult>(GET_SERVICES, {
+  } = useQuery<GetServicesResult>(GET_SERVICES_WITH_MANAGERS, {
     fetchPolicy: "cache-and-network",
   });
 
@@ -36,7 +41,7 @@ export default function DashboardServicesPage() {
     (s) => ({
       id: s.id,
       name: s.name,
-      status: s.isGloballyActive ? "Fluide" : "En attente",
+      authorizations: s.authorizations,
     })
   );
 
@@ -61,11 +66,6 @@ export default function DashboardServicesPage() {
           <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
             Services
           </h1>
-          <img
-            src="/src/assets/images/icon_img.jpg"
-            alt="Logo"
-            className="absolute right-0 -top-2 w-24 h-10 object-contain rounded-full bg-white shadow-md"
-          />
         </div>
         <div className="rounded-lg border p-4">
           <p className="text-red-600 font-medium">
@@ -88,15 +88,10 @@ export default function DashboardServicesPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between w-full mb-4">
+      <div className="flex items-center justify-between w-full mb-8">
         <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
           Services
         </h1>
-        <img
-          src="/src/assets/images/icon_img.jpg"
-          alt="Logo"
-          className="w-40 h-16 object-contain rounded-full bg-white shadow-md"
-        />
       </div>
 
       <div className="flex flex-col gap-6 w-full">

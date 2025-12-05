@@ -1,9 +1,9 @@
 import { Button } from "../ui/button";
 import { ServiceWithState } from "@/types/dashboard";
-import { FaCircle } from "react-icons/fa6";
 import { useOperator } from "@/context/OperatorContext";
 import { useMutation } from "@apollo/client";
 import { UPDATE_TICKET_STATUS } from "@/requests/queries/ticket.query";
+import StatusBadge from "./StatusBadge";
 
 export default function DashboardServiceStateCard({
   service,
@@ -48,10 +48,7 @@ export default function DashboardServiceStateCard({
         <h3 className="text-xl font-light flex flex-col items-start justify-start">
           {service.name}
         </h3>
-        <span className="text-sm py-2 px-4 bg-chart-1 flex items-center justify-start gap-2 rounded-full">
-          <FaCircle className="text-chart-2" size={9} />
-          {service.state}
-        </span>
+        <StatusBadge label={"Fluide"} />
       </div>
       <div className="w-full bg-popover rounded-md flex flex-col items-start justify-start p-6">
         {service.tickets.length === 0 ? (
