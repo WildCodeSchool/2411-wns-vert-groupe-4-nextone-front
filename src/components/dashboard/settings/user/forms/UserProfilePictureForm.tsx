@@ -1,5 +1,6 @@
 import InputWithLabel from "@/components/dashboard/InputWithLabel";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
@@ -43,8 +44,25 @@ export default function UserProfilePictureForm() {
     mode: "onChange",
   });
 
-  const onSubmit = (data: UserProfilePictureFormData) => {
-    console.log(data);
+  const { user, getInfos } = useAuth();
+
+  const onSubmit = async (data: any) => {
+    const file = data.profilePicture?.[0];
+    if (!file) {
+      return alert("Choisis une image !");
+    }
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await fetch(
+      `http://localhost:4005/managers/${user?.id}/profile-picture`,
+      {
+        method: "PUT",
+        body: formData,
+      }
+    );
+    await res.json();
+    getInfos()
   };
 
   return (
@@ -57,9 +75,11 @@ export default function UserProfilePictureForm() {
         className="text-base! font-normal bg-transparent! shadow-none! w-full"
         error={errors.profilePicture?.message}
       />
-      <Button onClick={handleSubmit(onSubmit)} disabled={!isValid}>
+      <Button  type="button" onClick={handleSubmit(onSubmit)} disabled={!isValid}>
         Enregistrer la photo de profil
       </Button>
+      <img src={user?.profileImage ? `http://localhost:4005/files/${encodeURIComponent(user.profileImage)}`: undefined}
+        alt="Aperçu photo de profil" className="w-32 h-32 rounded-full object-cover"/>
     </>
   );
 }
