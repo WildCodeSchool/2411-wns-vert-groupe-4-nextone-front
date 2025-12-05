@@ -10,7 +10,7 @@ type CheckToken = {
     lastName: string;
     companyId: string;
     role: string;
-    profileImage: string;
+    profileImage?: string;
   };
 };
 
