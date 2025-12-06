@@ -30,7 +30,10 @@ export default function LoginAdmin() {
   const {
     register,
     handleSubmit,
+<<<<<<< HEAD
     control,
+=======
+>>>>>>> 7e8d214 (💥 NEW: Add data-testid on LoginPageAdmin  for e2e tests)
     formState: { errors },
   } = useForm({
     resolver: yupResolver(loginInfo),
@@ -112,9 +115,16 @@ export default function LoginAdmin() {
                   label="Adresse mail"
                   type="email"
                   placeholder="example@example.com"
+<<<<<<< HEAD
                   error={errors.email?.message || formatedErrorMessage}
                   {...register("email")}
                   className="!text-base font-normal !bg-transparent !shadow-none w-full"
+=======
+                  error={errors.email?.message}
+                  {...register("email")}
+                  className="!text-base font-normal !bg-transparent !shadow-none w-full"
+                  data-testid="login-email"
+>>>>>>> 7e8d214 (💥 NEW: Add data-testid on LoginPageAdmin  for e2e tests)
                 />
                 <InputWithLabel
                   label="Mot de passe"
@@ -123,6 +133,10 @@ export default function LoginAdmin() {
                   error={errors.password?.message}
                   {...register("password")}
                   className="!text-base font-normal !bg-transparent !shadow-none"
+<<<<<<< HEAD
+=======
+                  data-testid="login-password"
+>>>>>>> 7e8d214 (💥 NEW: Add data-testid on LoginPageAdmin  for e2e tests)
                 />
                 <div className="flex items-center justify-between">
                   <div className="inline-flex items-center gap-2.5">
@@ -149,6 +163,10 @@ export default function LoginAdmin() {
               <Button
                 type="submit"
                 className="w-full bg-[#1f2511] py-7 rounded-lg font-['Archivo',Helvetica] font-light text-lg"
+<<<<<<< HEAD
+=======
+                data-testid="login-submit"
+>>>>>>> 7e8d214 (💥 NEW: Add data-testid on LoginPageAdmin  for e2e tests)
               >
                 Me connecter
               </Button>
