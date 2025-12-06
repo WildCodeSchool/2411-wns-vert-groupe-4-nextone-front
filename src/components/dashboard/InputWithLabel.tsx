@@ -10,6 +10,7 @@ interface InputWithLabelProps
   readonly label: string;
   readonly error?: string;
   readonly children?: React.ReactNode;
+  readonly "data-testid"?: string;
 }
 
 function InputWithLabelFunc(
@@ -60,7 +61,7 @@ function InputWithLabelFunc(
           </Toggle>
         )}
       </div>
-
+        data-testid={props["data-testid"]}
       {error && <p className="text-sm text-red-500 mt-1 text-start">{error}</p>}
     </div>
   );
