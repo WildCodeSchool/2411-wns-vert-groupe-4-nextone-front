@@ -119,10 +119,17 @@ function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
                 className="w-full border border-primary rounded-md p-3 text-lg"
                 value={selectedService?.id || ""}
                 onChange={(e) => handleSelectService(e.target.value)}
+                data-testid="service-select"
               >
                 <option value="">-- Sélectionnez un service --</option>
                 {activeServices.map((service) => (
-                  <option key={service.id} value={service.id}>
+                  <option
+                    key={service.id}
+                    value={service.id}
+                    data-testid={`service-option-${service.name
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
+                  >
                     {service.name}
                   </option>
                 ))}
@@ -140,6 +147,9 @@ function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
                     key={service.id}
                     value={service.id}
                     className={tabClass}
+                    data-testid={`service-card-${service.name
+                      .toLowerCase()
+                      .replace(/\s+/g, "-")}`}
                   >
                     {service.name}
                   </TabsTrigger>
@@ -157,6 +167,7 @@ function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
             updateTicket={() =>
               updateTicketService(ticket, selectedService, setTicket)
             }
+            nextButtonTestId="next-button"
           />
         </div>
       </div>

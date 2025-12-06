@@ -5,9 +5,16 @@ export type StepControlsProps = {
   onNext?: () => void;
   onCancel?: () => void;
   updateTicket?: () => void;
+  nextButtonTestId?: string;
 };
 
-function NavigationActions({ onBack, onNext, onCancel, updateTicket }: StepControlsProps) {
+function NavigationActions({
+  onBack,
+  onNext,
+  onCancel,
+  updateTicket,
+  nextButtonTestId,
+}: StepControlsProps) {
   const handleNext = () => {
     updateTicket?.();
     onNext?.();
@@ -21,15 +28,30 @@ function NavigationActions({ onBack, onNext, onCancel, updateTicket }: StepContr
   return (
     <div className="flex w-full items-center justify-between mt-6">
       <div className="flex space-x-9">
-        <Button type="button" onClick={handleBack} variant="ghost" className="text-primary text-[17px] p-6">
+        <Button
+          type="button"
+          onClick={handleBack}
+          variant="ghost"
+          className="text-primary text-[17px] p-6"
+        >
           Retour
         </Button>
-        <Button type="submit" onClick={handleNext} className="text-[17px] p-6">
+        <Button
+          type="submit"
+          onClick={handleNext}
+          className="text-[17px] p-6"
+          data-testid={nextButtonTestId}
+        >
           Continuer
         </Button>
       </div>
       {onCancel && (
-        <Button type="button" onClick={onCancel} variant="ghost" className="text-primary text-[17px] p-6">
+        <Button
+          type="button"
+          onClick={onCancel}
+          variant="ghost"
+          className="text-primary text-[17px] p-6"
+        >
           Annuler
         </Button>
       )}
