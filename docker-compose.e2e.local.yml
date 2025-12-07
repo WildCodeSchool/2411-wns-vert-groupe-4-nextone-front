@@ -1,0 +1,10 @@
+services:
+  e2e:
+    build: ./e2e
+    volumes:
+      - ./playwright-report:/app/playwright-report
+    environment:
+      - NODE_ENV=development
+      - PLAYWRIGHT_BASE_URL=http://host.docker.internal:4000
+      - BACKEND_URL=http://host.docker.internal:4005/graphql
+    network_mode: "host"
