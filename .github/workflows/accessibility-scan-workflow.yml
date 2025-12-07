@@ -1,0 +1,53 @@
+name: Accessibility Scan
+
+on:
+  workflow_call:
+
+jobs:
+  accessibility-scan:
+    runs-on: ubuntu-latest
+    continue-on-error: true  
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+      
+      - name: Install a11ywatch CLI
+        run: npm install -g @a11ywatch/cli
+      
+      - name: Wait for deployment to be ready
+        run: sleep 30
+      
+      - name: Run a11ywatch accessibility scan
+        run: |
+          a11ywatch scan \
+            --url ${{ secrets.FRONTEND_STAGING_URL }} \
+            --save \
+            --sitemap \
+            --standard WCAG2AA || true
+      
+      - name: Display scan summary
+        if: always()
+        run: |
+          echo "📊 Scan d'accessibilité terminé"
+          echo "Les rapports détaillés sont disponibles dans les artifacts"
+          if [ -f a11ywatch-results.json ]; then
+            echo "✅ Rapport JSON généré"
+          fi
+          if [ -f a11ywatch-results.html ]; then
+            echo "✅ Rapport HTML généré"
+          fi
+      
+      - name: Upload accessibility reports
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: a11ywatch-accessibility-reports
+          path: |
+            a11ywatch-results.json
+            a11ywatch-results.html
+          retention-days: 30

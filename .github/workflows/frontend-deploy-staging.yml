@@ -85,3 +85,7 @@ jobs:
           target: ${{ secrets.FRONTEND_STAGING_URL }}
           fail_action: true
           cmd_options: "-I"
+  
+  accessibility-scan:
+    needs: deploy-staging
+    uses: ./.github/workflows/accessibility-scan-workflow.yml
