@@ -95,7 +95,6 @@ export default function ServiceStep({
           <select
             className="w-full border border-primary rounded-md p-3 text-lg"
             {...formMethods.register("serviceId")}
-            onChange={() => {}}
           >
             {activeServices.map((service) => (
               <option key={service.id} value={service.id}>
