@@ -11,6 +11,7 @@ export const GET_COMPANY_INFORMATIONS = gql`
       email
       city
       postalCode
+      logoCompany
     }
   }
 `;

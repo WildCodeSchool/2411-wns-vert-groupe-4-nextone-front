@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
 import { GET_SERVICES_WITH_MANAGERS } from "../requests/queries/service.query";
+import LogoCompany from "@/common/setting/logoCompany";
 
 type DashboardService = {
   id: string;
@@ -88,12 +89,12 @@ export default function DashboardServicesPage() {
 
   return (
     <>
-      <div className="flex items-center justify-between w-full mb-8">
+      <div className="w-full flex items-center justify-between">
         <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
           Services
         </h1>
+        <LogoCompany></LogoCompany>
       </div>
-
       <div className="flex flex-col gap-6 w-full">
         {mappedServices.map((service) => (
           <DashboardServiceCard
