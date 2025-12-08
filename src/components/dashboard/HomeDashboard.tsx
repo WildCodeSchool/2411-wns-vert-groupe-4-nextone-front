@@ -4,7 +4,7 @@ import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useDashboardServices } from "@/hooks/useDashboardServices";
 import { useOperator } from "@/context/OperatorContext";
 import { useEffect } from "react";
-import LogoCompany from "@/common/setting/logoCompany";
+import LogoCompany from "@/common/setting/CompanyLogo";
 
 export type Ticket = {
   id: number;

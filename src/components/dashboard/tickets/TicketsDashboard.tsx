@@ -55,7 +55,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ApolloError } from "@apollo/client";
 import { Spinner } from "@/components/ui/spinner";
 import { useDebounceValue } from "usehooks-ts";
-import LogoCompany from "@/common/setting/logoCompany";
+import LogoCompany from "@/common/setting/CompanyLogo";
 
 dayjs.extend(relativeTime);
 
