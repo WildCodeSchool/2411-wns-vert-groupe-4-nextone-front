@@ -36,8 +36,12 @@ export default function DashboardMenuTooltip({
       <>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <div className="flex items-center justify-center w-full aspect-square bg-primary text-white rounded-full cursor-pointer">
-              {item.icon}
+            <div className="flex items-center justify-center w-full aspect-square bg-primary text-white rounded-full cursor-pointer overflow-hidden">
+              {user.id && user.profileImage ? (
+                <img src={`http://localhost:4005/files/${encodeURIComponent(user.profileImage)}`} className="w-full h-full object-cover" alt="image de profil"/>
+              ) : (
+                item.icon
+              )}
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent

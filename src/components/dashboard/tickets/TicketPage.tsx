@@ -16,6 +16,7 @@ import { Button } from "../../../components/ui/button";
 import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
 import { useAuth } from "@/context/AuthContext";
+import LogoCompany from "@/common/setting/logoCompany";
 
 type RouteParams = {
   id: string;
@@ -91,28 +92,30 @@ export default function TicketPage() {
 
   return (
     <>
-      <div className="flex flex-row items-center justify-start w-full">
-        <div
-          className="bg-card flex items-center justify-center rounded-full p-3 mr-5 cursor-pointer"
-          onClick={() => navigate(-1)}
-        >
-          <IoIosArrowBack className="w-6 h-6 text-foreground cursor-pointer" />
+      <div className="flex flex-row items-center w-full">
+        <div className="flex items-center">
+          <div className="bg-card flex items-center justify-center rounded-full p-3 mr-5 cursor-pointer" onClick={() => navigate(-1)}>
+            <IoIosArrowBack className="w-6 h-6 text-foreground cursor-pointer" />
+          </div>
+          <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance mr-2">
+            {data.ticket.firstName} {data.ticket.lastName}
+          </h1>
+          <span className="ml-4 px-4 py-2 rounded-lg text-sm font-light bg-primary text-white">
+            Ticket {data.ticket.code}
+          </span>
+          <span
+            className={`ml-4 px-4 py-2 rounded-lg text-sm font-light mr-6 ${
+              ticketOptions ? ticketOptions.badgeStyle : ""
+            }`}>
+            {ticketOptions ? ticketOptions.label : data.ticket.status}
+          </span>
+          <IoIosMore size={20} />
         </div>
-        <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance mr-2">
-          {data.ticket.firstName} {data.ticket.lastName}
-        </h1>
-        <span className="ml-4 px-4 py-2 rounded-lg text-sm font-light bg-primary text-white">
-          Ticket {data.ticket.code}
-        </span>
-        <span
-          className={`ml-4 px-4 py-2 rounded-lg text-sm font-light mr-6 ${
-            ticketOptions ? ticketOptions.badgeStyle : ""
-          }`}
-        >
-          {ticketOptions ? ticketOptions.label : data.ticket.status}
-        </span>
-        <IoIosMore size={20} />
+        <div className="ml-auto">
+          <LogoCompany></LogoCompany>
+        </div>
       </div>
+
       <div className="flex flex-row items-stretch justify-between w-full h-full mt-8 gap-10">
         <div className="flex flex-col items-start justify-start gap-6 w-full">
           <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full mr-4">
