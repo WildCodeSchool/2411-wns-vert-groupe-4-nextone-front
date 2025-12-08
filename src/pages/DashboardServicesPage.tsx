@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
 import { GET_SERVICES_WITH_MANAGERS } from "../requests/queries/service.query";
-import LogoCompany from "@/common/setting/logoCompany";
+import LogoCompany from "@/common/setting/CompanyLogo";
 
 type DashboardService = {
   id: string;

@@ -16,7 +16,7 @@ import { Button } from "../../../components/ui/button";
 import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
 import { useAuth } from "@/context/AuthContext";
-import LogoCompany from "@/common/setting/logoCompany";
+import LogoCompany from "@/common/setting/CompanyLogo";
 
 type RouteParams = {
   id: string;
