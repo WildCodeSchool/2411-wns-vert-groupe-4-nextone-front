@@ -1,20 +1,32 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import logo from "../assets/logo.png";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import QRCode from "react-qr-code";
 import CompanyIllustration from "../common/terminal/CompanyIllustration";
-import { getScreenComponent } from "../components/terminal/Screens"; 
+import { getScreenComponent } from "../components/terminal/Screens";
 import { useTicket } from "../context/useContextTicket";
+import { useAuth } from "@/context/AuthContext";
 import { emptyTicket } from "../utils/constants/ticket";
 import { Screen } from "../types/terminal";
+import { useCompany } from "@/context/CompanyContext";
 
 function Terminal() {
+  const { user } = useAuth();
+  const {company} = useCompany();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { ticket, setTicket } = useTicket();
+  const { setTicket } = useTicket();
+
   const screenFromUrl = searchParams.get("screen") as Screen | null;
   const isScannedFromUrl = searchParams.get("scanned") === "true";
+
   const [currentScreen, setCurrentScreen] = useState<Screen>(screenFromUrl || "home");
   const [isScanned] = useState(isScannedFromUrl);
+
+  useEffect(() => {
+    if (!user) {
+      navigate("/login", { replace: true });
+    }
+  }, [user, navigate]);
 
   const handleCancel = () => {
     setTicket(emptyTicket);
@@ -29,8 +41,7 @@ function Terminal() {
       }, 20000);
       return () => clearTimeout(timer);
     }
-  }, [currentScreen, isScanned, ticket, setTicket]);
-
+  }, [currentScreen, isScanned, setTicket]);
 
   if (currentScreen !== "home") {
     return getScreenComponent(currentScreen, { setCurrentScreen, handleCancel, isScanned });
@@ -39,7 +50,7 @@ function Terminal() {
   return (
     <div className="h-screen flex flex-col md:flex-row bg-white font-[Archivo]">
       <div className="w-full md:w-1/2 p-4 flex flex-col justify-start items-center gap-4 mt-4 md:mt-10">
-        <img src={logo} alt="logo" className="h-10 md:h-14 opacity-100" />
+      <img src={company?.logoCompany ? `http://localhost:4005/files/${encodeURIComponent(company?.logoCompany ?? "")}` : undefined } alt="Aperçu logo de l'entreprise" className="h-10 md:h-14 opacity-100"/>
         <h1 className="text-3xl md:text-4xl font-semibold text-center mb-8">Bienvenue</h1>
         <p className="text-center text-base md:text-lg">
           Rejoignez la file d’attente directement
@@ -51,7 +62,7 @@ function Terminal() {
         </button>
         <div className="flex items-center gap-2 justify-center my-4 text-black">
           <hr className="w-6 md:w-8 border-t border-black" />
-            <span className="text-sm">OU</span>
+          <span className="text-sm">OU</span>
           <hr className="w-6 md:w-8 border-t border-black" />
         </div>
         <p className="text-center text-base md:text-lg">
@@ -69,5 +80,3 @@ function Terminal() {
 }
 
 export default Terminal;
-
-

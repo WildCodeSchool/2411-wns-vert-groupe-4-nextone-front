@@ -19,6 +19,7 @@ export const UPDATE_COMPANY_INFORMATIONS = gql`
       phone
       postalCode
       siret
+      logoCompany
     }
   }
 `;

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import { useCompany } from "@/context/CompanyContext";
 
 export default function CompanyLogoForm() {
   const companyLogoSchema = yup.object().shape({
@@ -32,17 +33,30 @@ export default function CompanyLogoForm() {
 
   type CompanyLogoFormData = yup.InferType<typeof companyLogoSchema>;
 
-  const {
-    register,
-    handleSubmit,
-    formState: { isValid, errors },
-  } = useForm<CompanyLogoFormData>({
-    resolver: yupResolver(companyLogoSchema),
-    mode: "onChange",
-  });
+  const { register, handleSubmit, formState: { isValid, errors } } = useForm<CompanyLogoFormData>({ resolver: yupResolver(companyLogoSchema), mode: "onChange" });
 
-  const onSubmit = (data: CompanyLogoFormData) => {
-    console.log(data);
+  const { company, getCompany } = useCompany();
+
+  const onSubmit = async (data: CompanyLogoFormData) => {
+    if (!data.logo || !(data.logo instanceof FileList)) return;
+    const file = data.logo[0];
+    const formData = new FormData();
+    formData.append("file", file);
+      try {
+      const response = await fetch(`http://localhost:4005/companies/${company?.id}/logo`, {
+        method: "PUT",
+        body: formData,
+        credentials: "include", 
+      });
+      const result = await response.json();
+      if (response.ok) {
+        getCompany()
+      } else {
+        console.error("Erreur :", result.error);
+      }
+    } catch (error) {
+      console.error("Erreur fetch :", error);
+    }
   };
 
   return (
@@ -58,6 +72,7 @@ export default function CompanyLogoForm() {
       <Button onClick={handleSubmit(onSubmit)} disabled={!isValid}>
         Enregistrer le logo
       </Button>
+      <img src={company?.logoCompany ? `http://localhost:4005/files/${encodeURIComponent(company?.logoCompany ?? "")}` : undefined } alt="Aperçu logo de l'entreprise" className="w-32 h-32 rounded-full object-cover"/>
     </>
   );
 }

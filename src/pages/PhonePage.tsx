@@ -1,20 +1,21 @@
 import { useState } from "react";
 import { Button } from "../components/ui/button";
-import logo from "../assets/logo.png";
 import { useTicket } from "../context/useContextTicket";
 import { useSearchParams } from "react-router-dom";
+import { useCompany } from "@/context/CompanyContext";
 
 export default function PhonePage() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
     const [searchParams] = useSearchParams();
     const ticketFromQr = searchParams.get("ticket");
     const ticket = ticketFromQr ? JSON.parse(ticketFromQr) : useTicket().ticket;
+    const { company } = useCompany();
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-[#F3F4FB] p-4 space-y-8">
         <div className="w-full max-w-sm flex justify-between items-center bg-white px-4 rounded-lg shadow">
-            <div className="flex items-center space-x-2">
-                <img src={logo} className="w-30 h-30 object-contain" alt="Logo" />
+            <div className="flex items-center space-x-2">    
+                <img src={company?.logoCompany ? `http://localhost:4005/files/${encodeURIComponent(company?.logoCompany ?? "")}` : undefined } alt="Aperçu logo de l'entreprise" className="w-30 h-30 object-contain"/>
             </div>
             <div className="bg-primary text-white font-bold px-8 py-4 rounded-lg">
                 {ticket.code}
