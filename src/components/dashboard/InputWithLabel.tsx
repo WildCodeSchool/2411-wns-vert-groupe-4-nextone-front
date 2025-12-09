@@ -7,16 +7,18 @@ interface InputWithLabelProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   readonly label: string;
   readonly error?: string;
+  readonly children?: React.ReactNode;
 }
 
 function InputWithLabelFunc(
-  { label, id, name, className, error, ...props }: InputWithLabelProps,
+  { label, id, name, className, error, children, ...props }: InputWithLabelProps,
   ref: React.Ref<HTMLInputElement>
 ) {
   const inputId = id || name;
 
   return (
     <div className={cn("flex flex-col gap-2 w-full", className)}>
+      {children && <div>{children}</div>}
       <Label
         htmlFor={inputId}
         className={cn(

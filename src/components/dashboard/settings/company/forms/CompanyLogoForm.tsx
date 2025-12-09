@@ -4,6 +4,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useCompany } from "@/context/CompanyContext";
+import placeholderCompany from "@/assets/images/placeholderCompany.jpg";
+import { url_api } from "@/main";
 
 export default function CompanyLogoForm() {
   const companyLogoSchema = yup.object().shape({
@@ -43,7 +45,7 @@ export default function CompanyLogoForm() {
     const formData = new FormData();
     formData.append("file", file);
       try {
-      const response = await fetch(`http://localhost:4005/companies/${company?.id}/logo`, {
+      const response = await fetch(`${url_api}companies/${company?.id}/logo`, {
         method: "PUT",
         body: formData,
         credentials: "include", 
@@ -61,18 +63,14 @@ export default function CompanyLogoForm() {
 
   return (
     <>
-      <InputWithLabel
-        label="Logo de l'entreprise"
-        {...register("logo")}
-        type="file"
-        accept="image/png, image/jpeg"
-        className="text-base! font-normal bg-transparent! shadow-none! w-full"
-        error={errors.logo?.message}
-      />
+      <InputWithLabel label="Logo de l'entreprise" {...register("logo")} type="file" accept="image/png, image/jpeg" className="text-base! font-normal bg-transparent! shadow-none! w-full" error={errors.logo?.message}>
+       <img src={company?.logoCompany
+        ? `${url_api}files/${encodeURIComponent(company.logoCompany)}`
+        : placeholderCompany } alt="Aperçu logo" className="w-32 h-32 mb-2 rounded-full object-cover"/>
+      </InputWithLabel>
       <Button onClick={handleSubmit(onSubmit)} disabled={!isValid}>
         Enregistrer le logo
       </Button>
-      <img src={company?.logoCompany ? `http://localhost:4005/files/${encodeURIComponent(company?.logoCompany ?? "")}` : undefined } alt="Aperçu logo de l'entreprise" className="w-32 h-32 rounded-full object-cover"/>
     </>
   );
 }

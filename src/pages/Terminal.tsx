@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { emptyTicket } from "../utils/constants/ticket";
 import { Screen } from "../types/terminal";
 import { useCompany } from "@/context/CompanyContext";
+import { url_api } from "@/main";
 
 function Terminal() {
   const { user } = useAuth();
@@ -50,7 +51,7 @@ function Terminal() {
   return (
     <div className="h-screen flex flex-col md:flex-row bg-white font-[Archivo]">
       <div className="w-full md:w-1/2 p-4 flex flex-col justify-start items-center gap-4 mt-4 md:mt-10">
-      <img src={company?.logoCompany ? `http://localhost:4005/files/${encodeURIComponent(company?.logoCompany ?? "")}` : undefined } alt="Aperçu logo de l'entreprise" className="h-10 md:h-14 opacity-100"/>
+      <img src={company?.logoCompany ? `${url_api}files/${encodeURIComponent(company?.logoCompany ?? "")}` : undefined } alt="Aperçu logo de l'entreprise" className="h-10 md:h-14 opacity-100"/>
         <h1 className="text-3xl md:text-4xl font-semibold text-center mb-8">Bienvenue</h1>
         <p className="text-center text-base md:text-lg">
           Rejoignez la file d’attente directement
