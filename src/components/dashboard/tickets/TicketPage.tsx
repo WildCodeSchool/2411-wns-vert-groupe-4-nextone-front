@@ -17,6 +17,7 @@ import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
 import { useAuth } from "@/context/AuthContext";
 import LogoCompany from "@/common/setting/CompanyLogo";
+import { url_api } from "@/main";
 
 type RouteParams = {
   id: string;
@@ -200,7 +201,7 @@ export default function TicketPage() {
                       >
                         <div className="flex flex-row items-center justify-start mr-4 gap-3">
                             {log.manager ? (
-                          <img src={user?.profileImage ? `http://localhost:4005/files/${encodeURIComponent(user.profileImage)}`: "/avatar-example.jpg"} alt="" className="w-7 h-7 rounded-full"/>
+                          <img src={user?.profileImage ? `${url_api}files/${encodeURIComponent(user.profileImage)}`: "/avatar-example.jpg"} alt="" className="w-7 h-7 rounded-full"/>
                             ) : (
                               <img src="/avatar-example.jpg" alt="" className="w-7 h-7 rounded-full"/>
                                 )}

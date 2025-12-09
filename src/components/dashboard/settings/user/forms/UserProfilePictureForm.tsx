@@ -4,6 +4,8 @@ import { useAuth } from "@/context/AuthContext";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import placeholderProfile from "@/assets/images/placeHolderProfile.jpg";
+import { url_api } from "@/main";
 
 export default function UserProfilePictureForm() {
   const userProfilePictureSchema = yup.object().shape({
@@ -55,7 +57,7 @@ export default function UserProfilePictureForm() {
     formData.append("file", file);
 
     const res = await fetch(
-      `http://localhost:4005/managers/${user?.id}/profile-picture`,
+      `${url_api}managers/${user?.id}/profile-picture`,
       {
         method: "PUT",
         body: formData,
@@ -67,19 +69,15 @@ export default function UserProfilePictureForm() {
 
   return (
     <>
-      <InputWithLabel
-        label="Photo de profil"
-        {...register("profilePicture")}
-        type="file"
-        accept="image/png, image/jpeg"
-        className="text-base! font-normal bg-transparent! shadow-none! w-full"
-        error={errors.profilePicture?.message}
-      />
+      <InputWithLabel label="Photo de profil" {...register("profilePicture")} type="file" accept="image/png, image/jpeg" className="text-base! font-normal bg-transparent! shadow-none! w-full" error={errors.profilePicture?.message}>
+      <img src={user?.profileImage 
+      ? `${url_api}files/${encodeURIComponent(user.profileImage)}`
+      : placeholderProfile} alt="Aperçu photo de profil" className="w-32 h-32 rounded-full object-cover"/>
+      </InputWithLabel>
       <Button  type="button" onClick={handleSubmit(onSubmit)} disabled={!isValid}>
         Enregistrer la photo de profil
       </Button>
-      <img src={user?.profileImage ? `http://localhost:4005/files/${encodeURIComponent(user.profileImage)}`: undefined}
-        alt="Aperçu photo de profil" className="w-32 h-32 rounded-full object-cover"/>
+
     </>
   );
 }

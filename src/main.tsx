@@ -21,7 +21,8 @@ import { onError } from "@apollo/client/link/error";
 import OperatorProvider from "./context/OperatorContext";
 import { CompanyProvider } from "./context/CompanyContext";
 
-const uri = import.meta.env.VITE_API_URL as string;
+export const uri = import.meta.env.VITE_API_URL as string;
+export const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
 const httpLink = new HttpLink({
   uri,
