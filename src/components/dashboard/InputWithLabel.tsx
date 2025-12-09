@@ -11,7 +11,7 @@ interface InputWithLabelProps
 }
 
 function InputWithLabelFunc(
-  { label, id, name, className, error, children, ...props }: InputWithLabelProps,
+  { label, id, name, className, error, type, children, ...props }: InputWithLabelProps,
   ref: React.Ref<HTMLInputElement>
 ) {
   const inputId = id || name;
