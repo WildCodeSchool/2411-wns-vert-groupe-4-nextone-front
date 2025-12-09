@@ -1,6 +1,8 @@
 import * as React from "react";
 import { Input } from "../../components/ui/input";
 import { Label } from "../../components/ui/label";
+import { Toggle } from "../../components/ui/toggle";
+import { Eye, EyeOff } from "lucide-react";
 import { cn } from "../../lib/utils";
 
 interface InputWithLabelProps
@@ -16,6 +18,9 @@ function InputWithLabelFunc(
 ) {
   const inputId = id || name;
 
+  const isPassword = type === "password";
+  const [showPassword, setShowPassword] = React.useState(false);
+
   return (
     <div className={cn("flex flex-col gap-2 w-full", className)}>
       {children && <div>{children}</div>}
@@ -28,17 +33,34 @@ function InputWithLabelFunc(
       >
         {label} {props.required && "*"}
       </Label>
-      <Input
-        id={inputId}
-        name={name}
-        aria-invalid={!!error}
-        ref={ref}
-        {...props}
-        className={cn(
-          error && "border-red-500 focus-visible:ring-red-500",
-          className
+
+      <div className="relative">
+        <Input
+          id={inputId}
+          name={name}
+          aria-invalid={!!error}
+          ref={ref}
+          type={isPassword ? (showPassword ? "text" : "password") : type}
+          {...props}
+          className={cn(
+            error && "border-red-500 focus-visible:ring-red-500",
+            "pr-12",
+            className
+          )}
+        />
+
+        {isPassword && (
+          <Toggle
+            pressed={showPassword}
+            onPressedChange={setShowPassword}
+            size="sm"
+            className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 p-0 bg-transparent"
+          >
+            {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+          </Toggle>
         )}
-      />
+      </div>
+
       {error && <p className="text-sm text-red-500 mt-1 text-start">{error}</p>}
     </div>
   );
