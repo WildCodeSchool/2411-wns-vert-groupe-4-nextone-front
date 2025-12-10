@@ -228,7 +228,7 @@ export default function TicketPage() {
                       >
                         <div className="flex flex-row items-center justify-start mr-4 gap-3">
                             {log.manager ? (
-                          <img src={log?.manager.profileImage ? `${url_api}files/${encodeURIComponent(log.manager.profileImage)}`: "/avatar-example.jpg"} alt="" className="w-7 h-7 rounded-full"/>
+                          <img src={log?.manager.profileImage ? `${url_api}/images/files/${encodeURIComponent(log.manager.profileImage)}`: "/avatar-example.jpg"} alt="" className="w-7 h-7 rounded-full"/>
                             ) : (
                               <img src="/avatar-example.jpg" alt="" className="w-7 h-7 rounded-full"/>
                                 )}

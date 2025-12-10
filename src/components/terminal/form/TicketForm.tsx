@@ -152,6 +152,7 @@ export default function TicketForm({
     if (formStep > 1) {
       setFormStep(formStep - 1);
     } else {
+      sessionStorage.removeItem("ticketFormData");
       setFormStep(0);
     }
   };

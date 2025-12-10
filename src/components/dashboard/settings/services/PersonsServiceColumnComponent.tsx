@@ -24,7 +24,7 @@ export default function PersonsServiceColumnComponent({
             <>
                <div key={person.lastName + index} className={`w-8 h-8 bg-primary rounded-full border-1 border-popover flex items-center justify-center ${index > 0 ? "-ml-3" : ""}`}>
                 {person.profileImage ? (
-                  <img src={`${url_api}files/${encodeURIComponent(person.profileImage)}`} alt={`${person.firstName} ${person.lastName}`} className="w-8 h-8 rounded-full object-cover"/>
+                  <img src={`${url_api}/images/files/${encodeURIComponent(person.profileImage)}`} alt={`${person.firstName} ${person.lastName}`} className="w-8 h-8 rounded-full object-cover"/>
                 ) : (
                   <div className="w-full h-full bg-primary flex items-center justify-center">
                     <IoPerson color="white" fontSize={14} />

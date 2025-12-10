@@ -46,10 +46,10 @@ export default function CompanyLogoForm() {
     formData.append("file", file);
       try {
         console.log(url_api)
-      const response = await fetch(`${url_api}companies/${company?.id}/logo`, {
+      const response = await fetch(`${url_api}/images/companies/${company?.id}/logo`, {
         method: "PUT",
         body: formData,
-        credentials: "include", 
+        credentials: "include",
       });
       const result = await response.json();
       if (response.ok) {
@@ -66,7 +66,7 @@ export default function CompanyLogoForm() {
     <>
       <InputWithLabel label="Logo de l'entreprise" {...register("logo")} type="file" accept="image/png, image/jpeg" className="text-base! font-normal bg-transparent! shadow-none! w-full" error={errors.logo?.message}>
        <img src={company?.logoCompany
-        ? `${url_api}files/${encodeURIComponent(company.logoCompany)}`
+        ? `${url_api}/images/files/${encodeURIComponent(company.logoCompany)}`
         : placeholderCompany } alt="Aperçu logo" className="w-32 h-32 mb-2 rounded-full object-cover"/>
       </InputWithLabel>
       <Button onClick={handleSubmit(onSubmit)} disabled={!isValid}>

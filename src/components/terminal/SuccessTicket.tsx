@@ -20,11 +20,10 @@ function SuccessTicketPage({
     }
   }, [isScanned, onTimeout]);
 
-  const qrValue = `${
-    window.location.origin
-  }/terminal?screen=phone&scanned=true&ticketId=${
-    ticket.id
-  }&ticket=${encodeURIComponent(JSON.stringify(ticket))}`;
+  const origin = window.location.origin;
+  const BASE_URL_FOR_QR = origin;
+
+  const qrValue = `${BASE_URL_FOR_QR}/terminal?screen=phone&scanned=true&ticketId=${ticket.id}`;
 
   return (
     <div className="flex flex-col md:flex-row h-screen w-full font-sans bg-white p-4 md:pl-8">

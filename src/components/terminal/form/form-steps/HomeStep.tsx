@@ -12,7 +12,7 @@ export default function HomeStep({
   const BASE_URL = API_URL.replace(/\/graphql$/, "");
 
   const logoSrc = company?.logoCompany
-    ? `${BASE_URL}/files/${encodeURIComponent(company.logoCompany)}`
+    ? `${BASE_URL}/images/files/${encodeURIComponent(company.logoCompany)}`
     : logo;
 
   return (
@@ -46,7 +46,7 @@ export default function HomeStep({
       <div className="mt-2">
         <QRCode
           data-testid="qr-code"
-          value={`${window.location.origin}/terminal?scanned=true`}
+          value={`${window.location.origin}/terminal?screen=chooseService&scanned=true`}
           size={100}
           fgColor="#000000"
         />
