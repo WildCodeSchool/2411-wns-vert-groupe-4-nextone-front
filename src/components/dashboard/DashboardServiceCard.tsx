@@ -395,6 +395,7 @@ export default function DashboardServiceCard({
                 {/* <IoIosMore size={20} className="cursor-pointer" /> */}
                 <TicketActionMenu
                   ticketId={row.original.id}
+                  ticketStatus={row.original.status}
                   onArchive={() => handleArchive(row.original.id)}
                   onResetStatus={() => handleResetStatus(row.original.id)}
                 />
