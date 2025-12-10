@@ -64,14 +64,9 @@ export default function ServiceStep({ formMethods }: FormStepProps) {
     const firstActiveServiceId = activeServices[0]?.id;
 
     if (!currentServiceId && firstActiveServiceId) {
-      formMethods.setValue("serviceId", firstActiveServiceId, { shouldValidate: true });
+      formMethods.setValue("serviceId", firstActiveServiceId);
     }
   }, [activeServices[0]?.id, formMethods]);
-
-  // Register the field with React Hook Form
-  useEffect(() => {
-    formMethods.register("serviceId");
-  }, [formMethods]);
 
   const selectedServiceId = formMethods.watch("serviceId");
 
@@ -84,12 +79,7 @@ export default function ServiceStep({ formMethods }: FormStepProps) {
         <div className="mb-4">
           <select
             className="w-full border border-primary rounded-md p-3 text-lg"
-            value={selectedServiceId || activeServices[0]?.id || ""}
-            onChange={(e) =>
-              formMethods.setValue("serviceId", e.target.value, {
-                shouldValidate: true,
-              })
-            }
+            {...formMethods.register("serviceId")}
           >
             {activeServices.map((service) => (
               <option key={service.id} value={service.id}>

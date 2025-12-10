@@ -9,6 +9,7 @@ import HomeStep from "@/components/terminal/form/form-steps/HomeStep";
 import { motion } from "motion/react";
 import { tabContentEnterAnimation } from "@/lib/animations/settings.animation";
 import TicketForm from "@/components/terminal/form/TicketForm";
+import SuccessTicketPage from "@/components/terminal/SuccessTicket";
 
 export function Terminal() {
   const { user } = useAuth();
@@ -74,26 +75,6 @@ export function Terminal() {
     );
   }
 
-  const SuccessScreen = () => (
-    <div className="flex flex-col items-center justify-center gap-6">
-      <div className="text-6xl">✅</div>
-      <h1 className="text-3xl font-semibold text-center">
-        Ticket créé avec succès !
-      </h1>
-      <p className="text-xl text-center text-muted-foreground">
-        Votre ticket a été enregistré.
-        <br />
-        Merci de patienter.
-      </p>
-      <button
-        onClick={() => setFormStep(0)}
-        className="mt-4 bg-primary text-white px-6 py-3 rounded-md text-lg"
-      >
-        Retour à l'accueil
-      </button>
-    </div>
-  );
-
   const TerminalComponent = () => {
     switch (formStep) {
       case 0:
@@ -109,11 +90,18 @@ export function Terminal() {
           />
         );
       case 4:
-        return <SuccessScreen />;
+        return <SuccessTicketPage isScanned={isScanned} onTimeout={() => {
+          setTicket(emptyTicket);
+          setFormStep(0);
+        }} />;
       default:
         return <HomeStep setFormStep={setFormStep} />;
     }
   };
+
+  if (formStep === 4) {
+    return <TerminalComponent />;
+  }
 
   return (
     <div className="h-screen w-full flex flex-col md:flex-row bg-white font-[Archivo]">

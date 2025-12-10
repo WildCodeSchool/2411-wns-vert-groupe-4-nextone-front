@@ -4,18 +4,13 @@ import PersonalInfoStep from "./form-steps/PersonalInfoStep";
 import ContactInfoStep from "./form-steps/ContactInfoStep";
 import { useForm } from "react-hook-form";
 import { object, string, boolean } from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
 import { useMutation } from "@apollo/client";
 import { CREATE_TICKET } from "@/requests/mutations/ticket.mutation";
 import { useIPCompany } from "@/context/IPCompanyContext";
 import FormButtons from "@/components/terminal/form/FormButtons";
 import { TicketFormData } from "@/types/terminal";
-
-const STEP_FIELDS = {
-  1: ["serviceId"],
-  2: ["name", "firstName"],
-  3: ["email", "phone", "rgpdAccepted"],
-} as const;
+import { useRef } from "react";
+import { useTicket } from "@/context/useContextTicket";
 
 export default function TicketForm({
   formStep,
@@ -26,7 +21,15 @@ export default function TicketForm({
   setFormStep: React.Dispatch<React.SetStateAction<number>>;
   onSuccess?: () => void;
 }) {
-  const { company } = useIPCompany();
+  useIPCompany();
+  const { setTicket } = useTicket();
+
+  const getStoredFormData = (): Partial<TicketFormData> => {
+    const stored = sessionStorage.getItem("ticketFormData");
+    return stored ? JSON.parse(stored) : {};
+  };
+
+  const formDataRef = useRef<Partial<TicketFormData>>(getStoredFormData());
 
   const formStep1SchemaValidation = object({
     serviceId: string().uuid().required("Le service est requis"),
@@ -49,28 +52,33 @@ export default function TicketForm({
       .max(255, "L'email est trop long")
       .required("L'email est requis"),
     phone: string()
-      .matches(/^\+?[1-9]\d{1,14}$/, "Le numéro de téléphone n'est pas valide")
-      .max(15, "Le numéro de téléphone est trop long")
+      .matches(
+        /^(\+?\d{1,3}[-.\s]?)?\d{9,14}$/,
+        "Le numéro de téléphone n'est pas valide"
+      )
+      .min(10, "Le numéro de téléphone est trop court")
+      .max(20, "Le numéro de téléphone est trop long")
       .required("Le numéro de téléphone est requis"),
     rgpdAccepted: boolean()
       .oneOf([true], "Vous devez accepter les conditions")
       .required("Vous devez accepter les conditions"),
   });
 
-  const ticketFormSchemaValidation = formStep1SchemaValidation
-    .concat(formStep2SchemaValidation)
-    .concat(formStep3SchemaValidation);
-
-  const methods = useForm({
+  const methods = useForm<TicketFormData>({
     mode: "onChange",
-    resolver: yupResolver(ticketFormSchemaValidation),
+    shouldUnregister: false,
+    defaultValues: formDataRef.current,
   });
 
   const [createTicket, { loading: creatingTicket }] = useMutation(
     CREATE_TICKET,
     {
       onCompleted: (data) => {
-        console.log("✅ Ticket créé:", data.createTicket);
+        console.log("✅ Ticket créé:", data.generateTicket);
+        if (data.generateTicket) {
+          setTicket(data.generateTicket);
+        }
+        sessionStorage.removeItem("ticketFormData");
         if (onSuccess) onSuccess();
       },
       onError: (error) => {
@@ -80,36 +88,63 @@ export default function TicketForm({
     }
   );
 
-  const handleNext = async (data: TicketFormData) => {
+  const handleNext = async () => {
     console.log("🔴 handleNext APPELÉ !");
-    const fields = STEP_FIELDS[formStep as keyof typeof STEP_FIELDS];
-    const isValid = await methods.trigger(fields, { shouldFocus: true });
+    const currentStepData = methods.getValues();
+    console.log("📊 Valeurs de l'étape actuelle:", currentStepData);
 
-    console.log("🔍 formStep:", formStep, "isValid:", isValid);
-    if (!isValid) {
-      console.log("❌ Validation RHF échouée.");
-      return;
+    formDataRef.current = { ...formDataRef.current, ...currentStepData };
+
+    sessionStorage.setItem(
+      "ticketFormData",
+      JSON.stringify(formDataRef.current)
+    );
+    console.log("📦 Toutes les valeurs accumulées:", formDataRef.current);
+
+    let schema;
+    if (formStep === 1) {
+      schema = formStep1SchemaValidation;
+    } else if (formStep === 2) {
+      schema = formStep2SchemaValidation;
+    } else if (formStep === 3) {
+      schema = formStep3SchemaValidation;
     }
 
-    console.log("✅ Validation OK, passage à l'étape suivante");
+    try {
+      if (schema) {
+        await schema.validate(currentStepData, { abortEarly: false });
+      }
+      console.log("✅ Validation OK, passage à l'étape suivante");
 
-    if (formStep < 3) {
-      setFormStep(formStep + 1);
-    } else {
-      console.log("📤 Soumission du formulaire:", data);
+      if (formStep < 3) {
+        setFormStep(formStep + 1);
+      } else {
+        console.log("📤 Soumission du formulaire:", formDataRef.current);
 
-      createTicket({
-        variables: {
-          data: {
-            serviceId: data.serviceId,
-            companyId: company?.id,
-            customerLastName: data.name,
-            customerFirstName: data.firstName,
-            customerEmail: data.email,
-            customerPhone: data.phone,
+        createTicket({
+          variables: {
+            data: {
+              serviceId: formDataRef.current.serviceId,
+              firstName: formDataRef.current.firstName,
+              lastName: formDataRef.current.name,
+              email: formDataRef.current.email,
+              phone: formDataRef.current.phone,
+            },
           },
-        },
-      });
+        });
+      }
+    } catch (error: any) {
+      console.log("❌ Validation Yup échouée:", error);
+      if (error.inner && error.inner.length > 0) {
+        error.inner.forEach((err: any) => {
+          if (err.path) {
+            methods.setError(err.path, {
+              type: "manual",
+              message: err.message,
+            });
+          }
+        });
+      }
     }
   };
 
