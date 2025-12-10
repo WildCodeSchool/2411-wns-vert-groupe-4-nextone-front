@@ -45,6 +45,7 @@ export default function CompanyLogoForm() {
     const formData = new FormData();
     formData.append("file", file);
       try {
+        console.log(url_api)
       const response = await fetch(`${url_api}companies/${company?.id}/logo`, {
         method: "PUT",
         body: formData,
