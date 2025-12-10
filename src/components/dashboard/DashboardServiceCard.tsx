@@ -293,13 +293,8 @@ export default function DashboardServiceCard({
 
   const rawTickets = useMemo(() => (tickets ?? []) as Ticket[], [tickets]);
 
-  const filteredTickets = useMemo(
-    () => rawTickets.filter((ticket) => ticket.status !== "ARCHIVED"),
-    [rawTickets]
-  );
-
   const table = useReactTable({
-    data: filteredTickets,
+    data: rawTickets,
     columns: useMemo<ColumnDef<Ticket>[]>(
       () => [
         {

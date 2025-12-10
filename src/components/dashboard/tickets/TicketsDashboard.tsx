@@ -29,7 +29,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { Ticket } from "./TicketPage";
-import { useState, useMemo, useEffect, useCallback, useRef } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { RiArrowUpDownLine } from "react-icons/ri";
 import { Input } from "../../../components/ui/input";
 import dayjs from "dayjs";
@@ -76,8 +76,6 @@ export default function TicketsDashboard() {
     () => sorting.find((s) => s.id === "updatedAt")?.desc,
     [sorting]
   );
-
-  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setSorting([{ id: "updatedAt", desc: false }]);
@@ -134,29 +132,6 @@ export default function TicketsDashboard() {
   };
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (!scrollAreaRef.current) return;
-      const { scrollTop, scrollHeight, clientHeight } = scrollAreaRef.current;
-      console.log("scrollTop:", scrollTop);
-      console.log("scrollHeight:", scrollHeight);
-      console.log("clientHeight:", clientHeight);
-      if (scrollTop + clientHeight >= scrollHeight - 10) {
-        fetchMoreTickets();
-      }
-    };
-    const scrollArea = scrollAreaRef.current;
-    console.log("scrollArea:", scrollArea);
-    if (scrollArea) {
-      scrollArea.addEventListener("scroll", handleScroll);
-    }
-    return () => {
-      if (scrollArea) {
-        scrollArea.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, []);
-
-  useEffect(() => {
     getTickets();
   }, []);
 
@@ -169,21 +144,6 @@ export default function TicketsDashboard() {
       tickets.length ? (tickets[tickets.length - 1] as unknown as Ticket) : null
     );
   }, [tickets]);
-
-  // useEffect(() => {
-  //   refetch({
-  //     fields: {
-  //       status: columnFilters.find((f) => f.id === "status")?.value as
-  //         | string[]
-  //         | undefined,
-  //     },
-  //     pagination: {
-  //       limit: itemsToFetch,
-  //       order: updatedAtDescSorting ? "DESC" : "ASC",
-  //       cursor: null,
-  //     },
-  //   });
-  // }, [updatedAtDescSorting]);
 
   useSubscription(TICKET_ADDED_SUBSCRIPTION, {
     onData: ({ data }) => {
@@ -286,13 +246,8 @@ export default function TicketsDashboard() {
 
   const rawTickets = useMemo(() => (tickets ?? []) as Ticket[], [tickets]);
 
-  const filteredTickets = useMemo(
-    () => rawTickets.filter((ticket) => ticket.status !== "ARCHIVED"),
-    [rawTickets]
-  );
-
   const table = useReactTable({
-    data: filteredTickets,
+    data: rawTickets,
     columns: useMemo<ColumnDef<Ticket>[]>(
       () => [
         {
@@ -408,6 +363,7 @@ export default function TicketsDashboard() {
                 {/* <IoIosMore size={20} className="cursor-pointer" /> */}
                 <TicketActionMenu
                   ticketId={row.original.id}
+                  ticketStatus={row.original.status}
                   onArchive={() => handleArchive(row.original.id)}
                   onResetStatus={() => handleResetStatus(row.original.id)}
                 />
