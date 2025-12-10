@@ -293,13 +293,8 @@ export default function DashboardServiceCard({
 
   const rawTickets = useMemo(() => (tickets ?? []) as Ticket[], [tickets]);
 
-  const filteredTickets = useMemo(
-    () => rawTickets.filter((ticket) => ticket.status !== "ARCHIVED"),
-    [rawTickets]
-  );
-
   const table = useReactTable({
-    data: filteredTickets,
+    data: rawTickets,
     columns: useMemo<ColumnDef<Ticket>[]>(
       () => [
         {
@@ -400,6 +395,7 @@ export default function DashboardServiceCard({
                 {/* <IoIosMore size={20} className="cursor-pointer" /> */}
                 <TicketActionMenu
                   ticketId={row.original.id}
+                  ticketStatus={row.original.status}
                   onArchive={() => handleArchive(row.original.id)}
                   onResetStatus={() => handleResetStatus(row.original.id)}
                 />
@@ -443,7 +439,7 @@ export default function DashboardServiceCard({
   }, [debouncedSearchValue, table]);
 
   return (
-    <Card key={service.id} className="w-full border border-gray-200 shadow-sm">
+    <Card key={service.id} className="w-full">
       <CardHeader className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2">
           <CardTitle className="text-xl font-bold flex-col items-start justify-start">

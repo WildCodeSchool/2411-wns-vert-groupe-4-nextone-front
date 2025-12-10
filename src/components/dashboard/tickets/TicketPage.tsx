@@ -16,7 +16,6 @@ import { Button } from "../../../components/ui/button";
 import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
 import { useAuth } from "@/context/AuthContext";
-import LogoCompany from "@/common/setting/CompanyLogo";
 import { url_api } from "@/main";
 
 type RouteParams = {
@@ -45,7 +44,7 @@ export type Ticket = {
 
 export default function TicketPage() {
   const { id } = useParams<RouteParams>();
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   const navigate = useNavigate();
 
@@ -95,7 +94,10 @@ export default function TicketPage() {
     <>
       <div className="flex flex-row items-center w-full">
         <div className="flex items-center">
-          <div className="bg-card flex items-center justify-center rounded-full p-3 mr-5 cursor-pointer" onClick={() => navigate(-1)}>
+          <div
+            className="bg-card flex items-center justify-center rounded-full p-3 mr-5 cursor-pointer"
+            onClick={() => navigate(-1)}
+          >
             <IoIosArrowBack className="w-6 h-6 text-foreground cursor-pointer" />
           </div>
           <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance mr-2">
@@ -107,13 +109,11 @@ export default function TicketPage() {
           <span
             className={`ml-4 px-4 py-2 rounded-lg text-sm font-light mr-6 ${
               ticketOptions ? ticketOptions.badgeStyle : ""
-            }`}>
+            }`}
+          >
             {ticketOptions ? ticketOptions.label : data.ticket.status}
           </span>
           <IoIosMore size={20} />
-        </div>
-        <div className="ml-auto">
-          <LogoCompany></LogoCompany>
         </div>
       </div>
 
@@ -200,11 +200,25 @@ export default function TicketPage() {
                         }`}
                       >
                         <div className="flex flex-row items-center justify-start mr-4 gap-3">
-                            {log.manager ? (
-                          <img src={user?.profileImage ? `${url_api}files/${encodeURIComponent(user.profileImage)}`: "/avatar-example.jpg"} alt="" className="w-7 h-7 rounded-full"/>
-                            ) : (
-                              <img src="/avatar-example.jpg" alt="" className="w-7 h-7 rounded-full"/>
-                                )}
+                          {log.manager ? (
+                            <img
+                              src={
+                                user?.profileImage
+                                  ? `${url_api}files/${encodeURIComponent(
+                                      user.profileImage
+                                    )}`
+                                  : "/avatar-example.jpg"
+                              }
+                              alt=""
+                              className="w-7 h-7 rounded-full"
+                            />
+                          ) : (
+                            <img
+                              src="/avatar-example.jpg"
+                              alt=""
+                              className="w-7 h-7 rounded-full"
+                            />
+                          )}
                           {log.manager ? (
                             <p className="mr-4 font-medium">
                               {log.manager.firstName} {log.manager.lastName}

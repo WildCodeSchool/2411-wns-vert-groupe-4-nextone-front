@@ -6,6 +6,7 @@ import { IoPerson } from "react-icons/io5";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { useAuth } from "@/context/AuthContext";
 import DashboardLayoutProcessingTicketBadge from "./DashboardLayoutProcessingTicketBadge";
+import LogoCompany from "@/common/setting/CompanyLogo";
 
 export type DashboardMenuItem = {
   name: string;
@@ -83,7 +84,8 @@ export default function DashboardLayout() {
           logout={logout}
         />
       </div>
-      <div className="flex-1 p-8 overflow-y-auto flex flex-col justify-start items-start font-archivo">
+      <div className="flex-1 p-12 overflow-y-auto flex flex-col justify-start items-start font-archivo">
+        <LogoCompany />
         <Outlet />
         <DashboardLayoutProcessingTicketBadge />
       </div>

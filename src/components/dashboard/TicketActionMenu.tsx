@@ -1,4 +1,4 @@
-import { MoreHorizontal, Pencil, RefreshCcw, Trash2 } from "lucide-react";
+import { Archive, MoreHorizontal, Pencil, RefreshCcw } from "lucide-react";
 import { Button } from "../../components/ui/button";
 import {
   DropdownMenu,
@@ -10,15 +10,17 @@ import {
 import { useNavigate } from "react-router-dom";
 
 export type TicketActionMenuProps = {
-ticketId: string;           
-  onArchive: () => void;          
-  onResetStatus: () => void;     
+  ticketId: string;
+  onArchive: () => void;
+  onResetStatus: () => void;
+  ticketStatus: string;
 };
 
 export function TicketActionMenu({
   ticketId,
   onArchive,
   onResetStatus,
+  ticketStatus,
 }: TicketActionMenuProps) {
   const navigate = useNavigate();
 
@@ -31,23 +33,29 @@ export function TicketActionMenu({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="end">
-         <DropdownMenuItem onClick={() => navigate(`/dashboard/tickets/${ticketId}`)}>
+        <DropdownMenuItem
+          onClick={() => navigate(`/dashboard/tickets/${ticketId}`)}
+        >
           {/* redirection to ticketpage edit */}
           <Pencil className="w-4 h-4 mr-2" />
           Modifier
         </DropdownMenuItem>
-
-        <DropdownMenuItem onClick={onResetStatus}>
-          <RefreshCcw className="w-4 h-4 mr-2" />
-          Remettre en attente
-        </DropdownMenuItem>
-
-        <DropdownMenuItem onClick={() => {
-          onArchive();
-        }}>
-          <Trash2 className="w-4 h-4 mr-2 text-red-500" />
-          Supprimer
-        </DropdownMenuItem>
+        {ticketStatus !== "PENDING" && (
+          <DropdownMenuItem onClick={onResetStatus}>
+            <RefreshCcw className="w-4 h-4 mr-2" />
+            Remettre en attente
+          </DropdownMenuItem>
+        )}
+        {ticketStatus !== "ARCHIVED" && (
+          <DropdownMenuItem
+            onClick={() => {
+              onArchive();
+            }}
+          >
+            <Archive className="w-4 h-4 mr-2 text-red-500" />
+            Archiver
+          </DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );
