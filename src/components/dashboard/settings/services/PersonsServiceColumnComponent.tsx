@@ -1,10 +1,11 @@
 import { IoPerson } from "react-icons/io5";
+import { url_api } from "@/main";
 
 export default function PersonsServiceColumnComponent({
   persons,
   personType,
 }: {
-  persons: { firstName: string; lastName: string }[];
+  persons: { firstName: string; lastName: string; profileImage?: string }[];
   personType: "member" | "administrator";
 }) {
   const personLabel = personType === "member" ? "membre" : "administrateur";
@@ -15,19 +16,22 @@ export default function PersonsServiceColumnComponent({
     return `Aucun ${personLabel}`;
   }
 
-  if (personsNumber <= 3) {
+    if (personsNumber <= 3) {
     return (
       <div className="flex flex-row gap-2 justify-start items-center">
         <div className="flex flex-row">
           {persons.slice(0, personsNumber).map((person, index) => (
-            <div
-              key={person.lastName + index}
-              className={`w-8 h-8 bg-primary rounded-full border-1 border-popover flex items-center justify-center
-                  ${index > 0 ? "-ml-3" : ""}
-                  `}
-            >
-              <IoPerson color="white" fontSize={14} />
-            </div>
+            <>
+               <div key={person.lastName + index} className={`w-8 h-8 bg-primary rounded-full border-1 border-popover flex items-center justify-center ${index > 0 ? "-ml-3" : ""}`}>
+                {person.profileImage ? (
+                  <img src={`${url_api}files/${encodeURIComponent(person.profileImage)}`} alt={`${person.firstName} ${person.lastName}`} className="w-8 h-8 rounded-full object-cover"/>
+                ) : (
+                  <div className="w-full h-full bg-primary flex items-center justify-center">
+                    <IoPerson color="white" fontSize={14} />
+                  </div>
+                )}
+              </div>
+            </>
           ))}
         </div>
         <p>
