@@ -27,7 +27,7 @@ export default function SettingsPage() {
       <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
         Paramètres
       </h1>
-      <div className="mt-8 bg-card p-8 rounded-lg w-full h-full overflow-hidden">
+      <div className="mt-8 bg-card p-8 rounded-lg w-full h-full overflow-y-auto overflow-x-hidden">
         <Tabs
           defaultValue={currentTab}
           className="w-full"

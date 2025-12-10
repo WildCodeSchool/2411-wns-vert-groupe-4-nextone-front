@@ -11,6 +11,7 @@ export const GET_TICKET_LOGS = gql`
           id
           firstName
           lastName
+          profileImage
         }
       }
       totalCount

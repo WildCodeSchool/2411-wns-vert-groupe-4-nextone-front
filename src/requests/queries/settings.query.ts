@@ -28,6 +28,7 @@ export const GET_SERVICES_THAT_CAN_BE_MANAGED = gql`
             id
             firstName
             lastName
+            profileImage
           }
           isAdministrator
         }

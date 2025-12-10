@@ -15,7 +15,6 @@ import { Textarea } from "../../../components/ui/textarea";
 import { Button } from "../../../components/ui/button";
 import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
-import { useAuth } from "@/context/AuthContext";
 import { url_api } from "@/main";
 
 type RouteParams = {
@@ -44,7 +43,6 @@ export type Ticket = {
 
 export default function TicketPage() {
   const { id } = useParams<RouteParams>();
-  const { user } = useAuth();
 
   const navigate = useNavigate();
 
@@ -184,7 +182,7 @@ export default function TicketPage() {
                     log: {
                       id: string;
                       status: string;
-                      manager: { firstName: string; lastName: string };
+                      manager: { firstName: string; lastName: string; profileImage: string };
                       createdAt: string;
                     },
                     idx: number
@@ -200,25 +198,11 @@ export default function TicketPage() {
                         }`}
                       >
                         <div className="flex flex-row items-center justify-start mr-4 gap-3">
-                          {log.manager ? (
-                            <img
-                              src={
-                                user?.profileImage
-                                  ? `${url_api}files/${encodeURIComponent(
-                                      user.profileImage
-                                    )}`
-                                  : "/avatar-example.jpg"
-                              }
-                              alt=""
-                              className="w-7 h-7 rounded-full"
-                            />
-                          ) : (
-                            <img
-                              src="/avatar-example.jpg"
-                              alt=""
-                              className="w-7 h-7 rounded-full"
-                            />
-                          )}
+                            {log.manager ? (
+                          <img src={log?.manager.profileImage ? `${url_api}files/${encodeURIComponent(log.manager.profileImage)}`: "/avatar-example.jpg"} alt="" className="w-7 h-7 rounded-full"/>
+                            ) : (
+                              <img src="/avatar-example.jpg" alt="" className="w-7 h-7 rounded-full"/>
+                                )}
                           {log.manager ? (
                             <p className="mr-4 font-medium">
                               {log.manager.firstName} {log.manager.lastName}
