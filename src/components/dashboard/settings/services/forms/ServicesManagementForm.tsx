@@ -46,6 +46,7 @@ type FormattedService = {
       id: string;
       firstName: string;
       lastName: string;
+      profileImage?: string;
     };
     isAdministrator: boolean;
   }[];
@@ -68,11 +69,13 @@ export type FormattedServiceRow = {
     id: string;
     firstName: string;
     lastName: string;
+    profileImage?: string;
   }[];
   operators: {
     id: string;
     firstName: string;
     lastName: string;
+    profileImage?: string;
   }[];
 };
 
@@ -118,6 +121,7 @@ export default function ServicesManagementForm() {
               id: a.manager.id,
               firstName: a.manager.firstName,
               lastName: a.manager.lastName,
+              profileImage: a.manager.profileImage,
             })),
           operators: authorization.service.authorizations
             .filter((a) => !a.isAdministrator)
@@ -125,6 +129,7 @@ export default function ServicesManagementForm() {
               id: a.manager.id,
               firstName: a.manager.firstName,
               lastName: a.manager.lastName,
+              profileImage: a.manager.profileImage,
             })),
         };
       }) || []
