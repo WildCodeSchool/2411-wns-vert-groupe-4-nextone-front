@@ -10,9 +10,6 @@ import { FaPlus } from "react-icons/fa6";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaTicketSimple } from "react-icons/fa6";
 import { GET_TICKET_LOGS } from "../../../requests/queries/ticketLogs.query";
-import { useState } from "react";
-import { Textarea } from "../../../components/ui/textarea";
-import { Button } from "../../../components/ui/button";
 import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
 import { url_api } from "@/main";
@@ -53,9 +50,6 @@ export default function TicketPage() {
   const ticketOptions = statusOptions.find(
     (option) => option.value === data?.ticket.status
   );
-
-  const [isEditingComments, setIsEditingComments] = useState(false);
-  const [comments, setComments] = useState("");
 
   const { data: ticketLogs } = useQuery(GET_TICKET_LOGS, {
     variables: { field: { ticketId: id } },
@@ -190,27 +184,17 @@ export default function TicketPage() {
               Historique du ticket
             </h2>
             <div className="flex flex-col items-start justify-start w-full h-full overflow-y-auto">
-              {/* {ticketLogs &&
-                ticketLogs.ticketLogsByProperty.map(
-                  (
-                    log: {
-                      id: string;
-                      status: string;
-                      manager: { firstName: string; lastName: string };
-                      createdAt: string;
-                    },
-                    idx: number
-                  ) => {
-                    const isLast =
-                      idx === ticketLogs.ticketLogsByProperty.length - 1; */}
-
               {ticketLogs?.ticketLogsByProperty?.items &&
                 ticketLogs.ticketLogsByProperty.items.map(
                   (
                     log: {
                       id: string;
                       status: string;
-                      manager: { firstName: string; lastName: string; profileImage: string };
+                      manager: {
+                        firstName: string;
+                        lastName: string;
+                        profileImage: string;
+                      };
                       createdAt: string;
                     },
                     idx: number
@@ -227,11 +211,25 @@ export default function TicketPage() {
                         }`}
                       >
                         <div className="flex flex-row items-center justify-start mr-4 gap-3">
-                            {log.manager ? (
-                          <img src={log?.manager.profileImage ? `${url_api}/images/files/${encodeURIComponent(log.manager.profileImage)}`: "/avatar-example.jpg"} alt="" className="w-7 h-7 rounded-full"/>
-                            ) : (
-                              <img src="/avatar-example.jpg" alt="" className="w-7 h-7 rounded-full"/>
-                                )}
+                          {log.manager ? (
+                            <img
+                              src={
+                                log?.manager.profileImage
+                                  ? `${url_api}/images/files/${encodeURIComponent(
+                                      log.manager.profileImage
+                                    )}`
+                                  : "/avatar-example.jpg"
+                              }
+                              alt=""
+                              className="w-7 h-7 rounded-full"
+                            />
+                          ) : (
+                            <img
+                              src="/avatar-example.jpg"
+                              alt=""
+                              className="w-7 h-7 rounded-full"
+                            />
+                          )}
                           {log.manager ? (
                             <p className="mr-4 font-medium">
                               {log.manager.firstName} {log.manager.lastName}
@@ -263,43 +261,6 @@ export default function TicketPage() {
                   }
                 )}
             </div>
-          </div>
-          <div
-            className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full h-[55%]"
-            data-testid="comments-card"
-          >
-            <div className="flex flex-row items-center justify-between w-full">
-              <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
-                Commentaires
-              </h2>
-              <Button
-                onClick={() => setIsEditingComments(true)}
-                data-testid="edit-comments-button"
-              >
-                Modifier les commentaires
-              </Button>
-            </div>
-            {isEditingComments ? (
-              <>
-                <Textarea
-                  value={comments}
-                  onChange={(e) => setComments(e.target.value)}
-                  placeholder="Ajouter un commentaire..."
-                  rows={4}
-                  data-testid="comments-textarea"
-                />
-                <Button
-                  onClick={() => setIsEditingComments(false)}
-                  data-testid="save-comments-button"
-                >
-                  Sauvegarder
-                </Button>
-              </>
-            ) : (
-              <p data-testid="comments-display">
-                {comments ? comments : "Aucun commentaire"}
-              </p>
-            )}
           </div>
         </div>
       </div>
