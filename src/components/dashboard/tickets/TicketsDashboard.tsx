@@ -127,7 +127,12 @@ export default function TicketsDashboard() {
       },
     });
     const newTickets = data.ticketsByProperties.items as unknown as Ticket[];
-    setTickets((prevTickets) => [...prevTickets, ...newTickets]);
+    const newTicketsWithoutDuplicates =
+      newTickets[0]?.id === ticketCursor.id ? newTickets.slice(1) : newTickets;
+    setTickets((prevTickets) => [
+      ...prevTickets,
+      ...newTicketsWithoutDuplicates,
+    ]);
     setIsFetchingMoreLoading(false);
   };
 
