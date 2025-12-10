@@ -55,7 +55,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ApolloError } from "@apollo/client";
 import { Spinner } from "@/components/ui/spinner";
 import { useDebounceValue } from "usehooks-ts";
-import LogoCompany from "@/common/setting/CompanyLogo";
 
 dayjs.extend(relativeTime);
 
@@ -476,7 +475,6 @@ export default function TicketsDashboard() {
         <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
           Tickets ({totalCount})
         </h1>
-        <LogoCompany></LogoCompany>
       </div>
       <div className="mt-8 bg-card p-8 rounded-lg w-full h-full overflow-hidden">
         <div className="w-full flex flex-row items-center justify-between">

@@ -4,7 +4,6 @@ import { useDashboardStats } from "@/hooks/useDashboardStats";
 import { useDashboardServices } from "@/hooks/useDashboardServices";
 import { useOperator } from "@/context/OperatorContext";
 import { useEffect } from "react";
-import LogoCompany from "@/common/setting/CompanyLogo";
 
 export type Ticket = {
   id: number;
@@ -38,7 +37,6 @@ export default function HomeDashboard() {
         <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance">
           Dashboard
         </h1>
-        <LogoCompany></LogoCompany>
       </div>
       <div className="flex flex-col items-start justify-start w-full mt-8">
         <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">

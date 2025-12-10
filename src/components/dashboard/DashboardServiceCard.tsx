@@ -443,7 +443,7 @@ export default function DashboardServiceCard({
   }, [debouncedSearchValue, table]);
 
   return (
-    <Card key={service.id} className="w-full border border-gray-200 shadow-sm">
+    <Card key={service.id} className="w-full">
       <CardHeader className="flex items-center justify-between w-full">
         <div className="flex items-center gap-2">
           <CardTitle className="text-xl font-bold flex-col items-start justify-start">
