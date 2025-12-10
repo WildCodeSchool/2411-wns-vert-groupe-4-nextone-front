@@ -4,7 +4,7 @@ import { test, expect } from "@playwright/test";
 const OPERATOR_EMAIL = process.env.OPERATOR_EMAIL || "contact@apple.com";
 const OPERATOR_PASSWORD = process.env.OPERATOR_PASSWORD || "nextone";
 
-const SERVICE_NAME_SLUG = "cardiologie";
+const SERVICE_NAME_SLUG = "APPLE_Accueil";
 
 const CUSTOMER_NAME = "Lagadec";
 const CUSTOMER_FIRSTNAME = "Paul";

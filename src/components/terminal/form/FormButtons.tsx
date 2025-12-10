@@ -1,18 +1,19 @@
-import { Button } from "../../components/ui/button";
+import * as React from "react";
+import { Button } from "@/components/ui/button";
 
-export type StepControlsProps = {
-  onBack?: () => void;
-  onNext?: () => void;
+export type FormButtonsProps = {
+  onBack: () => void;
   onCancel?: () => void;
-  nextButtonTestId?: string;
+  loading?: boolean;
+  isLastStep?: boolean;
 };
 
-function NavigationActions({
+const FormButtons: React.FC<FormButtonsProps> = ({
   onBack,
-  onNext,
   onCancel,
-  nextButtonTestId,
-}: StepControlsProps) {
+  loading,
+  isLastStep,
+}) => {
   return (
     <div className="flex w-full items-center justify-between mt-6">
       <div className="flex space-x-9">
@@ -21,30 +22,34 @@ function NavigationActions({
           onClick={onBack}
           variant="ghost"
           className="text-primary text-[17px] p-6"
+          disabled={loading}
         >
           Retour
         </Button>
+
         <Button
-          type="button"
-          onClick={onNext}
+          type="submit"
           className="text-[17px] p-6"
-          data-testid={nextButtonTestId}
+          disabled={loading}
+          data-testid={isLastStep ? "submit-ticket-button" : "next-button"}
         >
-          Continuer
+          {loading ? "Envoi..." : isLastStep ? "Valider" : "Continuer"}
         </Button>
       </div>
+
       {onCancel && (
         <Button
           type="button"
           onClick={onCancel}
           variant="ghost"
           className="text-primary text-[17px] p-6"
+          disabled={loading}
         >
           Annuler
         </Button>
       )}
     </div>
   );
-}
+};
 
-export default NavigationActions;
+export default FormButtons;

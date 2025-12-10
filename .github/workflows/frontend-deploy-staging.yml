@@ -8,7 +8,7 @@ on:
 jobs:
   test-frontend:
     uses: ./.github/workflows/frontend-pr-checks.yml
-  
+
   build-frontend:
     needs: test-frontend
     runs-on: ubuntu-latest
@@ -30,7 +30,7 @@ jobs:
         with:
           name: frontend-dist
           path: dist/
-  
+
   docker:
     needs: [test-frontend, build-frontend]
     runs-on: ubuntu-latest
@@ -59,11 +59,11 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/nextone-front-staging:latest
           platforms: linux/amd64,linux/arm64,linux/x86_64
-  
+
   test-e2e:
     needs: docker
     uses: ./.github/workflows/test-e2e-workflow.yml
-  
+
   deploy-staging:
     needs: test-e2e
     runs-on: ubuntu-latest
@@ -73,7 +73,7 @@ jobs:
           echo "✅ Tests E2E passés ! Le webhook va déclencher le déploiement automatiquement."
           echo "Attente de 120 secondes pour le déploiement..."
           sleep 120
-  
+
   zap-scan:
     needs: deploy-staging
     runs-on: ubuntu-latest
@@ -85,7 +85,7 @@ jobs:
           target: ${{ secrets.FRONTEND_STAGING_URL }}
           fail_action: true
           cmd_options: "-I"
-  
+
   accessibility-scan:
     needs: deploy-staging
     uses: ./.github/workflows/accessibility-scan-workflow.yml

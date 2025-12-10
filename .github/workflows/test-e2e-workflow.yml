@@ -1,7 +1,7 @@
 name: E2E Tests
 
 on:
-  workflow_call: 
+  workflow_call:
 
 jobs:
   e2e-tests:
@@ -9,7 +9,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Create .env file for E2E tests
         run: |
           echo "POSTGRES_USER=utilisateur" >> .env
@@ -21,15 +21,15 @@ jobs:
           echo "PLAYWRIGHT_BASE_URL=http://api_gateway" >> .env
           echo "BACKEND_URL=http://api_gateway/api" >> .env
           echo "NODE_ENV=development" >> .env
-      
+
       - name: Run E2E tests with Docker Compose
         run: |
           docker-compose -f docker-compose.e2e.yml up --build --abort-on-container-exit --exit-code-from e2e
-      
+
       - name: Stop and remove containers
         if: always()
         run: docker-compose -f docker-compose.e2e.yml down -v
-      
+
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
         if: always()

@@ -14,7 +14,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   backend:
-    image: nextone4/nextone-back-staging:latest  
+    image: nextone4/nextone-back-staging:latest
     environment:
       - NODE_ENV=${NODE_ENV}
       - DATABASE_URL=${DATABASE_URL}
@@ -32,7 +32,7 @@ services:
         condition: service_healthy
 
   frontend:
-    image: nextone4/nextone-front-staging:latest  
+    image: nextone4/nextone-front-staging:latest
     environment:
       - VITE_API_URL=http://api_gateway/api
     depends_on:

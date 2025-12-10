@@ -1,29 +1,25 @@
 import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
-import QRCode from "react-qr-code";
 import CompanyIllustration from "../common/terminal/CompanyIllustration";
-import { getScreenComponent } from "../components/terminal/Screens";
 import { useTicket } from "../context/useContextTicket";
 import { useAuth } from "@/context/AuthContext";
 import { emptyTicket } from "../utils/constants/ticket";
-import { Screen } from "../types/terminal";
-import { useCompany } from "@/context/CompanyContext";
-import { url_api } from "@/main";
+import { useIPCompany } from "../context/IPCompanyContext";
+import HomeStep from "@/components/terminal/form/form-steps/HomeStep";
+import { motion } from "motion/react";
+import { tabContentEnterAnimation } from "@/lib/animations/settings.animation";
+import TicketForm from "@/components/terminal/form/TicketForm";
 
-function Terminal() {
+export function Terminal() {
   const { user } = useAuth();
-  const { company } = useCompany();
+  const { loading, error } = useIPCompany();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { ticket, setTicket } = useTicket();
+  const { setTicket } = useTicket();
 
-  const screenFromUrl = searchParams.get("screen") as Screen | null;
   const isScannedFromUrl = searchParams.get("scanned") === "true";
-
-  const [currentScreen, setCurrentScreen] = useState<Screen>(
-    screenFromUrl || "home"
-  );
   const [isScanned] = useState(isScannedFromUrl);
+  const [formStep, setFormStep] = useState<number>(0);
 
   useEffect(() => {
     if (!user) {
@@ -31,79 +27,105 @@ function Terminal() {
     }
   }, [user, navigate]);
 
-  const handleCancel = () => {
-    setTicket(emptyTicket);
-    setCurrentScreen("home");
-  };
-
   useEffect(() => {
-    if (currentScreen === "successTicketPage" && !isScanned) {
+    if (formStep === 4 && !isScanned) {
       const timer = setTimeout(() => {
         setTicket(emptyTicket);
-        setCurrentScreen("home");
+        setFormStep(0);
       }, 20000);
       return () => clearTimeout(timer);
     }
-  }, [currentScreen, isScanned, ticket, setTicket]);
+  }, [formStep, isScanned, setTicket]);
 
-  if (currentScreen !== "home") {
-    return getScreenComponent(currentScreen, {
-      setCurrentScreen,
-      handleCancel,
-      isScanned,
-    });
-  }
-
-  return (
-    <div className="h-screen flex flex-col md:flex-row bg-white font-[Archivo]">
-      <div className="w-full md:w-1/2 p-4 flex flex-col justify-start items-center gap-4 mt-4 md:mt-10">
-      <img src={company?.logoCompany ? `${url_api}files/${encodeURIComponent(company?.logoCompany ?? "")}` : undefined } alt="Aperçu logo de l'entreprise" className="h-10 md:h-14 opacity-100"/>
-        <h1 className="text-3xl md:text-4xl font-semibold text-center mb-8">Bienvenue</h1>
-        <img
-          src={
-            company?.logoCompany
-              ? `http://localhost:4005/files/${encodeURIComponent(
-                  company?.logoCompany ?? ""
-                )}`
-              : undefined
-          }
-          alt="Aperçu logo de l'entreprise"
-          className="h-10 md:h-14 opacity-100"
-        />
-        <h1 className="text-3xl md:text-4xl font-semibold text-center mb-8">
-          Bienvenue
-        </h1>
-        <p className="text-center text-base md:text-lg">
-          Rejoignez la file d’attente directement
-          <br />
-          depuis cette borne
-        </p>
-        <button
-          onClick={() => setCurrentScreen("chooseService")}
-          className="bg-primary text-white text-base py-3 px-4 rounded-md w-full max-w-[400px] transition font-semibold"
-          data-testid="join-queue-button"
-        >
-          Rejoindre la file d’attente
-        </button>
-        <div className="flex items-center gap-2 justify-center my-4 text-black">
-          <hr className="w-6 md:w-8 border-t border-black" />
-          <span className="text-sm">OU</span>
-          <hr className="w-6 md:w-8 border-t border-black" />
-        </div>
-        <p className="text-center text-base md:text-lg">
-          Scannez ce QR code pour
-          <br />
-          prendre un ticket depuis votre smartphone
-        </p>
-        <div className="mt-2">
-          <QRCode
-            data-testid="qr-code"
-            value={`${window.location.origin}/terminal?screen=chooseService&scanned=true`}
-            size={100}
-            fgColor="#000000"
-          />
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
+          <p className="text-lg text-muted-foreground">Chargement...</p>
         </div>
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-screen bg-background">
+        <div className="text-center max-w-md p-8 bg-card rounded-lg shadow-lg">
+          <div className="text-6xl mb-4">🚫</div>
+          <h1 className="text-2xl font-bold text-destructive mb-4">
+            Accès non autorisé
+          </h1>
+          <p className="text-muted-foreground mb-2">
+            Cette borne n'est pas enregistrée dans le système.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            Contactez un administrateur pour enregistrer cette borne.
+          </p>
+          {error.message && (
+            <div className="mt-6 p-4 bg-muted rounded text-left">
+              <p className="text-xs font-mono text-muted-foreground break-all">
+                {error.message}
+              </p>
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  const SuccessScreen = () => (
+    <div className="flex flex-col items-center justify-center gap-6">
+      <div className="text-6xl">✅</div>
+      <h1 className="text-3xl font-semibold text-center">
+        Ticket créé avec succès !
+      </h1>
+      <p className="text-xl text-center text-muted-foreground">
+        Votre ticket a été enregistré.
+        <br />
+        Merci de patienter.
+      </p>
+      <button
+        onClick={() => setFormStep(0)}
+        className="mt-4 bg-primary text-white px-6 py-3 rounded-md text-lg"
+      >
+        Retour à l'accueil
+      </button>
+    </div>
+  );
+
+  const TerminalComponent = () => {
+    switch (formStep) {
+      case 0:
+        return <HomeStep setFormStep={setFormStep} />;
+      case 1:
+      case 2:
+      case 3:
+        return (
+          <TicketForm
+            formStep={formStep}
+            setFormStep={setFormStep}
+            onSuccess={() => setFormStep(4)}
+          />
+        );
+      case 4:
+        return <SuccessScreen />;
+      default:
+        return <HomeStep setFormStep={setFormStep} />;
+    }
+  };
+
+  return (
+    <div className="h-screen w-full flex flex-col md:flex-row bg-white font-[Archivo]">
+      <motion.div
+        className="w-1/2 flex flex-col justify-center items-center gap-4 p-10"
+        initial={tabContentEnterAnimation.initial}
+        animate={tabContentEnterAnimation.animate}
+        transition={tabContentEnterAnimation.transition}
+        key={formStep}
+      >
+        <TerminalComponent />
+      </motion.div>
       <CompanyIllustration />
     </div>
   );

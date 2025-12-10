@@ -14,6 +14,7 @@ import UserInvitationPage from "@/pages/UserInvitationPage";
 import UserProtectedRoute from "@/components/UserProtectedRoute.tsx";
 import PublicProtectedRoute from "@/components/PublicProtectedRoute.tsx";
 import TvSelector from "../pages/TvSelector.tsx";
+import { IPCompanyProvider } from "../context/IPCompanyContext";
 
 export const router = createBrowserRouter([
   {
@@ -22,21 +23,25 @@ export const router = createBrowserRouter([
   },
   {
     path: "/terminal",
-    element: <Terminal />,
+    element: (
+      <IPCompanyProvider>
+        <Terminal />
+      </IPCompanyProvider>
+    ),
   },
   {
     path: "/phone",
     element: <PhonePage />,
   },
   {
-    element: <TvSelector/>,
+    element: <TvSelector />,
     path: "/tv",
     children: [
       {
         path: ":serviceId",
-        element: <TvPage/>
-      }
-    ]
+        element: <TvPage />,
+      },
+    ],
   },
   {
     element: <UserProtectedRoute />,
