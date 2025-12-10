@@ -14,6 +14,7 @@ export type TicketActionMenuProps = {
   onArchive: () => void;
   onResetStatus: () => void;
   ticketStatus: string;
+  openUpdateDialog?: () => void;
 };
 
 export function TicketActionMenu({
@@ -21,8 +22,22 @@ export function TicketActionMenu({
   onArchive,
   onResetStatus,
   ticketStatus,
+  openUpdateDialog,
 }: TicketActionMenuProps) {
   const navigate = useNavigate();
+
+  const isUpdatable =
+    ticketStatus !== "ARCHIVED" &&
+    ticketStatus !== "DONE" &&
+    ticketStatus !== "CANCELED";
+
+  const handleUpdate = () => {
+    if (openUpdateDialog) {
+      openUpdateDialog();
+    } else {
+      navigate(`/dashboard/tickets/${ticketId}?edit=true`);
+    }
+  };
 
   return (
     <DropdownMenu>
@@ -31,15 +46,13 @@ export function TicketActionMenu({
           <MoreHorizontal className="h-4 w-4" />
         </Button>
       </DropdownMenuTrigger>
-
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem
-          onClick={() => navigate(`/dashboard/tickets/${ticketId}`)}
-        >
-          {/* redirection to ticketpage edit */}
-          <Pencil className="w-4 h-4 mr-2" />
-          Modifier
-        </DropdownMenuItem>
+      <DropdownMenuContent align={openUpdateDialog ? "start" : "end"}>
+        {isUpdatable && (
+          <DropdownMenuItem onClick={handleUpdate}>
+            <Pencil className="w-4 h-4 mr-2" />
+            Modifier
+          </DropdownMenuItem>
+        )}
         {ticketStatus !== "PENDING" && (
           <DropdownMenuItem onClick={onResetStatus}>
             <RefreshCcw className="w-4 h-4 mr-2" />

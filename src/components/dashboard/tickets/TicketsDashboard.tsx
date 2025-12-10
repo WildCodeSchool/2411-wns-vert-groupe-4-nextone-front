@@ -366,7 +366,6 @@ export default function TicketsDashboard() {
               )}
 
               <div onClick={(e) => e.stopPropagation()}>
-                {/* <IoIosMore size={20} className="cursor-pointer" /> */}
                 <TicketActionMenu
                   ticketId={row.original.id}
                   ticketStatus={row.original.status}

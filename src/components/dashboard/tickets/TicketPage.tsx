@@ -1,7 +1,10 @@
-import { useNavigate, useParams } from "react-router-dom";
-import { IoIosArrowBack, IoIosMore } from "react-icons/io";
-import { GET_TICKET_INFOS } from "../../../requests/queries/ticket.query";
-import { useQuery } from "@apollo/client/react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { IoIosArrowBack } from "react-icons/io";
+import {
+  GET_TICKET_INFOS,
+  UPDATE_TICKET_STATUS,
+} from "../../../requests/queries/ticket.query";
+import { useMutation, useQuery } from "@apollo/client/react";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
@@ -13,6 +16,10 @@ import { GET_TICKET_LOGS } from "../../../requests/queries/ticketLogs.query";
 import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
 import { url_api } from "@/main";
+import { TicketActionMenu } from "../TicketActionMenu";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import TicketUpdateDialog from "./dialogs/TicketUpdateDialog";
 
 type RouteParams = {
   id: string;
@@ -40,12 +47,23 @@ export type Ticket = {
 
 export default function TicketPage() {
   const { id } = useParams<RouteParams>();
+  const [searchParams] = useSearchParams();
+
+  const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
+
+  const isEditingRedirection = useMemo(
+    () => searchParams.get("edit") === "true",
+    [searchParams]
+  );
 
   const navigate = useNavigate();
 
-  const { data, loading, error } = useQuery<GetTicketType>(GET_TICKET_INFOS, {
-    variables: { ticketId: id },
-  });
+  const { data, loading, error, refetch } = useQuery<GetTicketType>(
+    GET_TICKET_INFOS,
+    {
+      variables: { ticketId: id },
+    }
+  );
 
   const ticketOptions = statusOptions.find(
     (option) => option.value === data?.ticket.status
@@ -54,6 +72,46 @@ export default function TicketPage() {
   const { data: ticketLogs } = useQuery(GET_TICKET_LOGS, {
     variables: { field: { ticketId: id } },
   });
+
+  const { toastSuccess, toastError } = useToast();
+
+  const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
+
+  const handleArchive = useCallback(
+    async (ticketId: string) => {
+      try {
+        await updateTicketStatus({
+          variables: {
+            updateTicketStatusData: { id: ticketId, status: "ARCHIVED" },
+          },
+        });
+        toastSuccess("Ticket archivé avec succès");
+        await refetch();
+      } catch (error) {
+        toastError("Erreur lors de l'archivage du ticket");
+        console.error(error);
+      }
+    },
+    [updateTicketStatus, refetch, toastSuccess, toastError]
+  );
+
+  const handleResetStatus = useCallback(
+    async (ticketId: string) => {
+      try {
+        await updateTicketStatus({
+          variables: {
+            updateTicketStatusData: { id: ticketId, status: "PENDING" },
+          },
+        });
+        toastSuccess("Statut remis à 'En attente'");
+        await refetch();
+      } catch (error) {
+        toastError("Erreur lors du changement de statut");
+        console.error(error);
+      }
+    },
+    [updateTicketStatus, refetch, toastSuccess, toastError]
+  );
 
   const ticketLogSentence = (log: { status: string }) => {
     switch (log.status) {
@@ -74,6 +132,12 @@ export default function TicketPage() {
     }
   };
 
+  useEffect(() => {
+    if (isEditingRedirection) {
+      setIsUpdateDialogOpen(true);
+    }
+  }, [isEditingRedirection]);
+
   if (!id) {
     return <p>Aucun ID fourni</p>;
   }
@@ -84,13 +148,34 @@ export default function TicketPage() {
 
   return (
     <>
-      <div className="flex flex-row items-center justify-start w-full">
-        <div
-          className="bg-card flex items-center justify-center rounded-full p-3 mr-5 cursor-pointer"
-          onClick={() => navigate(-1)}
-          data-testid="back-button"
-        >
-          <IoIosArrowBack className="w-6 h-6 text-foreground cursor-pointer" />
+      <div className="flex flex-row items-center w-full">
+        <div className="flex items-center">
+          <div
+            className="bg-card flex items-center justify-center rounded-full p-3 mr-5 cursor-pointer"
+            onClick={() => navigate(-1)}
+          >
+            <IoIosArrowBack className="w-6 h-6 text-foreground cursor-pointer" />
+          </div>
+          <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance mr-2">
+            {data.ticket.firstName} {data.ticket.lastName}
+          </h1>
+          <span className="ml-4 px-4 py-2 rounded-lg text-sm font-light bg-primary text-white">
+            Ticket {data.ticket.code}
+          </span>
+          <span
+            className={`ml-4 px-4 py-2 rounded-lg text-sm font-light mr-6 ${
+              ticketOptions ? ticketOptions.badgeStyle : ""
+            }`}
+          >
+            {ticketOptions ? ticketOptions.label : data.ticket.status}
+          </span>
+          <TicketActionMenu
+            ticketId={data.ticket.id}
+            ticketStatus={data.ticket.status}
+            onArchive={() => handleArchive(data.ticket.id)}
+            onResetStatus={() => handleResetStatus(data.ticket.id)}
+            openUpdateDialog={() => setIsUpdateDialogOpen(true)}
+          />
         </div>
         <h1
           className="scroll-m-20 text-4xl font-light tracking-tight text-balance mr-2"
@@ -215,7 +300,7 @@ export default function TicketPage() {
                             <img
                               src={
                                 log?.manager.profileImage
-                                  ? `${url_api}/images/files/${encodeURIComponent(
+                                  ? `${url_api}files/${encodeURIComponent(
                                       log.manager.profileImage
                                     )}`
                                   : "/avatar-example.jpg"
@@ -263,6 +348,12 @@ export default function TicketPage() {
             </div>
           </div>
         </div>
+        <TicketUpdateDialog
+          ticketInfos={data.ticket}
+          refetchTicket={refetch}
+          open={isUpdateDialogOpen}
+          setOpen={setIsUpdateDialogOpen}
+        />
       </div>
     </>
   );
