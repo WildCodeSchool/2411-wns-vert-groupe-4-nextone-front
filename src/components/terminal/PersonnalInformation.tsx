@@ -41,7 +41,6 @@ function PersonnalInformation({
         </div>
         <div className="flex-1 flex flex-col justify-center">
           <form
-            data-testid="form"
             onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-4 md:gap-6"
           >
@@ -50,14 +49,12 @@ function PersonnalInformation({
               placeholder="Nom"
               error={errors.name?.message}
               {...register("name")}
-              data-testid="lastName-input"
             />
             <InputWithLabel
               label="Votre prénom ?"
               placeholder="Prénom"
               error={errors.firstName?.message}
               {...register("firstName")}
-              data-testid="firstName-input"
             />
             <NavigationActions
               onBack={onBack}

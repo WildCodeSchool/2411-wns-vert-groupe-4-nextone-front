@@ -12,10 +12,16 @@ function Stepper({ currentStep }: StepperProps) {
           const isCompleted = stepNumber < currentStep;
           return (
             <div key={step.label} className="flex flex-col items-center">
-              <div data-testid={`step-circle-${stepNumber}`} className={clsx( "w-8 h-8 rounded-full flex items-center justify-center border-2 z-10",
-                  { "bg-primary text-white border-primary": isActive || isCompleted,
+              <div
+                data-testid={`step-circle-${stepNumber}`}
+                className={clsx(
+                  "w-8 h-8 rounded-full flex items-center justify-center border-2 z-10",
+                  {
+                    "bg-primary text-white border-primary": isActive || isCompleted,
                     "bg-white text-gray-400 border-gray-300": !isActive && !isCompleted,
-                  })}>
+                  }
+                )}
+              >
                 {stepNumber}
               </div>
               <span className={clsx("mt-2 text-xs md:text-sm text-center", { 

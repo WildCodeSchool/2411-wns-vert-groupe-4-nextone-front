@@ -10,11 +10,19 @@ interface InputWithLabelProps
   readonly label: string;
   readonly error?: string;
   readonly children?: React.ReactNode;
-  readonly "data-testid"?: string;
 }
 
 function InputWithLabelFunc(
-  { label, id, name, className, error, type, children, ...props }: InputWithLabelProps,
+  {
+    label,
+    id,
+    name,
+    className,
+    error,
+    type,
+    children,
+    ...props
+  }: InputWithLabelProps,
   ref: React.Ref<HTMLInputElement>
 ) {
   const inputId = id || name;
@@ -42,12 +50,12 @@ function InputWithLabelFunc(
           aria-invalid={!!error}
           ref={ref}
           type={isPassword ? (showPassword ? "text" : "password") : type}
-          {...props}
           className={cn(
             error && "border-red-500 focus-visible:ring-red-500",
             "pr-12",
             className
           )}
+          {...props}
         />
 
         {isPassword && (
@@ -61,7 +69,6 @@ function InputWithLabelFunc(
           </Toggle>
         )}
       </div>
-        data-testid={props["data-testid"]}
       {error && <p className="text-sm text-red-500 mt-1 text-start">{error}</p>}
     </div>
   );

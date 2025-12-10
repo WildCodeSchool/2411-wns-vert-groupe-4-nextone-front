@@ -14,7 +14,6 @@ export default function PersonalInfoStep({ formMethods }: FormStepProps) {
         placeholder="Nom"
         error={errors.name?.message}
         {...register("name")}
-        data-testid="lastName-input"
       />
 
       <InputWithLabel
@@ -22,7 +21,6 @@ export default function PersonalInfoStep({ formMethods }: FormStepProps) {
         placeholder="Prénom"
         error={errors.firstName?.message}
         {...register("firstName")}
-        data-testid="firstName-input"
       />
     </div>
   );

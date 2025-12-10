@@ -8,9 +8,8 @@ export default function HomeStep({
   setFormStep: React.Dispatch<React.SetStateAction<number>>;
 }) {
   const { company } = useIPCompany();
-  // Extract base URL from API URL (remove /graphql endpoint)
   const API_URL = import.meta.env.VITE_API_URL as string;
-  const BASE_URL = API_URL.replace(/\/graphql$/, '');
+  const BASE_URL = API_URL.replace(/\/graphql$/, "");
 
   const logoSrc = company?.logoCompany
     ? `${BASE_URL}/files/${encodeURIComponent(company.logoCompany)}`
