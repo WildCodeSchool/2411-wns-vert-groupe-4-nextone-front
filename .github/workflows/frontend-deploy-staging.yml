@@ -60,19 +60,6 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/nextone-front-staging:latest
           platforms: linux/amd64,linux/arm64,linux/x86_64
 
-  #  test-e2e:
-  #    needs: docker
-  #    uses: ./.github/workflows/test-e2e-workflow.yml
-  # deploy-staging:
-  #   needs: test-e2e
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - name: Trigger webhook deployment
-  #       run: |
-  #         echo "✅ Tests E2E passés ! Le webhook va déclencher le déploiement automatiquement."
-  #         echo "Attente de 120 secondes pour le déploiement..."
-  #         sleep 120
-
   zap-scan:
     needs: docker
     runs-on: ubuntu-latest
