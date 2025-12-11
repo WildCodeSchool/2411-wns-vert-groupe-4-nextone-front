@@ -164,9 +164,6 @@ function ChooseService({ onBack, onNext, onCancel }: ChooseServiceProps) {
             onBack={onBack}
             onNext={setTicketForGenerate}
             onCancel={onCancel}
-            updateTicket={() =>
-              updateTicketService(ticket, selectedService, setTicket)
-            }
             nextButtonTestId="next-button"
           />
         </div>

@@ -40,21 +40,18 @@ export function Terminal() {
   const [formStep, setFormStep] = useState<number>(initialFormStep);
 
   const { loading: loadingTicket } = useQuery(GET_TICKET_INFOS, {
-    // La requête est lancée uniquement si on a un ID dans l'URL ET que le contexte du ticket est vide
-    variables: { ticketId: ticketIdFromUrl }, // Utilisation du nom de variable 'ticketId'
+    variables: { ticketId: ticketIdFromUrl },
     skip: !ticketIdFromUrl || !!ticket?.id,
     onCompleted: (data) => {
-      // La requête retourne 'ticket' directement.
       if (data?.ticket) {
-        setTicket(data.ticket); // 👉 Mise à jour du contexte avec le ticket chargé
+        setTicket(data.ticket);
       } else if (ticketIdFromUrl) {
-        // Si l'ID est là mais la réponse est nulle (ticket non trouvé), on revient à l'accueil
         setFormStep(0);
       }
     },
     onError: (error) => {
       console.error("Erreur de chargement du ticket par ID:", error);
-      setFormStep(0); // Retour à l'accueil en cas d'erreur API
+      setFormStep(0);
     },
   });
 
