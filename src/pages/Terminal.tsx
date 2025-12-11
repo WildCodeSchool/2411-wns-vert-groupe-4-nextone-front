@@ -12,8 +12,6 @@ import TicketForm from "@/components/terminal/form/TicketForm";
 import SuccessTicketPage from "@/components/terminal/SuccessTicket";
 import { useQuery } from "@apollo/client";
 import { GET_TICKET_INFOS } from "@/requests/queries/ticket.query";
-import { Screen } from "../types/terminal";
-import { useCompany } from "@/context/CompanyContext";
 
 type UrlScreen = "chooseService" | "successTicketPage" | "phone";
 
@@ -40,7 +38,6 @@ export function Terminal() {
 
   const [isScanned] = useState(isScannedFromUrl);
   const [formStep, setFormStep] = useState<number>(initialFormStep);
-  const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   const { loading: loadingTicket } = useQuery(GET_TICKET_INFOS, {
     variables: { ticketId: ticketIdFromUrl },
