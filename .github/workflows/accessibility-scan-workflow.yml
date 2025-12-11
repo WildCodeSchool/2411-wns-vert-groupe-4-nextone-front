@@ -17,7 +17,7 @@ jobs:
           node-version: "20"
 
       - name: Install a11ywatch CLI
-        run: npm install -g @a11ywatch/cli
+        run: npm install -g a11ywatch
 
       - name: Wait for deployment to be ready
         run: sleep 30
