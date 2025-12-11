@@ -212,27 +212,6 @@ export default function TicketPage() {
             openUpdateDialog={() => setIsUpdateDialogOpen(true)}
           />
         </div>
-        <h1
-          className="scroll-m-20 text-4xl font-light tracking-tight text-balance mr-2"
-          data-testid="ticket-full-name"
-        >
-          {data.ticket.firstName} {data.ticket.lastName}
-        </h1>
-        <span
-          className="ml-4 px-4 py-2 rounded-lg text-sm font-light bg-primary text-white"
-          data-testid="ticket-code-display"
-        >
-          Ticket {data.ticket.code}
-        </span>
-        <span
-          className={`ml-4 px-4 py-2 rounded-lg text-sm font-light mr-6 ${
-            ticketOptions ? ticketOptions.badgeStyle : ""
-          }`}
-          data-testid="ticket-status-badge"
-        >
-          {ticketOptions ? ticketOptions.label : data.ticket.status}
-        </span>
-        <IoIosMore size={20} />
       </div>
 
       <div className="flex flex-row items-stretch justify-between w-full h-full mt-8 gap-10">
