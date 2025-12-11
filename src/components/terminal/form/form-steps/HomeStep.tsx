@@ -30,6 +30,7 @@ export default function HomeStep({
           setFormStep(1);
         }}
         className="bg-primary text-white text-xl py-4 rounded-md w-full max-w-[500px] transition font-normal"
+        data-testid="join-queue-button"
       >
         Rejoindre la file d’attente
       </button>
