@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { UserAuthContext } from "@/context/AuthContext";
-import { url_api } from "@/main";
 
 export default function DashboardMenuTooltip({
   item,
@@ -24,6 +23,7 @@ export default function DashboardMenuTooltip({
   logout?: () => Promise<void>;
 }) {
   const navigate = useNavigate();
+  const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   const handleLogout = () => {
     if (!logout) return;

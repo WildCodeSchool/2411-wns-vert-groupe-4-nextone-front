@@ -15,7 +15,6 @@ import { MdOutlineEdit } from "react-icons/md";
 import { FaTicketSimple } from "react-icons/fa6";
 import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
-import { url_api } from "@/main";
 import { TicketActionMenu } from "../TicketActionMenu";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
@@ -87,6 +86,8 @@ export default function TicketPage() {
   const { toastSuccess, toastError } = useToast();
 
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
+
+  const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   useSubscription(TICKET_UPDATED_SUBSCRIPTION, {
     onData: ({ data }) => {
