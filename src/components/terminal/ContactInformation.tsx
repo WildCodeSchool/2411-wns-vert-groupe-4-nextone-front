@@ -17,11 +17,11 @@ function ContactInformation({ onBack, onNext, onCancel }: ChooseServiceProps) {
   const {
     register,
     handleSubmit,
-    getValues,
     watch,
     formState: { errors },
   } = useForm<ContactInfo>({
     resolver: yupResolver(contactInfo),
+    mode: "onChange",
     defaultValues: {
       email: ticket.email || "",
       phone: ticket.phone || "",
@@ -29,8 +29,8 @@ function ContactInformation({ onBack, onNext, onCancel }: ChooseServiceProps) {
     },
   });
 
-  const handleGenerateTicket = async (data: any) => {
-    const { email, phone } = data;
+  const handleGenerateTicket = async (data: ContactInfo) => {
+    const { email, phone, rgpdAccepted } = data;
     const { data: response } = await generateTicket({
       variables: {
         data: {
@@ -47,24 +47,20 @@ function ContactInformation({ onBack, onNext, onCancel }: ChooseServiceProps) {
       ...ticket,
       email,
       phone,
-      rgpdAccepted: data.rgpdAccepted,
+      rgpdAccepted,
       code: generated.code,
+      id: generated.id,
     });
     return generated.code;
   };
 
-  const onSubmit = async (data: any) => {
-    await handleGenerateTicket(data);
-    onNext?.();
-  };
-
-  const setTicketForGenerate = () => {
-    setTicket({
-      ...ticket,
-      email: getValues("email"),
-      phone: getValues("phone"),
-      rgpdAccepted: getValues("rgpdAccepted") ?? false,
-    });
+  const onSubmit = async (data: ContactInfo) => {
+    try {
+      await handleGenerateTicket(data);
+      onNext?.();
+    } catch (error) {
+      console.error("Erreur lors de la génération du ticket :", error);
+    }
   };
 
   const rgpdChecked = watch("rgpdAccepted");
@@ -124,7 +120,6 @@ function ContactInformation({ onBack, onNext, onCancel }: ChooseServiceProps) {
             <NavigationActions
               onBack={onBack}
               onCancel={onCancel}
-              updateTicket={() => setTicketForGenerate()}
               nextButtonTestId="submit-ticket-button"
             />
           </form>

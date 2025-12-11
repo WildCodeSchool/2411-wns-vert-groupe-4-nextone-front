@@ -2,8 +2,12 @@ import type { ApolloError } from "@apollo/client";
 import type { UseFormReturn } from "react-hook-form";
 
 type StepControlsProps = {
-  onBack: string;
-  onNext: string;
+  onBack?: () => void;
+  onNext?: () => void;
+  onCancel: () => void;
+  updateTicket?: () => void;
+  nextButtonTestId?: string;
+  isNextDisabled?: boolean;
 };
 
 interface StepperProps {
