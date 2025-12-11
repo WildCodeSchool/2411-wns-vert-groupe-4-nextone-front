@@ -2,7 +2,6 @@ import {
   UPDATE_TICKET_STATUS,
   GET_TICKETS_PAGINATED,
   TICKET_ADDED_SUBSCRIPTION,
-  TICKET_UPDATED_SUBSCRIPTION,
 } from "../../../requests/queries/ticket.query";
 import {
   useLazyQuery,
@@ -55,6 +54,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { ApolloError } from "@apollo/client";
 import { Spinner } from "@/components/ui/spinner";
 import { useDebounceValue } from "usehooks-ts";
+import { TICKET_UPDATED_SUBSCRIPTION } from "@/requests/subscriptions/ticket.subscription";
 
 dayjs.extend(relativeTime);
 

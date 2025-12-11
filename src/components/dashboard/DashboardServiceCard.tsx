@@ -2,7 +2,6 @@ import {
   UPDATE_TICKET_STATUS,
   GET_TICKETS_PAGINATED,
   TICKET_ADDED_SUBSCRIPTION,
-  TICKET_UPDATED_SUBSCRIPTION,
 } from "../../requests/queries/ticket.query";
 import {
   useLazyQuery,
@@ -59,6 +58,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ChevronDown } from "lucide-react";
 import StatusBadge from "./StatusBadge";
 import defineServiceStatus from "@/utils/services/defineServiceStatus";
+import { TICKET_UPDATED_SUBSCRIPTION } from "@/requests/subscriptions/ticket.subscription";
 
 dayjs.extend(relativeTime);
 
