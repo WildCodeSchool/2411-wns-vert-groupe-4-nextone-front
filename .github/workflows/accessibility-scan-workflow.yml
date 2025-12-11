@@ -2,11 +2,16 @@ name: Accessibility Scan
 
 on:
   workflow_call:
+  workflow_dispatch:
 
 jobs:
   accessibility-scan:
     runs-on: ubuntu-latest
     continue-on-error: true
+
+    env:
+      FRONTEND_URL: ${{ secrets.FRONTEND_STAGING_URL }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -18,52 +23,64 @@ jobs:
 
       - name: Install Pa11y dependencies
         run: |
-          npm install -g pa11y-ci pa11y-reporter-html
+          npm install -g pa11y-ci
 
       - name: Wait for deployment to be ready
         run: sleep 30
 
-      - name: Create Pa11y config
+      - name: Verify environment
         run: |
-          cat > .pa11yci << EOF
-          {
-            "defaults": {
-              "standard": "WCAG2AA",
-              "timeout": 30000,
-              "wait": 1000,
-              "chromeLaunchConfig": {
-                "args": ["--no-sandbox", "--disable-setuid-sandbox"]
-              },
-              "reporters": [
-                ["html", { "destination": "pa11y-results.html" }],
-                ["json", { "destination": "pa11y-results.json" }]
-              ]
-            },
-            "urls": [
-              "${{ secrets.FRONTEND_STAGING_URL }}/terminal",
-              "${{ secrets.FRONTEND_STAGING_URL }}/login",
-              "${{ secrets.FRONTEND_STAGING_URL }}/dashboard"
-            ]
-          }
-          EOF
+          if [ -z "$FRONTEND_URL" ]; then
+            echo "❌ FRONTEND_URL n'est pas défini"
+            exit 1
+          fi
+          echo "✅ FRONTEND_URL est configuré"
 
-      - name: Run Pa11y CI accessibility scan
+      - name: Run Pa11y accessibility scan
         run: |
-          pa11y-ci || true
+          echo "🔍 Scanning ${FRONTEND_URL}/terminal..."
+          pa11y ${FRONTEND_URL}/terminal --standard WCAG2AA --reporter json > terminal.json || echo "⚠️ Error scanning terminal"
+
+          echo "🔍 Scanning ${FRONTEND_URL}/login..."
+          pa11y ${FRONTEND_URL}/login --standard WCAG2AA --reporter json > login.json || echo "⚠️ Error scanning login"
+
+          echo "🔍 Scanning ${FRONTEND_URL}/dashboard..."
+          pa11y ${FRONTEND_URL}/dashboard --standard WCAG2AA --reporter json > dashboard.json || echo "⚠️ Error scanning dashboard"
+
+          echo ""
+          echo "✅ Scans terminés"
+          echo "📂 Fichiers générés:"
+          ls -lh *.json || echo "❌ Aucun fichier JSON généré"
 
       - name: Display scan summary
         if: always()
         run: |
-          echo "📊 Scan d'accessibilité Pa11y terminé"
-          echo "Les rapports détaillés sont disponibles dans les artifacts"
-          if [ -f pa11y-results.json ]; then
-            echo "✅ Rapport JSON généré"
-            # Compte le nombre total d'issues
-            total_issues=$(cat pa11y-results.json | jq '[.[] | .issues | length] | add' || echo "N/A")
-            echo "🔍 Total d'issues trouvées: $total_issues"
+          echo "📊 Résumé du scan d'accessibilité"
+          echo "=================================="
+          echo ""
+
+          if [ -f terminal.json ]; then
+            echo "✅ /terminal"
+            issues=$(cat terminal.json | jq '.issues | length' 2>/dev/null || echo "N/A")
+            echo "   Issues: $issues"
+          else
+            echo "❌ /terminal - Rapport non généré"
           fi
-          if [ -f pa11y-results.html ]; then
-            echo "✅ Rapport HTML généré"
+
+          if [ -f login.json ]; then
+            echo "✅ /login"
+            issues=$(cat login.json | jq '.issues | length' 2>/dev/null || echo "N/A")
+            echo "   Issues: $issues"
+          else
+            echo "❌ /login - Rapport non généré"
+          fi
+
+          if [ -f dashboard.json ]; then
+            echo "✅ /dashboard"
+            issues=$(cat dashboard.json | jq '.issues | length' 2>/dev/null || echo "N/A")
+            echo "   Issues: $issues"
+          else
+            echo "❌ /dashboard - Rapport non généré"
           fi
 
       - name: Upload accessibility reports
@@ -72,7 +89,5 @@ jobs:
         with:
           name: pa11y-accessibility-reports
           path: |
-            pa11y-results.json
-            pa11y-results.html
-            .pa11yci
+            *.json
           retention-days: 30
