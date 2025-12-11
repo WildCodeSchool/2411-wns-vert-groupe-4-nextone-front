@@ -2,9 +2,10 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 import {
   GET_TICKET_INFOS,
+  TICKET_UPDATED_SUBSCRIPTION,
   UPDATE_TICKET_STATUS,
 } from "../../../requests/queries/ticket.query";
-import { useMutation, useQuery } from "@apollo/client/react";
+import { useMutation, useQuery, useSubscription } from "@apollo/client/react";
 import { MdOutlineEmail } from "react-icons/md";
 import { FaPhoneAlt } from "react-icons/fa";
 import { FaPerson } from "react-icons/fa6";
@@ -12,7 +13,6 @@ import { MdRoomService } from "react-icons/md";
 import { FaPlus } from "react-icons/fa6";
 import { MdOutlineEdit } from "react-icons/md";
 import { FaTicketSimple } from "react-icons/fa6";
-import { GET_TICKET_LOGS } from "../../../requests/queries/ticketLogs.query";
 import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
 import { url_api } from "@/main";
@@ -29,6 +29,16 @@ type GetTicketType = {
   ticket: Ticket;
 };
 
+type TicketLog = {
+  id: string;
+  status: string;
+  manager: {
+    firstName: string;
+    lastName: string;
+  };
+  createdAt: string;
+};
+
 export type Ticket = {
   code: string;
   email: string;
@@ -43,11 +53,15 @@ export type Ticket = {
     id: string;
     name: string;
   };
+  ticketLogs?: TicketLog[];
 };
 
 export default function TicketPage() {
   const { id } = useParams<RouteParams>();
   const [searchParams] = useSearchParams();
+
+  const [ticket, setTicket] = useState<Ticket | null>(null);
+  const [ticketLogs, setTicketLogs] = useState<TicketLog[] | null>(null);
 
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false);
 
@@ -69,13 +83,32 @@ export default function TicketPage() {
     (option) => option.value === data?.ticket.status
   );
 
-  const { data: ticketLogs } = useQuery(GET_TICKET_LOGS, {
-    variables: { field: { ticketId: id } },
-  });
-
   const { toastSuccess, toastError } = useToast();
 
   const [updateTicketStatus] = useMutation(UPDATE_TICKET_STATUS);
+
+  useSubscription(TICKET_UPDATED_SUBSCRIPTION, {
+    onData: ({ data }) => {
+      const updatedTicket = data.data.ticketUpdated;
+
+      if (updatedTicket.id !== ticket?.id) return;
+
+      const newTicketLogs = updatedTicket.ticketLogs;
+
+      setTicket((prevTicket) =>
+        prevTicket ? { ...prevTicket, ...updatedTicket } : prevTicket
+      );
+
+      setTicketLogs(newTicketLogs);
+    },
+  });
+
+  useEffect(() => {
+    if (data && data.ticket) {
+      setTicket(data.ticket);
+      setTicketLogs(data.ticket.ticketLogs || null);
+    }
+  }, [data]);
 
   const handleArchive = useCallback(
     async (ticketId: string) => {
@@ -143,7 +176,8 @@ export default function TicketPage() {
   }
 
   if (loading) return <p data-testid="ticket-loading">Chargement...</p>;
-  if (!data) return <p data-testid="ticket-not-found">Aucun ticket trouvé</p>;
+  if (!data || !ticket)
+    return <p data-testid="ticket-not-found">Aucun ticket trouvé</p>;
   if (error) return <p data-testid="ticket-error">Erreur: {error.message}</p>;
 
   return (
@@ -157,23 +191,23 @@ export default function TicketPage() {
             <IoIosArrowBack className="w-6 h-6 text-foreground cursor-pointer" />
           </div>
           <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance mr-2">
-            {data.ticket.firstName} {data.ticket.lastName}
+            {ticket.firstName} {ticket.lastName}
           </h1>
           <span className="ml-4 px-4 py-2 rounded-lg text-sm font-light bg-primary text-white">
-            Ticket {data.ticket.code}
+            Ticket {ticket.code}
           </span>
           <span
             className={`ml-4 px-4 py-2 rounded-lg text-sm font-light mr-6 ${
               ticketOptions ? ticketOptions.badgeStyle : ""
             }`}
           >
-            {ticketOptions ? ticketOptions.label : data.ticket.status}
+            {ticketOptions ? ticketOptions.label : ticket.status}
           </span>
           <TicketActionMenu
-            ticketId={data.ticket.id}
-            ticketStatus={data.ticket.status}
-            onArchive={() => handleArchive(data.ticket.id)}
-            onResetStatus={() => handleResetStatus(data.ticket.id)}
+            ticketId={ticket.id}
+            ticketStatus={ticket.status}
+            onArchive={() => handleArchive(ticket.id)}
+            onResetStatus={() => handleResetStatus(ticket.id)}
             openUpdateDialog={() => setIsUpdateDialogOpen(true)}
           />
         </div>
@@ -210,17 +244,17 @@ export default function TicketPage() {
               Informations personnelles
             </h2>
             <TicketInfos
-              information={`${data.ticket.firstName} ${data.ticket.lastName}`}
+              information={`${ticket.firstName} ${ticket.lastName}`}
               icon={FaPerson}
               data-testid="info-full-name"
             />
             <TicketInfos
-              information={data.ticket.email}
+              information={ticket.email}
               icon={MdOutlineEmail}
               data-testid="info-email"
             />
             <TicketInfos
-              information={data.ticket.phone}
+              information={ticket.phone}
               icon={FaPhoneAlt}
               data-testid="info-phone"
             />
@@ -238,23 +272,23 @@ export default function TicketPage() {
               data-testid="info-code"
             />
             <TicketInfos
-              information={data.ticket.service.name || "N/A"}
+              information={ticket.service.name || "N/A"}
               icon={MdRoomService}
               data-testid="info-service"
             />
             <TicketInfos
               information={`${new Date(
-                data.ticket.createdAt
+                ticket.createdAt
               ).toLocaleDateString()} à ${" "}
-                ${new Date(data.ticket.createdAt).toLocaleTimeString()}`}
+                ${new Date(ticket.createdAt).toLocaleTimeString()}`}
               icon={FaPlus}
               data-testid="info-created-at"
             />
             <TicketInfos
               information={`${new Date(
-                data.ticket.updatedAt
+                ticket.updatedAt
               ).toLocaleDateString()} à ${" "}
-                ${new Date(data.ticket.updatedAt).toLocaleTimeString()}`}
+                ${new Date(ticket.updatedAt).toLocaleTimeString()}`}
               icon={MdOutlineEdit}
               data-testid="info-updated-at"
             />
@@ -269,8 +303,8 @@ export default function TicketPage() {
               Historique du ticket
             </h2>
             <div className="flex flex-col items-start justify-start w-full h-full overflow-y-auto">
-              {ticketLogs?.ticketLogsByProperty?.items &&
-                ticketLogs.ticketLogsByProperty.items.map(
+              {ticketLogs &&
+                ticketLogs.map(
                   (
                     log: {
                       id: string;
@@ -284,8 +318,7 @@ export default function TicketPage() {
                     },
                     idx: number
                   ) => {
-                    const isLast =
-                      idx === ticketLogs.ticketLogsByProperty.items.length - 1;
+                    const isLast = idx === ticketLogs.length - 1;
 
                     return (
                       <div
@@ -349,7 +382,7 @@ export default function TicketPage() {
           </div>
         </div>
         <TicketUpdateDialog
-          ticketInfos={data.ticket}
+          ticketInfos={ticket}
           refetchTicket={refetch}
           open={isUpdateDialogOpen}
           setOpen={setIsUpdateDialogOpen}
