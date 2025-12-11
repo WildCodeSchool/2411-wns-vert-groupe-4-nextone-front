@@ -112,9 +112,10 @@ export default function LoginAdmin() {
                   label="Adresse mail"
                   type="email"
                   placeholder="example@example.com"
-                  error={errors.email?.message || formatedErrorMessage}
+                  error={errors.email?.message}
                   {...register("email")}
                   className="!text-base font-normal !bg-transparent !shadow-none w-full"
+                  data-testid="login-email"
                 />
                 <InputWithLabel
                   label="Mot de passe"
@@ -123,6 +124,7 @@ export default function LoginAdmin() {
                   error={errors.password?.message}
                   {...register("password")}
                   className="!text-base font-normal !bg-transparent !shadow-none"
+                  data-testid="login-password"
                 />
                 <div className="flex items-center justify-between">
                   <div className="inline-flex items-center gap-2.5">
@@ -149,6 +151,7 @@ export default function LoginAdmin() {
               <Button
                 type="submit"
                 className="w-full bg-[#1f2511] py-7 rounded-lg font-['Archivo',Helvetica] font-light text-lg"
+                data-testid="login-submit"
               >
                 Me connecter
               </Button>

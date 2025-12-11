@@ -359,6 +359,7 @@ export default function TicketsDashboard() {
                     processTicket(row.original);
                   }}
                   disabled={!canProcessTicket}
+                  data-testid={`take-ticket-button-${row.original.id}`}
                 >
                   Prendre le ticket
                 </Button>
@@ -445,6 +446,7 @@ export default function TicketsDashboard() {
               placeholder="Rechercher un ticket par nom..."
               value={searchValue}
               onChange={(event) => setSearchValue(event.target.value)}
+              data-testid="search-input"
             />
             <Popover>
               <PopoverTrigger asChild>
@@ -475,6 +477,7 @@ export default function TicketsDashboard() {
                         onCheckedChange={() =>
                           handleFilterChange("status", option.value)
                         }
+                        data-testid={`status-filter-checkbox-${option.value.toLowerCase()}`}
                       />
                       <Label htmlFor={option.value} className="cursor-pointer">
                         {option.label}
@@ -503,6 +506,7 @@ export default function TicketsDashboard() {
                         onCheckedChange={() =>
                           handleFilterChange("service.id", option.id)
                         }
+                        data-testid={`service-filter-checkbox-${option.id}`}
                       />
                       <Label htmlFor={option.id} className="cursor-pointer">
                         {option.name}
@@ -520,6 +524,7 @@ export default function TicketsDashboard() {
               onClick={() => {
                 setColumnFilters([]);
               }}
+              data-testid="reset-filters-button"
             >
               <FaRegTrashAlt />
               Réinitialiser
@@ -556,13 +561,24 @@ export default function TicketsDashboard() {
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && "selected"}
+                      data-testid={`ticket-row-${row.original.id}`}
                       className="cursor-pointer text-base text-left bg-popover hover:bg-muted/30 transition-colors"
                       onClick={() =>
                         navigate(`/dashboard/tickets/${row.original.id}`)
                       }
                     >
                       {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id} className="text-left py-4">
+                        <TableCell
+                          key={cell.id}
+                          className="text-left py-4"
+                          data-testid={
+                            cell.column.id === "code"
+                              ? `ticket-number-${row.original.id}`
+                              : cell.column.id === "status"
+                              ? `ticket-status-${row.original.id}`
+                              : undefined
+                          }
+                        >
                           {flexRender(
                             cell.column.columnDef.cell,
                             cell.getContext()
@@ -581,6 +597,7 @@ export default function TicketsDashboard() {
                           onClick={async () => {
                             await fetchMoreTickets();
                           }}
+                          data-testid="load-more-tickets-button"
                         >
                           {isFetchingMoreLoading && (
                             <Spinner className="mr-2" />
@@ -631,6 +648,7 @@ const StateTableComponent = ({
       <TableCell
         colSpan={table.getAllColumns().length}
         className="h-24 text-center"
+        data-testid="ticket-dashboard-status-message"
       >
         {loading && <Spinner className="mr-2" />}
         {message}

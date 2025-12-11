@@ -84,61 +84,84 @@ export default function TicketPage() {
     return <p>Aucun ID fourni</p>;
   }
 
-  if (loading) return <p>Chargement...</p>;
-  if (!data) return <p>Aucun ticket trouvé</p>;
-  if (error) return <p>Erreur: {error.message}</p>;
+  if (loading) return <p data-testid="ticket-loading">Chargement...</p>;
+  if (!data) return <p data-testid="ticket-not-found">Aucun ticket trouvé</p>;
+  if (error) return <p data-testid="ticket-error">Erreur: {error.message}</p>;
 
   return (
     <>
-      <div className="flex flex-row items-center w-full">
-        <div className="flex items-center">
-          <div
-            className="bg-card flex items-center justify-center rounded-full p-3 mr-5 cursor-pointer"
-            onClick={() => navigate(-1)}
-          >
-            <IoIosArrowBack className="w-6 h-6 text-foreground cursor-pointer" />
-          </div>
-          <h1 className="scroll-m-20 text-4xl font-light tracking-tight text-balance mr-2">
-            {data.ticket.firstName} {data.ticket.lastName}
-          </h1>
-          <span className="ml-4 px-4 py-2 rounded-lg text-sm font-light bg-primary text-white">
-            Ticket {data.ticket.code}
-          </span>
-          <span
-            className={`ml-4 px-4 py-2 rounded-lg text-sm font-light mr-6 ${
-              ticketOptions ? ticketOptions.badgeStyle : ""
-            }`}
-          >
-            {ticketOptions ? ticketOptions.label : data.ticket.status}
-          </span>
-          <IoIosMore size={20} />
+      <div className="flex flex-row items-center justify-start w-full">
+        <div
+          className="bg-card flex items-center justify-center rounded-full p-3 mr-5 cursor-pointer"
+          onClick={() => navigate(-1)}
+          data-testid="back-button"
+        >
+          <IoIosArrowBack className="w-6 h-6 text-foreground cursor-pointer" />
         </div>
+        <h1
+          className="scroll-m-20 text-4xl font-light tracking-tight text-balance mr-2"
+          data-testid="ticket-full-name"
+        >
+          {data.ticket.firstName} {data.ticket.lastName}
+        </h1>
+        <span
+          className="ml-4 px-4 py-2 rounded-lg text-sm font-light bg-primary text-white"
+          data-testid="ticket-code-display"
+        >
+          Ticket {data.ticket.code}
+        </span>
+        <span
+          className={`ml-4 px-4 py-2 rounded-lg text-sm font-light mr-6 ${
+            ticketOptions ? ticketOptions.badgeStyle : ""
+          }`}
+          data-testid="ticket-status-badge"
+        >
+          {ticketOptions ? ticketOptions.label : data.ticket.status}
+        </span>
+        <IoIosMore size={20} />
       </div>
 
       <div className="flex flex-row items-stretch justify-between w-full h-full mt-8 gap-10">
         <div className="flex flex-col items-start justify-start gap-6 w-full">
-          <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full mr-4">
+          <div
+            className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full mr-4"
+            data-testid="personal-info-card"
+          >
             <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
               Informations personnelles
             </h2>
             <TicketInfos
               information={`${data.ticket.firstName} ${data.ticket.lastName}`}
               icon={FaPerson}
+              data-testid="info-full-name"
             />
             <TicketInfos
               information={data.ticket.email}
               icon={MdOutlineEmail}
+              data-testid="info-email"
             />
-            <TicketInfos information={data.ticket.phone} icon={FaPhoneAlt} />
+            <TicketInfos
+              information={data.ticket.phone}
+              icon={FaPhoneAlt}
+              data-testid="info-phone"
+            />
           </div>
-          <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full mr-4">
+          <div
+            className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full mr-4"
+            data-testid="ticket-details-card"
+          >
             <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
               Informations sur le ticket
             </h2>
-            <TicketInfos information={data.ticket.code} icon={FaTicketSimple} />
+            <TicketInfos
+              information={data.ticket.code}
+              icon={FaTicketSimple}
+              data-testid="info-code"
+            />
             <TicketInfos
               information={data.ticket.service.name || "N/A"}
               icon={MdRoomService}
+              data-testid="info-service"
             />
             <TicketInfos
               information={`${new Date(
@@ -146,6 +169,7 @@ export default function TicketPage() {
               ).toLocaleDateString()} à ${" "}
                 ${new Date(data.ticket.createdAt).toLocaleTimeString()}`}
               icon={FaPlus}
+              data-testid="info-created-at"
             />
             <TicketInfos
               information={`${new Date(
@@ -153,11 +177,15 @@ export default function TicketPage() {
               ).toLocaleDateString()} à ${" "}
                 ${new Date(data.ticket.updatedAt).toLocaleTimeString()}`}
               icon={MdOutlineEdit}
+              data-testid="info-updated-at"
             />
           </div>
         </div>
         <div className="flex flex-col items-stretch justify-start w-full h-full gap-10">
-          <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full h-[45%]">
+          <div
+            className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full h-[45%]"
+            data-testid="ticket-history-card"
+          >
             <h2 className="text-xl font-light tracking-tight text-balance text-muted-foreground">
               Historique du ticket
             </h2>
@@ -193,13 +221,14 @@ export default function TicketPage() {
                     return (
                       <div
                         key={log.id}
+                        data-testid={`log-entry-${log.id}`}
                         className={`flex flex-row items-center justify-between p-4 w-full text-sm ${
                           !isLast ? "border-b-2 border-muted" : ""
                         }`}
                       >
                         <div className="flex flex-row items-center justify-start mr-4 gap-3">
                             {log.manager ? (
-                          <img src={log?.manager.profileImage ? `${url_api}files/${encodeURIComponent(log.manager.profileImage)}`: "/avatar-example.jpg"} alt="" className="w-7 h-7 rounded-full"/>
+                          <img src={log?.manager.profileImage ? `${url_api}/images/files/${encodeURIComponent(log.manager.profileImage)}`: "/avatar-example.jpg"} alt="" className="w-7 h-7 rounded-full"/>
                             ) : (
                               <img src="/avatar-example.jpg" alt="" className="w-7 h-7 rounded-full"/>
                                 )}
@@ -210,7 +239,12 @@ export default function TicketPage() {
                           ) : (
                             <p className="mr-4 font-medium">Système</p>
                           )}
-                          <p className="font-light">{ticketLogSentence(log)}</p>
+                          <p
+                            className="font-light"
+                            data-testid={`log-status-${log.id}`}
+                          >
+                            {ticketLogSentence(log)}
+                          </p>
                         </div>
                         <p className="font-light text-xs text-muted-foreground ml-4">
                           {new Date(log.createdAt).toLocaleDateString("fr-FR", {
@@ -230,12 +264,18 @@ export default function TicketPage() {
                 )}
             </div>
           </div>
-          <div className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full h-[55%]">
+          <div
+            className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full h-[55%]"
+            data-testid="comments-card"
+          >
             <div className="flex flex-row items-center justify-between w-full">
               <h2 className="scroll-m-20 text-xl font-light tracking-tight text-balance text-muted-foreground">
                 Commentaires
               </h2>
-              <Button onClick={() => setIsEditingComments(true)}>
+              <Button
+                onClick={() => setIsEditingComments(true)}
+                data-testid="edit-comments-button"
+              >
                 Modifier les commentaires
               </Button>
             </div>
@@ -246,13 +286,19 @@ export default function TicketPage() {
                   onChange={(e) => setComments(e.target.value)}
                   placeholder="Ajouter un commentaire..."
                   rows={4}
+                  data-testid="comments-textarea"
                 />
-                <Button onClick={() => setIsEditingComments(false)}>
+                <Button
+                  onClick={() => setIsEditingComments(false)}
+                  data-testid="save-comments-button"
+                >
                   Sauvegarder
                 </Button>
               </>
             ) : (
-              <p>{comments ? comments : "Aucun commentaire"}</p>
+              <p data-testid="comments-display">
+                {comments ? comments : "Aucun commentaire"}
+              </p>
             )}
           </div>
         </div>

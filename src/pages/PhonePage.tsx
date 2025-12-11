@@ -16,7 +16,7 @@ export default function PhonePage() {
     <div className="flex flex-col items-center min-h-screen bg-[#F3F4FB] p-4 space-y-8">
         <div className="w-full max-w-sm flex justify-between items-center bg-white px-4 rounded-lg shadow">
             <div className="flex items-center space-x-2">    
-                <img src={company?.logoCompany ? `${url_api}files/${encodeURIComponent(company?.logoCompany ?? "")}` : undefined } alt="Aperçu logo de l'entreprise" className="w-30 h-30 object-contain"/>
+                <img src={company?.logoCompany ? `${url_api}/images/files/${encodeURIComponent(company?.logoCompany ?? "")}` : undefined } alt="Aperçu logo de l'entreprise" className="w-30 h-30 object-contain"/>
             </div>
             <div className="bg-primary text-white font-bold px-8 py-4 rounded-lg">
                 {ticket.code}

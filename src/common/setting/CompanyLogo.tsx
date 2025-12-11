@@ -11,7 +11,7 @@ function LogoCompany() {
   return (
     <div className="flex justify-center items-center bg-white rounded-full w-[6%] px-4 py-4 absolute top-8 right-12">
       <img
-        src={`${url_api}files/${encodeURIComponent(company?.logoCompany)}`}
+        src={`${url_api}/images/files/${encodeURIComponent(company?.logoCompany)}`}
         alt="image"
       />
     </div>
