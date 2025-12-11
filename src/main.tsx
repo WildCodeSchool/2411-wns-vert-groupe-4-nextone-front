@@ -22,7 +22,6 @@ import OperatorProvider from "./context/OperatorContext";
 import { CompanyProvider } from "./context/CompanyContext";
 
 export const uri = import.meta.env.VITE_API_URL as string;
-export const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
 const httpLink = new HttpLink({
   uri,

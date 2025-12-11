@@ -5,7 +5,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import placeholderProfile from "@/assets/images/placeHolderProfile.jpg";
-import { url_api } from "@/main";
 
 export default function UserProfilePictureForm() {
   const userProfilePictureSchema = yup.object().shape({
@@ -47,6 +46,8 @@ export default function UserProfilePictureForm() {
   });
 
   const { user, getInfos } = useAuth();
+  
+  const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   const onSubmit = async (data: any) => {
     const file = data.profilePicture?.[0];

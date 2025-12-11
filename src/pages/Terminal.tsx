@@ -8,7 +8,6 @@ import { useAuth } from "@/context/AuthContext";
 import { emptyTicket } from "../utils/constants/ticket";
 import { Screen } from "../types/terminal";
 import { useCompany } from "@/context/CompanyContext";
-import { url_api } from "@/main";
 
 function Terminal() {
   const { user } = useAuth();
@@ -22,6 +21,7 @@ function Terminal() {
 
   const [currentScreen, setCurrentScreen] = useState<Screen>(screenFromUrl || "home");
   const [isScanned] = useState(isScannedFromUrl);
+  const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   useEffect(() => {
     if (!user) {

@@ -460,7 +460,7 @@ export default function DashboardServiceCard({
       </CardHeader>
       {isOpen && (
         <CardContent>
-          <div className="bg-card p-2 rounded-lg w-full h-[35vh] overflow-hidden">
+          <div className="bg-card p-2 rounded-lg w-full h-[60vh] overflow-hidden">
             <div className="w-full flex flex-row items-center justify-between">
               <div className="w-full flex flex-row items-center justify-start gap-4">
                 <Input

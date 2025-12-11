@@ -15,7 +15,6 @@ import { Textarea } from "../../../components/ui/textarea";
 import { Button } from "../../../components/ui/button";
 import { statusOptions } from "../../../utils/constants/ticket";
 import TicketInfos from "./TicketInfos";
-import { url_api } from "@/main";
 
 type RouteParams = {
   id: string;
@@ -56,6 +55,8 @@ export default function TicketPage() {
 
   const [isEditingComments, setIsEditingComments] = useState(false);
   const [comments, setComments] = useState("");
+
+  const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   const { data: ticketLogs } = useQuery(GET_TICKET_LOGS, {
     variables: { field: { ticketId: id } },

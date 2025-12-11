@@ -5,7 +5,6 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { useCompany } from "@/context/CompanyContext";
 import placeholderCompany from "@/assets/images/placeholderCompany.jpg";
-import { url_api } from "@/main";
 
 export default function CompanyLogoForm() {
   const companyLogoSchema = yup.object().shape({
@@ -38,6 +37,7 @@ export default function CompanyLogoForm() {
   const { register, handleSubmit, formState: { isValid, errors } } = useForm<CompanyLogoFormData>({ resolver: yupResolver(companyLogoSchema), mode: "onChange" });
 
   const { company, getCompany } = useCompany();
+  const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   const onSubmit = async (data: CompanyLogoFormData) => {
     if (!data.logo || !(data.logo instanceof FileList)) return;

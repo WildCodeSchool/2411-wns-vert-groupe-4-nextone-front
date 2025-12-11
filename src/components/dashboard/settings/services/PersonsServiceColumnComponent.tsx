@@ -1,5 +1,4 @@
 import { IoPerson } from "react-icons/io5";
-import { url_api } from "@/main";
 
 export default function PersonsServiceColumnComponent({
   persons,
@@ -11,6 +10,8 @@ export default function PersonsServiceColumnComponent({
   const personLabel = personType === "member" ? "membre" : "administrateur";
 
   const personsNumber = persons.length;
+  
+  const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   if (personsNumber === 0) {
     return `Aucun ${personLabel}`;

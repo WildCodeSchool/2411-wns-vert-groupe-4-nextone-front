@@ -1,8 +1,8 @@
 import { useCompany } from "@/context/CompanyContext";
-import { url_api } from "@/main";
 
 function LogoCompany() {
   const { company } = useCompany();
+  const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   if (!company || !company.logoCompany) {
     return null;

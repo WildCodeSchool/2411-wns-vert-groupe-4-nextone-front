@@ -3,7 +3,6 @@ import { Button } from "../components/ui/button";
 import { useTicket } from "../context/useContextTicket";
 import { useSearchParams } from "react-router-dom";
 import { useCompany } from "@/context/CompanyContext";
-import { url_api } from "@/main";
 
 export default function PhonePage() {
     const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -11,6 +10,7 @@ export default function PhonePage() {
     const ticketFromQr = searchParams.get("ticket");
     const ticket = ticketFromQr ? JSON.parse(ticketFromQr) : useTicket().ticket;
     const { company } = useCompany();
+    const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   return (
     <div className="flex flex-col items-center min-h-screen bg-[#F3F4FB] p-4 space-y-8">
