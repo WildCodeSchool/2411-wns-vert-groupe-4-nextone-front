@@ -11,15 +11,19 @@ import { useToast } from "@/hooks/use-toast";
 export default function UserProfilePictureForm() {
   const userProfilePictureSchema = yup.object().shape({
     profilePicture: yup
-      .mixed()
+      .mixed<FileList>()
       .test("required", "Vous devez sélectionner un fichier", (value) => {
         return value && (value as FileList).length > 0;
       })
-      .test("fileSize", "Le fichier est trop volumineux (max 2 Mo)", (value) => {
-        if (!value || !(value as FileList).length) return true;
-        const files = value as FileList;
-        return files[0] && files[0].size <= 2000000;
-      })
+      .test(
+        "fileSize",
+        "Le fichier est trop volumineux (max 2 Mo)",
+        (value) => {
+          if (!value || !(value as FileList).length) return true;
+          const files = value as FileList;
+          return files[0] && files[0].size <= 2000000;
+        }
+      )
       .test(
         "type",
         "Uniquement les formats suivants: .jpeg, .jpg, .png",
@@ -29,7 +33,8 @@ export default function UserProfilePictureForm() {
           const validTypes = ["image/jpeg", "image/jpg", "image/png"];
           return files[0] && validTypes.includes(files[0].type);
         }
-      ),
+      )
+      .required("Vous devez sélectionner un fichier"),
   });
 
   type UserProfilePictureFormData = yup.InferType<
@@ -56,7 +61,6 @@ export default function UserProfilePictureForm() {
       return;
     }
 
-    // Validation supplémentaire côté client
     if (file.size > 2000000) {
       toastError("Le fichier est trop volumineux (max 2 Mo)");
       return;
@@ -64,7 +68,9 @@ export default function UserProfilePictureForm() {
 
     const validTypes = ["image/jpeg", "image/jpg", "image/png"];
     if (!validTypes.includes(file.type)) {
-      toastError("Format de fichier non supporté. Utilisez .jpeg, .jpg ou .png");
+      toastError(
+        "Format de fichier non supporté. Utilisez .jpeg, .jpg ou .png"
+      );
       return;
     }
 
@@ -87,7 +93,6 @@ export default function UserProfilePictureForm() {
           const errorData = await res.json();
           errorMessage = errorData.message || errorMessage;
         } catch {
-          // Si la réponse n'est pas du JSON, utiliser le message par défaut
           errorMessage = `Erreur ${res.status}: ${res.statusText}`;
         }
         throw new Error(errorMessage);
@@ -98,21 +103,43 @@ export default function UserProfilePictureForm() {
       toastSuccess("Photo de profil mise à jour avec succès !");
     } catch (error) {
       console.error("Erreur lors de l'upload:", error);
-      toastError(error instanceof Error ? error.message : "Erreur lors de l'upload de l'image");
+      toastError(
+        error instanceof Error
+          ? error.message
+          : "Erreur lors de l'upload de l'image"
+      );
     }
   };
 
   return (
     <>
-      <InputWithLabel label="Photo de profil" {...register("profilePicture")} type="file" accept="image/png, image/jpeg" className="text-base! font-normal bg-transparent! shadow-none! w-full" error={errors.profilePicture?.message}>
-      <img src={user?.profileImage
-      ? `${url_api}/images/files/${encodeURIComponent(user.profileImage)}`
-      : placeholderProfile} alt="Aperçu photo de profil" className="w-32 h-32 rounded-full object-cover"/>
+      <InputWithLabel
+        label="Photo de profil"
+        {...register("profilePicture")}
+        type="file"
+        accept="image/png, image/jpeg"
+        className="text-base! font-normal bg-transparent! shadow-none! w-full"
+        error={errors.profilePicture?.message}
+      >
+        <img
+          src={
+            user?.profileImage
+              ? `${url_api}/images/files/${encodeURIComponent(
+                  user.profileImage
+                )}`
+              : placeholderProfile
+          }
+          alt="Aperçu photo de profil"
+          className="w-32 h-32 rounded-full object-cover"
+        />
       </InputWithLabel>
-      <Button  type="button" onClick={handleSubmit(onSubmit)} disabled={!isValid}>
+      <Button
+        type="button"
+        onClick={handleSubmit(onSubmit)}
+        disabled={!isValid}
+      >
         Enregistrer la photo de profil
       </Button>
-
     </>
   );
 }
