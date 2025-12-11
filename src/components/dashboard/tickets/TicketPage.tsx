@@ -316,7 +316,7 @@ export default function TicketPage() {
                             <img
                               src={
                                 log?.manager.profileImage
-                                  ? `${url_api}files/${encodeURIComponent(
+                                  ? `${url_api}/images/files/${encodeURIComponent(
                                       log.manager.profileImage
                                     )}`
                                   : "/avatar-example.jpg"

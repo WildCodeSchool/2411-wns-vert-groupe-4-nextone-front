@@ -41,6 +41,7 @@ export const GET_TICKET_INFOS = gql`
         manager {
           firstName
           lastName
+          profileImage
         }
         updatedAt
         createdAt
