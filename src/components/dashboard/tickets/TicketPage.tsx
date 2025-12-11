@@ -35,6 +35,7 @@ type TicketLog = {
   manager: {
     firstName: string;
     lastName: string;
+    profileImage: string;
   };
   createdAt: string;
 };
