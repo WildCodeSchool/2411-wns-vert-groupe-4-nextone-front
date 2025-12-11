@@ -5,7 +5,6 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import placeholderProfile from "@/assets/images/placeHolderProfile.jpg";
-import { url_api } from "@/main";
 import { useToast } from "@/hooks/use-toast";
 
 export default function UserProfilePictureForm() {
@@ -52,6 +51,7 @@ export default function UserProfilePictureForm() {
 
   const { user, getInfos } = useAuth();
   const { toastSuccess, toastError } = useToast();
+  const url_api = import.meta.env.VITE_ORIGIN_URL as string;
 
   const onSubmit = async (data: UserProfilePictureFormData) => {
     const fileList = data.profilePicture as FileList;
