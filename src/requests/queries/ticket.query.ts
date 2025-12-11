@@ -36,6 +36,16 @@ export const GET_TICKET_INFOS = gql`
       }
       status
       updatedAt
+      ticketLogs {
+        status
+        manager {
+          firstName
+          lastName
+        }
+        updatedAt
+        createdAt
+        id
+      }
     }
   }
 `;
@@ -110,26 +120,6 @@ export const TICKET_ADDED_SUBSCRIPTION = gql`
   }
 `;
 
-export const TICKET_UPDATED_SUBSCRIPTION = gql`
-  subscription TicketUpdated {
-    ticketUpdated {
-      id
-      firstName
-      code
-      createdAt
-      email
-      lastName
-      phone
-      status
-      updatedAt
-      service {
-        id
-        name
-      }
-    }
-  }
-`;
-
 export const TICKETS_FOR_TV_DISPLAY = gql`
   query TicketsForTVDisplay($serviceId: ID) {
     ticketsForTVDisplay(serviceId: $serviceId) {
@@ -144,7 +134,7 @@ export const TICKETS_FOR_TV_DISPLAY = gql`
         id
         name
       }
-        status
+      status
       createdAt
       updatedAt
     }

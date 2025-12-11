@@ -18,6 +18,29 @@ export const GET_TICKETS_PAGINATED_SUBSCRIPTION = gql`
   }
 `;
 
+export const TICKET_UPDATED_SUBSCRIPTION = gql`
+  subscription TicketUpdated {
+    ticketUpdated {
+      code
+      createdAt
+      email
+      firstName
+      id
+      lastName
+      phone
+      service {
+        id
+        name
+      }
+      status
+      updatedAt
+      ticketLogs {
+        id
+      }
+    }
+  }
+`;
+
 export const TICKETS_CHANGED_SUBSCRIPTION = gql`
   subscription OnTicketsChanged {
     ticketsChanged {
@@ -28,17 +51,17 @@ export const TICKETS_CHANGED_SUBSCRIPTION = gql`
 `;
 
 export const TICKETS_CHANGED = gql`
-    subscription TicketsChanged {
-        ticketsChanged {
-            id
-            code
-            status
-            service {
-                id
-                name
-            }
-            createdAt
-            updatedAt
-        }
+  subscription TicketsChanged {
+    ticketsChanged {
+      id
+      code
+      status
+      service {
+        id
+        name
+      }
+      createdAt
+      updatedAt
     }
+  }
 `;

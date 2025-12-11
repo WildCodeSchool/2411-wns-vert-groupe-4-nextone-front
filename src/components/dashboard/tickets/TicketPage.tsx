@@ -2,7 +2,6 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { IoIosArrowBack } from "react-icons/io";
 import {
   GET_TICKET_INFOS,
-  TICKET_UPDATED_SUBSCRIPTION,
   UPDATE_TICKET_STATUS,
 } from "../../../requests/queries/ticket.query";
 import { useMutation, useQuery, useSubscription } from "@apollo/client/react";
@@ -19,6 +18,7 @@ import { TicketActionMenu } from "../TicketActionMenu";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import TicketUpdateDialog from "./dialogs/TicketUpdateDialog";
+import { TICKET_UPDATED_SUBSCRIPTION } from "@/requests/subscriptions/ticket.subscription";
 
 type RouteParams = {
   id: string;
@@ -162,6 +162,8 @@ export default function TicketPage() {
         return `Ticket archivé`;
       case "PENDING":
         return `Ticket mis en attente`;
+      case "UPDATED":
+        return `Informations du ticket mises à jour`;
       default:
         return "Statut inconnu";
     }
