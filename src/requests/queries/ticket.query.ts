@@ -122,13 +122,13 @@ export const TICKET_ADDED_SUBSCRIPTION = gql`
 `;
 
 export const TICKETS_FOR_TV_DISPLAY = gql`
-  query TicketsForTVDisplay($serviceId: ID) {
-    ticketsForTVDisplay(serviceId: $serviceId) {
-      id
+  query TicketsForTVDisplay($data: TicketForTvInput!) {
+    ticketsForTVDisplay(data: $data) {
       code
-      firstName
-      lastName
       email
+      firstName
+      id
+      lastName
       phone
       status
       service {
@@ -137,7 +137,11 @@ export const TICKETS_FOR_TV_DISPLAY = gql`
       }
       status
       createdAt
+      ticketLogs {
+        status
+      }
       updatedAt
+      createdAt
     }
   }
 `;

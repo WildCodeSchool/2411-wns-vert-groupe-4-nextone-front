@@ -1,7 +1,13 @@
-import { CurrentTicketProps } from "@/types/tv.types";
+import { CurrentTicketProps, TvTicket } from "@/types/tv.types";
+import { useEffect, useState } from "react";
 
 function TicketInProgressList({tickets}: CurrentTicketProps) {
-    const ticketsInProgress = tickets.slice(1, 6);
+    const [ticketsInProgressList, setTicketsInProgressList] = useState<TvTicket[]>([]);
+
+    useEffect(() => {   
+        console.log("tickets in progress:", tickets);        
+        setTicketsInProgressList(tickets.slice(1, 6))
+    }, [tickets]);
 
     return(
         <div className="w-1/3 bg-foreground text-white p-6 flex flex-col">
@@ -11,7 +17,7 @@ function TicketInProgressList({tickets}: CurrentTicketProps) {
                 </h2>
             </div>
             <ul className="flex flex-col items-center h-full p-12 gap-6">
-                {ticketsInProgress.map((ticket: any) => (
+                {ticketsInProgressList.map((ticket: any) => (
                     <li key={ticket.id} className="text-center">
                         <p className="text-4xl">{ticket.code}</p>
                         <p className="text-xl text-secondary">Service {ticket.service.name}</p>

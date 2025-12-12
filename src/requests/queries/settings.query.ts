@@ -110,6 +110,7 @@ export const GET_ALL_IP_ADDRESSES = gql`
   query WhitelistedIps {
     whitelistedIps {
       id
+      key
       ipAddress
     }
   }

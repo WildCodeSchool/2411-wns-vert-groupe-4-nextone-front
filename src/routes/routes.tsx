@@ -35,7 +35,7 @@ export const router = createBrowserRouter([
   },
   {
     element: <TvSelector />,
-    path: "/tv",
+    path: "/tv/:key",
     children: [
       {
         path: ":serviceId",

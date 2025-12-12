@@ -55,12 +55,36 @@ export const TICKETS_CHANGED = gql`
     ticketsChanged {
       id
       code
+      email
+      firstName
+      id
+      lastName
+      phone
       status
       service {
         id
         name
       }
+      ticketLogs {
+        id
+        status
+      }
+      updatedAt
       createdAt
+    }
+  }
+`;
+
+export const TICKET_STATUS_UPDATED_SUBSCRIPTION = gql`
+  subscription TicketStatusChanged($ticketId: ID!) {
+    ticketStatusChanged(ticketId: $ticketId) {
+      code
+      createdAt
+      id
+      service {
+        id
+      }
+      status
       updatedAt
     }
   }
