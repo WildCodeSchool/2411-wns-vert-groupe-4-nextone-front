@@ -14,6 +14,7 @@ import { useAuth } from "@/context/AuthContext";
 import { motion } from "motion/react";
 import { tabContentEnterAnimation } from "@/lib/animations/settings.animation";
 import PublicDisplaySettings from "@/components/dashboard/settings/public-display/PublicDisplaySettings";
+import CompanyCreationSettings from "@/components/dashboard/settings/company-creation/CompanyCreationSettings";
 
 type TabEnum = "user" | "company";
 
@@ -40,7 +41,8 @@ export default function SettingsPage() {
             >
               Informations de l'utilisateur
             </TabsTrigger>
-            {user?.role === "SUPER_ADMIN" && (
+            {(user?.role === "SUPER_ADMIN" ||
+              user?.role === "NEXTONE_ADMIN") && (
               <>
                 <TabsTrigger
                   value="company"
@@ -67,6 +69,14 @@ export default function SettingsPage() {
                   Gestion du panneau d'affichage public
                 </TabsTrigger>
               </>
+            )}
+            {user?.role === "NEXTONE_ADMIN" && (
+              <TabsTrigger
+                value="company-creation"
+                className="data-[state=active]:bg-primary! data-[state=active]:text-white! px-4 py-2"
+              >
+                Ajout d'un compte entreprise
+              </TabsTrigger>
             )}
           </TabsList>
           <TabsContent value="user">
@@ -160,6 +170,17 @@ export default function SettingsPage() {
               key={currentTab}
             >
               <PublicDisplaySettings />
+            </motion.div>
+          </TabsContent>
+          <TabsContent value="company-creation">
+            <motion.div
+              className="flex flex-col gap-4 h-full px-4 mb-4"
+              initial={tabContentEnterAnimation.initial}
+              animate={tabContentEnterAnimation.animate}
+              transition={tabContentEnterAnimation.transition}
+              key={currentTab}
+            >
+              <CompanyCreationSettings />
             </motion.div>
           </TabsContent>
         </Tabs>
