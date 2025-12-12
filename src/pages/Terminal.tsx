@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import CompanyIllustration from "../common/terminal/CompanyIllustration";
 import { useTicket } from "../context/useContextTicket";
 import { useAuth } from "@/context/AuthContext";
@@ -9,51 +9,15 @@ import HomeStep from "@/components/terminal/form/form-steps/HomeStep";
 import { motion } from "motion/react";
 import { tabContentEnterAnimation } from "@/lib/animations/settings.animation";
 import TicketForm from "@/components/terminal/form/TicketForm";
-import SuccessTicketPage from "@/components/terminal/SuccessTicket";
-import { useQuery } from "@apollo/client";
-import { GET_TICKET_INFOS } from "@/requests/queries/ticket.query";
-
-type UrlScreen = "chooseService" | "successTicketPage" | "phone";
-
-const screenToFormStep: Record<UrlScreen, number> = {
-  chooseService: 1,
-  successTicketPage: 4,
-  phone: 4,
-};
+import ConfirmationStep from "@/components/terminal/form/form-steps/ConfirmationStep";
 
 export function Terminal() {
   const { user } = useAuth();
   const { loading, error } = useIPCompany();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
-  const { setTicket, ticket } = useTicket();
+  const { setTicket } = useTicket();
 
-  const isScannedFromUrl = searchParams.get("scanned") === "true";
-  const screenFromUrl = searchParams.get("screen") as UrlScreen | null;
-  const ticketIdFromUrl = searchParams.get("ticketId");
-
-  const initialFormStep = screenFromUrl
-    ? screenToFormStep[screenFromUrl] ?? 0
-    : 0;
-
-  const [isScanned] = useState(isScannedFromUrl);
-  const [formStep, setFormStep] = useState<number>(initialFormStep);
-
-  const { loading: loadingTicket } = useQuery(GET_TICKET_INFOS, {
-    variables: { ticketId: ticketIdFromUrl },
-    skip: !ticketIdFromUrl || !!ticket?.id,
-    onCompleted: (data) => {
-      if (data?.ticket) {
-        setTicket(data.ticket);
-      } else if (ticketIdFromUrl) {
-        setFormStep(0);
-      }
-    },
-    onError: (error) => {
-      console.error("Erreur de chargement du ticket par ID:", error);
-      setFormStep(0);
-    },
-  });
+  const [formStep, setFormStep] = useState<number>(0);
 
   useEffect(() => {
     if (!user) {
@@ -62,14 +26,14 @@ export function Terminal() {
   }, [user, navigate]);
 
   useEffect(() => {
-    if (formStep === 4 && !isScanned) {
+    if (formStep === 4) {
       const timer = setTimeout(() => {
         setTicket(emptyTicket);
         setFormStep(0);
       }, 20000);
       return () => clearTimeout(timer);
     }
-  }, [formStep, isScanned, setTicket]);
+  }, [formStep, setTicket]);
 
   if (loading) {
     return (
@@ -108,19 +72,6 @@ export function Terminal() {
     );
   }
 
-  if (loadingTicket) {
-    return (
-      <div className="flex items-center justify-center h-screen bg-background">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary mx-auto mb-4"></div>
-          <p className="text-lg text-muted-foreground">
-            Chargement du ticket...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   const TerminalComponent = () => {
     switch (formStep) {
       case 0:
@@ -136,26 +87,11 @@ export function Terminal() {
           />
         );
       case 4:
-        if (screenFromUrl === "phone" && !ticket?.id) {
-          return <p>Ticket non trouvé ou non chargé. Retour à l'accueil...</p>;
-        }
-        return (
-          <SuccessTicketPage
-            isScanned={isScanned || screenFromUrl === "phone"}
-            onTimeout={() => {
-              setTicket(emptyTicket);
-              setFormStep(0);
-            }}
-          />
-        );
+        return <ConfirmationStep />;
       default:
-        return <HomeStep setFormStep={setFormStep} />;
+        return null;
     }
   };
-
-  if (formStep === 4) {
-    return <TerminalComponent />;
-  }
 
   return (
     <div className="h-screen w-full flex flex-col md:flex-row bg-white font-[Archivo]">

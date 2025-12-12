@@ -47,10 +47,10 @@ export default function ContactInfoStep({ formMethods }: FormStepProps) {
           </span>
         )}{" "}
         {rgpdChecked && !errors.rgpdAccepted && (
-          <span className="text-green-600 text-sm mt-1">
-            personnelles soient utilisées pour gérer votre ticket et la
-            communication avec vous conformément à notre politique de
-            confidentialité.{" "}
+          <span className="text-green-600 text-sm mt-4 text-start">
+            En cochant cette case, vous acceptez que vos données personnelles
+            soient utilisées pour gérer votre ticket et la communication avec
+            vous conformément à notre politique de confidentialité.{" "}
           </span>
         )}{" "}
       </div>

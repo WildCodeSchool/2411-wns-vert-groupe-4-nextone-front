@@ -60,8 +60,13 @@ export default function TicketForm({
       .max(20, "Le numéro de téléphone est trop long")
       .required("Le numéro de téléphone est requis"),
     rgpdAccepted: boolean()
-      .oneOf([true], "Vous devez accepter les conditions")
-      .required("Vous devez accepter les conditions"),
+      .oneOf(
+        [true],
+        "Vous devez accepter la politique de confidentialité pour continuer."
+      )
+      .required(
+        "Vous devez accepter la politique de confidentialité pour continuer."
+      ),
   });
 
   const methods = useForm<TicketFormData>({
@@ -178,15 +183,20 @@ export default function TicketForm({
 
   return (
     <div className="flex-column w-full h-full">
-      <form onSubmit={methods.handleSubmit(handleNext)}>
+      <form
+        onSubmit={methods.handleSubmit(handleNext)}
+        className="flex flex-col h-full"
+      >
         <Stepper currentStep={formStep} />
-        <StepForm />
-        <FormButtons
-          onBack={handleBack}
-          onCancel={handleCancel}
-          loading={creatingTicket}
-          isLastStep={isLastStep}
-        />
+        <div className="flex flex-col w-full flex-grow justify-center gap-4">
+          <StepForm />
+          <FormButtons
+            onBack={handleBack}
+            onCancel={handleCancel}
+            loading={creatingTicket}
+            isLastStep={isLastStep}
+          />
+        </div>
       </form>
     </div>
   );

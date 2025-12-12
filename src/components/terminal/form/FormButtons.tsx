@@ -45,7 +45,7 @@ const FormButtons: React.FC<FormButtonsProps> = ({
           className="text-primary text-[17px] p-6"
           disabled={loading}
         >
-          Annuler
+          Revenir à l'accueil
         </Button>
       )}
     </div>
