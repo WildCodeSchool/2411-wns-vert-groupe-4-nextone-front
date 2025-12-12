@@ -279,7 +279,7 @@ export default function TicketPage() {
         </div>
         <div className="flex flex-col items-stretch justify-start w-full h-full gap-10">
           <div
-            className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full h-[45%]"
+            className="bg-card p-6 rounded-lg flex flex-col items-start justify-start gap-4 text-left w-full h-full overflow-hidden"
             data-testid="ticket-history-card"
           >
             <h2 className="text-xl font-light tracking-tight text-balance text-muted-foreground">
@@ -316,7 +316,7 @@ export default function TicketPage() {
                             <img
                               src={
                                 log?.manager.profileImage
-                                  ? `${url_api}files/${encodeURIComponent(
+                                  ? `${url_api}/images/files/${encodeURIComponent(
                                       log.manager.profileImage
                                     )}`
                                   : "/avatar-example.jpg"
