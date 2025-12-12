@@ -40,22 +40,38 @@ jobs:
             exit 1
           fi
           echo "✅ FRONTEND_URL est configuré: $FRONTEND_URL"
+          echo "✅ Pa11y-ci version:"
+          pa11y-ci --version
 
-      - name: Run Pa11y accessibility scan
+      - name: Create Pa11y config file
         run: |
-          echo "🔍 Scanning ${FRONTEND_URL}/terminal..."
-          pa11y ${FRONTEND_URL}/terminal --standard WCAG2AA --reporter json > terminal.json || echo "⚠️ Error scanning terminal"
+          cat > .pa11yci.json <<EOF
+          {
+            "defaults": {
+              "standard": "WCAG2AA",
+              "timeout": 30000,
+              "chromeLaunchConfig": {
+                "args": ["--no-sandbox", "--disable-setuid-sandbox"]
+              }
+            },
+            "urls": [
+              "${FRONTEND_URL}/terminal",
+              "${FRONTEND_URL}/login",
+              "${FRONTEND_URL}/dashboard"
+            ]
+          }
+          EOF
 
-          echo "🔍 Scanning ${FRONTEND_URL}/login..."
-          pa11y ${FRONTEND_URL}/login --standard WCAG2AA --reporter json > login.json || echo "⚠️ Error scanning login"
+          echo "📄 Fichier de configuration créé:"
+          cat .pa11yci.json
 
-          echo "🔍 Scanning ${FRONTEND_URL}/dashboard..."
-          pa11y ${FRONTEND_URL}/dashboard --standard WCAG2AA --reporter json > dashboard.json || echo "⚠️ Error scanning dashboard"
+      - name: Run Pa11y-CI accessibility scan
+        run: |
+          echo "🔍 Lancement du scan d'accessibilité avec pa11y-ci..."
+          pa11y-ci --json > pa11y-results.json || true
 
           echo ""
-          echo "✅ Scans terminés"
-          echo "📂 Fichiers générés:"
-          ls -lh *.json || echo "❌ Aucun fichier JSON généré"
+          echo "✅ Scan terminé"
 
       - name: Display scan summary
         if: always()
@@ -64,28 +80,21 @@ jobs:
           echo "=================================="
           echo ""
 
-          if [ -f terminal.json ]; then
-            echo "✅ /terminal"
-            issues=$(cat terminal.json | jq '.issues | length' 2>/dev/null || echo "N/A")
-            echo "   Issues: $issues"
+          if [ -f pa11y-results.json ] && [ -s pa11y-results.json ]; then
+            echo "✅ Résultats disponibles"
+            
+            # Afficher un résumé pour chaque URL
+            for url in "terminal" "login" "dashboard"; do
+              echo ""
+              echo "📄 /${url}:"
+              
+              cat pa11y-results.json | jq -r ".[] | select(.pageUrl | contains(\"/${url}\")) | .issues | length" 2>/dev/null || echo "   Analyse en cours..."
+            done
+            
+            echo ""
+            echo "📂 Voir le fichier pa11y-results.json pour les détails complets"
           else
-            echo "❌ /terminal - Rapport non généré"
-          fi
-
-          if [ -f login.json ]; then
-            echo "✅ /login"
-            issues=$(cat login.json | jq '.issues | length' 2>/dev/null || echo "N/A")
-            echo "   Issues: $issues"
-          else
-            echo "❌ /login - Rapport non généré"
-          fi
-
-          if [ -f dashboard.json ]; then
-            echo "✅ /dashboard"
-            issues=$(cat dashboard.json | jq '.issues | length' 2>/dev/null || echo "N/A")
-            echo "   Issues: $issues"
-          else
-            echo "❌ /dashboard - Rapport non généré"
+            echo "❌ Aucun résultat généré"
           fi
 
       - name: Upload accessibility reports
@@ -94,5 +103,6 @@ jobs:
         with:
           name: pa11y-accessibility-reports
           path: |
-            *.json
+            pa11y-results.json
+            .pa11yci.json
           retention-days: 30
