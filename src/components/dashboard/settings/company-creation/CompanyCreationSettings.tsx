@@ -84,7 +84,7 @@ export default function CompanyCreationSettings() {
           phone: data.companyPhone,
           siret: data.companySiret,
           address: data.companyAddress,
-          zipCode: data.companyZipCode,
+          postalCode: data.companyZipCode,
           city: data.companyCity,
         },
       },
