@@ -63,6 +63,11 @@ export const TICKETS_CHANGED = gql`
       status
       service {
         id
+        name
+      }
+      ticketLogs {
+        id
+        status
       }
       updatedAt
       createdAt
