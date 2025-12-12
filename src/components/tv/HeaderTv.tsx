@@ -6,13 +6,8 @@ import { useWeather } from "@/hooks/useWeather";
 import { useGeolocation } from "@/hooks/useGeolocation";
 import { getWeatherIcon } from "@/utils/weatherIcons";
 
-function TvHeader({ dateTime }: TvHeaderProps) {
+function TvHeader({ dateTime, tvKey }: TvHeaderProps) {
   const { latitude, longitude, isLoading: geoLoading } = useGeolocation();
-  console.log("Localisation météo récupérée :", {
-    latitude,
-    longitude,
-    geoLoading,
-  });
 
   const {
     temperature,
@@ -30,7 +25,7 @@ function TvHeader({ dateTime }: TvHeaderProps) {
     <div className="flex justify-between items-center p-8 mb-8 text-black text-xl font-medium">
       <div className="flex items-center gap-4">
         <button
-          onClick={() => (window.location.href = "/tv")}
+          onClick={() => (window.location.href = `/tv/${tvKey}`)}
           className="text-black/30 hover:text-black/60 text-xs transition"
         >
           Retour

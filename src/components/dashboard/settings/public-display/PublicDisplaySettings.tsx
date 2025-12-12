@@ -22,7 +22,7 @@ import AddIpAddressDialog from "./dialogs/AddIpAddressDialog";
 import { Trash2 } from "lucide-react";
 
 type GET_ALL_IP_ADDRESSES = {
-  whitelistedIps: { id: string; ipAddress: string }[];
+  whitelistedIps: { id: string; ipAddress: string; key: string }[];
 };
 
 export default function PublicDisplaySettings() {

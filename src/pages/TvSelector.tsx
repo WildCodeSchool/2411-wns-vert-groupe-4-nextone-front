@@ -1,27 +1,33 @@
 import { useState } from "react";
 import { useQuery } from "@apollo/client";
-import { useNavigate, Outlet, useParams } from "react-router-dom";
-import { GET_SERVICES } from "../requests/queries/service.query";
+import { Outlet, useNavigate, 
+    useParams } from "react-router-dom";
+import { GET_SERVICES_BY_KEY } from "../requests/queries/service.query";
 
 export default function TvSelector() {
+
+
     const navigate = useNavigate();
-    const { serviceId } = useParams();
-    const { data, loading, error } = useQuery(GET_SERVICES);
+    const { key, serviceId } = useParams();
+
+    const { data, loading, error } = useQuery(GET_SERVICES_BY_KEY, {
+        variables: { key },
+    });
 
     const [selectedService, setSelectedService] = useState("");
-
-    if (loading) return <p>Chargement des services...</p>;
-    if (error) return <p>Erreur : {error.message}</p>;
-
-    const services = data?.services || [];
 
     if (serviceId) {
         return <Outlet />;
     }
 
+    if (loading) return <p>Chargement des services...</p>;
+    if (error) return <p>Erreur : {error.message}</p>;
+
+    const services = data?.servicesByKey || [];
+
     const handleSubmit = () => {
         if (!selectedService) return;
-        navigate(`/tv/${selectedService}`);
+        navigate(`/tv/${key}/${selectedService}`);
     };
 
     return (

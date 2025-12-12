@@ -15,6 +15,16 @@ export const GET_SERVICES = gql`
   }
 `;
 
+export const GET_SERVICES_BY_KEY = gql`
+  query ServicesByKey($key: String!) {
+    servicesByKey(key: $key) {
+      id
+      name
+      isGloballyActive
+    }
+  }
+`;
+
 export const GET_SERVICES_WITH_MANAGERS = gql`
   query ServicesWithManagers {
     services {
