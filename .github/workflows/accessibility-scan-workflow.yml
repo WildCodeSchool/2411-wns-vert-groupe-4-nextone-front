@@ -2,7 +2,15 @@ name: Accessibility Scan
 
 on:
   workflow_call:
+    secrets:
+      FRONTEND_STAGING_URL:
+        required: true
   workflow_dispatch:
+    inputs:
+      frontend_url:
+        description: "URL du frontend à scanner"
+        required: true
+        type: string
 
 jobs:
   accessibility-scan:
@@ -10,7 +18,7 @@ jobs:
     continue-on-error: true
 
     env:
-      FRONTEND_URL: ${{ secrets.FRONTEND_STAGING_URL }}
+      FRONTEND_URL: ${{ secrets.FRONTEND_STAGING_URL || inputs.frontend_url }}
 
     steps:
       - name: Checkout code
@@ -25,16 +33,13 @@ jobs:
         run: |
           npm install -g pa11y-ci
 
-      - name: Wait for deployment to be ready
-        run: sleep 30
-
       - name: Verify environment
         run: |
           if [ -z "$FRONTEND_URL" ]; then
             echo "❌ FRONTEND_URL n'est pas défini"
             exit 1
           fi
-          echo "✅ FRONTEND_URL est configuré"
+          echo "✅ FRONTEND_URL est configuré: $FRONTEND_URL"
 
       - name: Run Pa11y accessibility scan
         run: |
