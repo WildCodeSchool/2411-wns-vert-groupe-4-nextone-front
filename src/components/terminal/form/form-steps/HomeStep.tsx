@@ -1,5 +1,4 @@
-import logo from "../../../../assets/nextone-green.svg";
-import QRCode from "react-qr-code";
+import logo from "../../../../assets/logo-nextone.svg";
 import { useIPCompany } from "@/context/IPCompanyContext";
 
 export default function HomeStep({
@@ -17,7 +16,7 @@ export default function HomeStep({
 
   return (
     <>
-      <img src={logoSrc} alt="logo" className="h-18 mb-3" />
+      <img src={logoSrc} alt="logo" className="w-[33%] mb-6" />
       <h1 className="text-4xl font-semibold text-center mb-8">Bienvenue</h1>
       <p className="text-center text-xl mb-4">
         Rejoignez la file d’attente directement
@@ -34,24 +33,6 @@ export default function HomeStep({
       >
         Rejoindre la file d’attente
       </button>
-      <div className="flex items-center gap-2 justify-center my-4 text-black">
-        <hr className="w-6 md:w-8 border-t border-black" />
-        <span className="text-sm">OU</span>
-        <hr className="w-6 md:w-8 border-t border-black" />
-      </div>
-      <p className="text-center text-xl">
-        Scannez ce QR code pour
-        <br />
-        prendre un ticket depuis votre smartphone
-      </p>
-      <div className="mt-2">
-        <QRCode
-          data-testid="qr-code"
-          value={`${window.location.origin}/terminal?screen=chooseService&scanned=true`}
-          size={100}
-          fgColor="#000000"
-        />
-      </div>
     </>
   );
 }

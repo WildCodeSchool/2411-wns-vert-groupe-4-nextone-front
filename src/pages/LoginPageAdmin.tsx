@@ -77,7 +77,7 @@ export default function LoginAdmin() {
     }
   }, [email, password]);
 
-  const onSubmit = (data: any) => {
+  const onSubmit = (data: { email: string; password: string }) => {
     login({
       variables: {
         infos: {

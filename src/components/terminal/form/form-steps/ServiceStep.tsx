@@ -1,4 +1,3 @@
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { GET_SERVICES } from "@/requests/queries/service.query";
 import { SERVICE_TOGGLED_SUBSCRIPTION } from "@/requests/subscriptions/service.subscription";
 import { useQuery, useSubscription } from "@apollo/client";
@@ -71,11 +70,11 @@ export default function ServiceStep({ formMethods }: FormStepProps) {
   const selectedServiceId = formMethods.watch("serviceId");
 
   return (
-    <div className="flex-1 flex flex-col justify-center">
+    <div className="flex flex-col justify-center">
       <h2 className="text-[22px] mb-8 text-left">
         Quel service souhaitez-vous visiter ?
       </h2>
-      {services.length > 4 ? (
+      {activeServices.length > 4 ? (
         <div className="mb-4">
           <select
             className="w-full border border-primary rounded-md p-3 text-lg"
@@ -89,23 +88,22 @@ export default function ServiceStep({ formMethods }: FormStepProps) {
           </select>
         </div>
       ) : (
-        <Tabs
-          value={selectedServiceId || activeServices[0]?.id || ""}
-          onValueChange={(value) => formMethods.setValue("serviceId", value)}
-          className="w-full mb-4"
-        >
-          <TabsList className="grid grid-cols-2 gap-4 w-full">
-            {activeServices.map((service) => (
-              <TabsTrigger
-                key={service.id}
-                value={service.id}
-                data-testid={`service-tab-${service.id}`}
-              >
-                {service.name}
-              </TabsTrigger>
-            ))}
-          </TabsList>
-        </Tabs>
+        <div className="grid grid-cols-2 gap-4 w-full">
+          {activeServices.map((service) => (
+            <div
+              key={service.id}
+              className={`cursor-pointer border aspect-[16/5] rounded-md text-center flex items-center justify-center text-lg font-medium ${
+                selectedServiceId === service.id
+                  ? "border-primary bg-primary text-white"
+                  : "border-gray-300 bg-white text-gray-800 hover:border-primary"
+              }`}
+              data-testid={`service-card-${service.id}`}
+              onClick={() => formMethods.setValue("serviceId", service.id)}
+            >
+              {service.name}
+            </div>
+          ))}
+        </div>
       )}
       {formMethods.formState.errors.serviceId && (
         <p className="text-red-600 mt-2 text-sm">
