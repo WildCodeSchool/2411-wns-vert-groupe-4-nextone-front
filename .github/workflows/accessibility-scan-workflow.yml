@@ -55,9 +55,9 @@ jobs:
               }
             },
             "urls": [
-              "${FRONTEND_URL}/terminal",
-              "${FRONTEND_URL}/login",
-              "${FRONTEND_URL}/dashboard"
+              "${FRONTEND_URL}terminal",
+              "${FRONTEND_URL}login",
+              "${FRONTEND_URL}dashboard",
             ]
           }
           EOF

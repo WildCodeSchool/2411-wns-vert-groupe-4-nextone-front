@@ -1,7 +1,6 @@
 # NextOne - Frontend
 
 ![CI/CD Staging Status](https://github.com/WildCodeSchool/2411-wns-vert-groupe-4-nextone-front/actions/workflows/frontend-deploy-staging.yml/badge.svg?branch=staging)
-![E2E Tests Status](https://img.shields.io/badge/Tests_E2E-Playwright-success)
 ![Security Scan](https://img.shields.io/badge/S%C3%A9curit%C3%A9-OWASP%20ZAP-brightgreen)
 ![Accessibility Scan](https://img.shields.io/badge/Accessibilit%C3%A9-WCAG%202.1%20AA-blue)
 
