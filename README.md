@@ -54,7 +54,7 @@ L’objectif de l’interface est d’offrir une expérience claire, cohérente 
 
 ## ⚡ Setup du projet
 
-# Sans Docker
+### Sans Docker
 
 1. **Installation des dépendances**
 
@@ -68,5 +68,5 @@ VITE_API_URL= l'url de l'API
 
 npm run dev
 
-# Avec Docker
+### Avec Docker
 docker-compose up (lancement du back et front en même temps)
