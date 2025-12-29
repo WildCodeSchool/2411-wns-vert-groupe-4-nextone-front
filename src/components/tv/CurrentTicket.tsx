@@ -1,37 +1,36 @@
 import { CurrentTicketProps } from "@/types/tv.types";
 
-function CurrentTicket({tickets}: CurrentTicketProps) {
-    const currentTicket = tickets[0];
-    
-    return (
-        <>
-            {currentTicket ? (
-                <div className="bg-foreground text-white text-center py-12 w-full max-w-sm mx-auto mb-8 rounded-2xl shadow-lg">
-                    <h1 className="text-8xl font-medium">{currentTicket.code}</h1>
-                    <p className="text-4xl mt-4 text-lime-500">
-                        <span className="font-bold">Service {currentTicket.service.name}</span>
-                    </p>
-                </div>
-            ) : (
-                <p className="text-center text-black">
-                    Aucun ticket en cours pour ce service.
-                </p>
-            )}
-        </>
-    )
+function CurrentTicket({ tickets }: CurrentTicketProps) {
+  const currentTicket = tickets[0];
+
+  return (
+    <div className="flex justify-center items-center h-full">
+      {currentTicket ? (
+        <div className="bg-foreground text-white text-center p-16 w-[40vw] mx-auto rounded-2xl flex flex-col items-center justify-center shadow-lg">
+          <h1 className="text-8xl font-medium">{currentTicket.code}</h1>
+          <p className="text-4xl mt-4 text-lime-500">
+            <span className="font-bold">
+              Service {currentTicket.service.name}
+            </span>
+          </p>
+        </div>
+      ) : (
+        <p className="text-center text-black text-3xl">
+          Aucun ticket appelé pour le moment...
+        </p>
+      )}
+    </div>
+  );
 }
 
 export default CurrentTicket;
 
-
 // import { useEffect, useState, useRef } from "react";
 // import { CurrentTicketProps } from "@/types/tv.types";
 
-
 // interface CurrentTicketWithProgressProps extends CurrentTicketProps {
-//   progressList?: CurrentTicketProps['tickets']; 
+//   progressList?: CurrentTicketProps['tickets'];
 // }
-
 
 // function CurrentTicketWithProgress({ tickets, progressList = [] }: CurrentTicketWithProgressProps) {
 //   const [history, setHistory] = useState<typeof tickets>([]);
@@ -92,4 +91,3 @@ export default CurrentTicket;
 // }
 
 // export default CurrentTicketWithProgress;
-
