@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardServiceCard from "../components/dashboard/DashboardServiceCard";
-import { GET_SERVICES_WITH_MANAGERS } from "../requests/queries/service.query";
+import { GET_SERVICES_FOR_OPERATOR } from "../requests/queries/service.query";
+import { useAuth } from "@/context/AuthContext";
 
 type DashboardService = {
   id: string;
@@ -9,24 +10,27 @@ type DashboardService = {
   authorizations: { createdAt: string }[];
 };
 
-type GetServicesResult = {
-  services: {
-    id: string;
-    name: string;
-    isGloballyActive: boolean;
-    authorizations: { createdAt: string }[];
-  }[];
-};
+// type GetServicesResult = {
+//   services: {
+//     id: string;
+//     name: string;
+//     isGloballyActive: boolean;
+//     authorizations: { createdAt: string }[];
+//   }[];
+// };
 
 export default function DashboardServicesPage() {
   const [openCardId, setOpenCardId] = useState<string>("");
+
+  const { user } = useAuth();
 
   const {
     data: servicesData,
     loading: loadingServices,
     error: errorServices,
     refetch: refetchServices,
-  } = useQuery<GetServicesResult>(GET_SERVICES_WITH_MANAGERS, {
+  } = useQuery(GET_SERVICES_FOR_OPERATOR, {
+    variables: { managerId: user?.id },
     fetchPolicy: "cache-and-network",
   });
 
@@ -37,13 +41,13 @@ export default function DashboardServicesPage() {
     setOpenCardId((prev) => (prev === id ? "" : id));
   };
 
-  const mappedServices: DashboardService[] = (servicesData?.services ?? []).map(
-    (s) => ({
-      id: s.id,
-      name: s.name,
-      authorizations: s.authorizations,
-    })
-  );
+  const mappedServices: DashboardService[] = (
+    servicesData?.getEmployeeAuthorizations ?? []
+  ).map((s) => ({
+    id: s.service.id,
+    name: s.service.name,
+    authorizations: s.service.authorizations,
+  }));
 
   useEffect(() => {
     if (mappedServices.length > 0) {
