@@ -10,6 +10,10 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 import * as yup from "yup";
+import {
+  passwordSchema,
+  confirmPasswordSchema,
+} from "@/utils/validations/password.validation";
 
 type RouteParams = {
   invitationToken: string;
@@ -46,14 +50,8 @@ export default function UserInvitationPage() {
   const invitationFormSchema = yup.object({
     firstName: yup.string().required("Le prénom est requis"),
     lastName: yup.string().required("Le nom est requis"),
-    password: yup
-      .string()
-      .min(8, "Le mot de passe doit contenir au moins 8 caractères")
-      .required("Le mot de passe est requis"),
-    confirmPassword: yup
-      .string()
-      .oneOf([yup.ref("password")], "Les mots de passe ne correspondent pas")
-      .required("La confirmation du mot de passe est requise"),
+    password: passwordSchema,
+    confirmPassword: confirmPasswordSchema,
     email: yup.string().email().required(),
     role: yup.string().required(),
   });
