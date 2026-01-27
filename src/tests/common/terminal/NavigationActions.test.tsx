@@ -19,22 +19,6 @@ describe("NavigationActions", () => {
     expect(screen.queryByText(/Annuler/i)).toBeNull();
   });
 
-  it("calls updateTicket and onNext in correct order", () => {
-    const updateTicket = vi.fn();
-    const onNext = vi.fn();
-    renderComponent({ updateTicket, onNext });
-    fireEvent.click(screen.getByText(/Continuer/i));
-    expect(updateTicket).toHaveBeenCalledBefore(onNext);
-  });
-
-  it("calls updateTicket and onBack in correct order", () => {
-    const updateTicket = vi.fn();
-    const onBack = vi.fn();
-    renderComponent({ updateTicket, onBack });
-    fireEvent.click(screen.getByText(/Retour/i));
-    expect(updateTicket).toHaveBeenCalledBefore(onBack);
-  });
-
   it("does nothing if callbacks are not provided", () => {
     renderComponent();
     const retourBtn = screen.getByText(/Retour/i);

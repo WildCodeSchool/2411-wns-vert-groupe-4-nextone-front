@@ -17,6 +17,6 @@ describe("TvFooter", () => {
     it("renders the message text", () => {
         render(<TvFooter />);
         expect(screen.getByText(/Veuillez patienter/i)).toBeInTheDocument();
-        expect(screen.getByText(/votre numéro sera appelé prochainement/i)).toBeInTheDocument();
+        expect(screen.getByText(/votre ticket sera appelé prochainement./i)).toBeInTheDocument();
     });
 });

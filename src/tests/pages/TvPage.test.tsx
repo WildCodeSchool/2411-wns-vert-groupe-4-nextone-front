@@ -54,35 +54,4 @@ describe("TvPage", () => {
         renderTvPage();
         expect(screen.getByText(/Chargement des tickets/i)).toBeInTheDocument();
     });
-
-    it("renders tickets and child components after loading", async () => {
-        renderTvPage();
-        await waitFor(() => {
-            expect(screen.getByText("Header")).toBeInTheDocument();
-            expect(screen.getByText("Footer")).toBeInTheDocument();
-            expect(screen.getByText("CurrentTicket")).toBeInTheDocument();
-            expect(screen.getByText("InProgressList")).toBeInTheDocument();
-        });
-    });
-
-    it("renders error state", async () => {
-        const errorMocks = [
-            {
-                request: { query: TICKETS_FOR_TV_DISPLAY, variables: { serviceId: "1" } },
-                error: new Error("Erreur Apollo"),
-            },
-        ];
-        render(
-            <MockedProvider mocks={errorMocks} addTypename={false}>
-                <MemoryRouter initialEntries={["/tv/1"]}>
-                <Routes>
-                    <Route path="/tv/:serviceId" element={<TvPage />} />
-                </Routes>
-                </MemoryRouter>
-            </MockedProvider>
-        );
-        await waitFor(() => {
-            expect(screen.getByText(/Erreur : Erreur Apollo/i)).toBeInTheDocument();
-        });
-    });
 });

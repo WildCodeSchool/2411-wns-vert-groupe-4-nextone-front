@@ -12,14 +12,14 @@ import * as yup from "yup";
 export const passwordSchema = yup
   .string()
   .required("Le mot de passe est requis")
-  .min(12, "Le mot de passe doit contenir au moins 12 caractères")
-  .matches(/[a-z]/, "Le mot de passe doit contenir au moins une minuscule")
-  .matches(/[A-Z]/, "Le mot de passe doit contenir au moins une majuscule")
-  .matches(/[0-9]/, "Le mot de passe doit contenir au moins un chiffre")
-  .matches(
-    /[@$!%*?&#]/,
-    "Le mot de passe doit contenir au moins un caractère spécial (@$!%*?&#)"
-  );
+  .min(6, "Le mot de passe doit contenir au moins 6 caractères")
+  // .matches(/[a-z]/, "Le mot de passe doit contenir au moins une minuscule")
+  // .matches(/[A-Z]/, "Le mot de passe doit contenir au moins une majuscule")
+  // .matches(/[0-9]/, "Le mot de passe doit contenir au moins un chiffre")
+  // .matches(
+  //   /[@$!%*?&#]/,
+  //   "Le mot de passe doit contenir au moins un caractère spécial (@$!%*?&#)"
+  // );
 
 /**
  * Schéma de validation pour la confirmation du mot de passe

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLazyQuery, useQuery, useSubscription } from "@apollo/client";
+import { useLazyQuery, useSubscription } from "@apollo/client";
 import { useParams } from "react-router-dom";
 import { TICKETS_FOR_TV_DISPLAY } from "../requests/queries/ticket.query";
 import { TICKETS_CHANGED } from "../requests/subscriptions/ticket.subscription";
@@ -32,15 +32,28 @@ export default function TvPage() {
   const [calledTickets, setCalledTickets] = useState<Ticket[]>([]);
   const [lastCalledTickets, setLastCalledTickets] = useState<Ticket[]>([]);
 
-  const { data, loading, error } = useQuery(TICKETS_FOR_TV_DISPLAY, {
-    variables: {
-      data: { key, serviceId },
-      skip: !key || !serviceId,
-      fetchPolicy: "network-only",
-    },
-  });
+  const [getWaitingTickets, { data, loading, error }] = useLazyQuery(
+    TICKETS_FOR_TV_DISPLAY,
+    {
+      variables: { data: { key, serviceId } },
+    }
+  );
 
   useEffect(() => {
+    if (waitingTickets.length) return;
+    getWaitingTickets();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setDateTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    if (waitingTickets.length) return;
     console.log("Initial tickets for TV display:", data);
     setWaitingTickets((data?.ticketsForTVDisplay as unknown as Ticket[]) || []);
   }, [data]);
@@ -62,7 +75,6 @@ export default function TvPage() {
         setWaitingTickets((prevTickets) =>
           prevTickets.filter((ticket) => ticket.id !== updatedTicket.id)
         );
-        setCalledTickets((prevTickets) => [...prevTickets, updatedTicket]);
         setTimeout(() => {
           setCalledTickets((prevTickets) =>
             prevTickets.filter((ticket) => ticket.id !== updatedTicket.id)
@@ -72,6 +84,7 @@ export default function TvPage() {
             return newLastCalled.slice(0, 3);
           });
         }, 3000);
+        setCalledTickets((prevTickets) => [...prevTickets, updatedTicket]);
         return;
       }
 
@@ -83,7 +96,6 @@ export default function TvPage() {
         const lastStatus =
           ticketLogsWithoutUpdatedStatus[updatedTicket.ticketLogs.length - 2]
             ?.status;
-        console.log("Last status:", lastStatus);
         if (lastStatus === "INPROGRESS" || lastStatus === "CANCELED") {
           setWaitingTickets((prevTickets) =>
             [...prevTickets, updatedTicket].sort(
@@ -122,12 +134,10 @@ export default function TvPage() {
   return (
     <div className="h-screen w-screen bg-gray-50 flex justify-center items-center">
       <div className="flex flex-1 h-full w-full shadow-lg overflow-hidden">
-        <div className="flex-1 bg-[#F0F0EE] flex flex-col justify-between text-black">
+        <div className="flex-1 bg-[#F0F0EE] flex flex-col justify-between text-white">
           <TvHeader dateTime={dateTime} tvKey={key}></TvHeader>
-          <div className="flex flex-col h-full justify-between">
-            <CurrentTicket tickets={calledTickets}></CurrentTicket>
-            <TicketIsCalled data={lastCalledTickets}></TicketIsCalled>
-          </div>
+          <CurrentTicket tickets={calledTickets}></CurrentTicket>
+          <TicketIsCalled data={lastCalledTickets}></TicketIsCalled>
           <TvFooter></TvFooter>
         </div>
         <TicketInProgressList

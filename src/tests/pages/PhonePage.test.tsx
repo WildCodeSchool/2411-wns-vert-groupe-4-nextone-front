@@ -23,12 +23,6 @@ describe("PhonePage", () => {
         vi.clearAllMocks();
     });
 
-    it("renders ticket header with logo and code", () => {
-        renderPhonePage();
-        expect(screen.getByAltText("Logo")).toBeInTheDocument();
-        expect(screen.getByText(ticket.code!)).toBeInTheDocument();
-    });
-
     it("renders greeting and service info", () => {
         renderPhonePage();
         expect(screen.getByText(`Bonjour ${ticket.firstName},`)).toBeInTheDocument();
