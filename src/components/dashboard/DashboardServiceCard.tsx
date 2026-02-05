@@ -170,12 +170,13 @@ export default function DashboardServiceCard({
     : tickets.length;
 
   const serviceStatus = useMemo(() => {
+    console.log("Calculating service status for:", service);
     const status = defineServiceStatus(
       totalCount,
-      service.authorizations.length
+      service.authorizations?.length ?? 0
     );
     return status;
-  }, [totalCount, service.authorizations.length]);
+  }, [totalCount, service.authorizations?.length]);
 
   // useEffect(() => {
   //   refetch({

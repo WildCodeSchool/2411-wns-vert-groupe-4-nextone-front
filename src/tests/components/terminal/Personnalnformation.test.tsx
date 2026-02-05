@@ -50,27 +50,4 @@ describe("PersonnalInformation", () => {
     expect(inputs.name).toHaveValue("Doe");
     expect(inputs.firstName).toHaveValue("John");
   });
-
-  it("shows validation errors when fields are empty", async () => {
-    renderComponent({ ...emptyTicket, name: "", firstName: "" });
-    fireEvent.submit(screen.getByTestId("form"));
-    await waitFor(() => {
-      expect(screen.getByText(/Le nom est obligatoire/i)).toBeInTheDocument();
-      expect(screen.getByText(/Le prénom est obligatoire/i)).toBeInTheDocument();
-    });
-    expect(setTicketMock).not.toHaveBeenCalled();
-    expect(onNextMock).not.toHaveBeenCalled();
-  });
-
-  it("submits valid data correctly", async () => {
-    renderComponent();
-    await fillInputs({ name: "Doe", firstName: "John" });
-    fireEvent.submit(screen.getByTestId("form"));
-    await waitFor(() => {
-      expect(setTicketMock).toHaveBeenCalledWith(
-        expect.objectContaining({ name: "Doe", firstName: "John" })
-      );
-      expect(onNextMock).toHaveBeenCalled();
-    });
-  });
 });

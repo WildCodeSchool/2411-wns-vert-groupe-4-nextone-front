@@ -45,6 +45,14 @@ export default function TvPage() {
   }, []);
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      setDateTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     if (waitingTickets.length) return;
     console.log("Initial tickets for TV display:", data);
     setWaitingTickets((data?.ticketsForTVDisplay as unknown as Ticket[]) || []);

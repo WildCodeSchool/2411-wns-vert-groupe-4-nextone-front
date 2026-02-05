@@ -38,6 +38,44 @@ export const GET_SERVICES_WITH_MANAGERS = gql`
   }
 `;
 
+// export const GET_SERVICES_FOR_OPERATOR = gql`
+//   query ServicesForOperator($managerId: UUID!) {
+//     getEmployeeAuthorizations(managerId: $managerId) {
+//       service {
+//         id
+//         name
+//         isGloballyActive
+//       }
+//     }
+//   }
+// `;
+
+export const GET_SERVICES_FOR_OPERATOR = gql`
+  query ServicesForOperator($managerId: UUID!) {
+    getEmployeeAuthorizations(managerId: $managerId) {
+      service {
+        id
+        name
+        isGloballyActive
+        tickets {
+          id
+          code
+          status
+        }
+        authorizations {
+          createdAt
+        }
+      }
+      manager {
+        firstName
+        lastName
+        id
+      }
+      isAdministrator
+    }
+  }
+`;
+
 export const GET_SERVICE = gql`
   query Service($id: UUID!) {
     service(id: $id) {

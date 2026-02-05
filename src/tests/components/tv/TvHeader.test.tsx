@@ -1,34 +1,56 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { formattedDate } from "@/utils/formattedDate";
 import { formattedTime } from "@/utils/formattedTime";
-import TvHeader from "@/components/tv/HeaderTv";
 
-const mockLocation = { href: "" };
+vi.mock("@/hooks/useGeolocation", () => ({
+    useGeolocation: () => ({
+        latitude: 48.85,
+        longitude: 2.35,
+        isLoading: false,
+    }),
+}));
+
+vi.mock("@/utils/weatherIcons", () => ({
+    getWeatherIcon: () => "☀️",
+}));
 
 describe("TvHeader component", () => {
+    const mockLocation = { href: "" };
+
     beforeEach(() => {
+        vi.resetModules();
         Object.defineProperty(window, "location", {
             value: mockLocation,
             writable: true,
         });
     });
 
-    it("renders header correctly", () => {
-        const date = new Date("2025-02-02T10:30:00");
-        render(<TvHeader dateTime={date} />);
-        const retourBtn = screen.getByText("Retour");
-        expect(retourBtn).toBeInTheDocument();
-        expect(screen.getByText("☀️ 27°C")).toBeInTheDocument();
-        expect(screen.getByText(formattedDate(date))).toBeInTheDocument();
-        expect(screen.getByText(formattedTime(date))).toBeInTheDocument();
+    it("displays loading state when weather is loading", async () => {
+        vi.doMock("@/hooks/useWeather", () => ({
+        useWeather: () => ({
+            isLoading: true,
+            error: null,
+        }),
+        }));
+        const { default: TvHeader } = await import(
+            "@/components/tv/HeaderTv"
+        );
+        render( <TvHeader dateTime={new Date("2025-02-02T10:30:00")} tvKey="123"/> );
+        expect(screen.getByText("Chargement...")).toBeInTheDocument();
     });
 
-    it("redirects to /tv when clicking Retour", () => {
-        const date = new Date("2025-02-02T10:30:00");
-        render(<TvHeader dateTime={date} />);
-        const retourBtn = screen.getByText("Retour");
-        fireEvent.click(retourBtn);
-        expect(window.location.href).toBe("/tv");
+    it("displays fallback when weather returns an error", async () => {
+        vi.doMock("@/hooks/useWeather", () => ({
+            useWeather: () => ({
+                isLoading: false,
+                error: true,
+            }),
+        }));
+        const { default: TvHeader } = await import(
+            "@/components/tv/HeaderTv"
+        );
+        render( <TvHeader dateTime={new Date("2025-02-02T10:30:00")} tvKey="123"/>);
+        expect(screen.getByText("☀️ --°C")).toBeInTheDocument();
     });
 });

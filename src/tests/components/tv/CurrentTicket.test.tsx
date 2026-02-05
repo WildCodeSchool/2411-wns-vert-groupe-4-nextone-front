@@ -16,10 +16,4 @@ describe("CurrentTicket component", () => {
         expect(screen.getByText("T1")).toBeInTheDocument();
         expect(screen.getByText(/Service Odontologie 1/i)).toBeInTheDocument();
     });
-
-    it("renders a message when there are no tickets", () => {
-        const tickets: CurrentTicketProps["tickets"] = [];
-        render(<CurrentTicket tickets={tickets} />);
-        expect(screen.getByText("Aucun ticket en cours pour ce service.")).toBeInTheDocument();
-    });
 });

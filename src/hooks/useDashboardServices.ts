@@ -43,13 +43,18 @@ export const useDashboardServices = () => {
       services = data?.services || [];
     } else {
       if (!data || !("authorizations" in data)) return [];
-      services = data.authorizations.map(
-        (auth: { services: DashboardService }) => auth.services
-      );
+      services = data.authorizations
+        .map((auth: { service: DashboardService }) => auth.service)
+        .filter(
+          (service: DashboardService): service is DashboardService =>
+            service !== undefined && service !== null
+        );
     }
 
+    console.log("Fetched services:", services);
+
     return services
-      .filter((service) => service.isGloballyActive)
+      .filter((service) => service && service.isGloballyActive)
       .map((service: DashboardService): ServiceWithState => {
         const pendingTickets = (service.tickets || []).filter(
           (t) => t.status === "PENDING"

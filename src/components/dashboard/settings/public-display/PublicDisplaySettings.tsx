@@ -100,7 +100,7 @@ const IpAddressListItem = ({
   ipItem,
   onDelete,
 }: {
-  ipItem: { ipAddress: string; id: string };
+  ipItem: { ipAddress: string; id: string; key: string };
   onDelete: (ipItemId: string) => void;
 }) => {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
@@ -108,7 +108,9 @@ const IpAddressListItem = ({
   return (
     <>
       <div className="flex justify-between items-center px-2 py-2">
-        <div>{ipItem.ipAddress}</div>
+        <div>
+          {ipItem.ipAddress} ({ipItem.key})
+        </div>
         <Button
           onClick={() => setShowDeleteDialog(true)}
           size="icon"
